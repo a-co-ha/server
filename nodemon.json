@@ -1,0 +1,7 @@
+{
+    "ignore": [
+        "dist/"
+    ],
+    "exec": "yarn build && node dist",
+    "ext": "js,json,ts"
+}

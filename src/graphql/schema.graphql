@@ -1,0 +1,12 @@
+type User {
+  userId: String
+  userName: String
+}
+
+type Query {
+  users: String
+}
+
+type Mutation {
+  addUser(userId: String!, userName: String!): Boolean
+}
