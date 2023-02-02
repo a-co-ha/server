@@ -7,7 +7,7 @@ import logger from "morgan";
 
 import { port, mongoDBUri, host } from "./config";
 import { errorHandler, loginRequired } from "./middlewares";
-// import { indexRouter, userRouter } from "./routers";
+import { indexRouter, oauthRouter } from "./routers";
 import { endPoint } from "./constants";
 
 const app = express();
@@ -36,8 +36,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// app.get(endPoint.index, indexRouter);
-// app.use(endPoint.user, loginRequired, userRouter);
+app.get(endPoint.index, indexRouter);
+app.use(endPoint.oauth, oauthRouter);
 
 app.use(function (req, res, next) {
   next(createError(404));
