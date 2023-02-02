@@ -1,63 +1,54 @@
-import compression from "compression";
-import cors from "cors";
 import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import {
-  port,
-  TYPEORM_CONNECTION,
-  TYPEORM_HOST,
-  TYPEORM_USERNAME,
-  TYPEORM_PASSWORD,
-  TYPEORM_DATABASE,
-  TYPEORM_PORT,
-  TYPEORM_SYNCHRONIZE,
-  TYPEORM_LOGGING,
-  TYPEORM_ENTITIES,
-} from "./config";
-import { DataSource } from "typeorm";
-import resolvers from "./graphql/resolver";
-import fs from "fs";
+import cors from "cors";
+import createError from "http-errors";
+import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
+import logger from "morgan";
 
-const typeDefs = fs.readFileSync("src/graphql/schema.graphql", {
-  encoding: "utf-8",
-});
+import { port, mongoDBUri, host } from "./config";
+import { errorHandler, loginRequired } from "./middlewares";
+// import { indexRouter, userRouter } from "./routers";
+import { endPoint } from "./constants";
 
 const app = express();
-app.use("*", cors());
-app.use(compression());
+mongoose.connect(mongoDBUri);
+mongoose.connection.on("connected", () => {
+  console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
+});
 
-let apolloServer: any = null;
-async function startServer() {
-  apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-    introspection: true,
-  });
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
-}
-startServer();
+import mysql from "mysql2";
 
-async function initialize() {
-  try {
-    const myDataSource = new DataSource({
-      type: TYPEORM_CONNECTION as "mysql",
-      host: TYPEORM_HOST,
-      port: TYPEORM_PORT,
-      username: TYPEORM_USERNAME,
-      password: TYPEORM_PASSWORD,
-      database: TYPEORM_DATABASE,
-    });
-    myDataSource.initialize().then(() => {
-      console.log("Data Source has been initialized!");
-    });
-    console.log("DB Connected!");
-  } catch (e) {
-    console.log(e);
-  }
-}
-initialize();
+const pool = mysql.createPool({
+  host: host,
+  port: 3306,
+  user: "admin",
+  password: "12341234",
+  database: "acoha",
+});
 
-app.listen(port, () =>
-  console.log(`🚀 http://localhost:${port}${apolloServer.graphqlPath}`)
-);
+export const getConn = async () => {
+  return pool.getConnection(async (conn) => conn);
+};
+
+app.use(cors());
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// app.get(endPoint.index, indexRouter);
+// app.use(endPoint.user, loginRequired, userRouter);
+
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
+app.use(errorHandler);
+
+getConn().then((conn) => {
+  console.log(`Connected DB`);
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port: ${port}`);
+});
