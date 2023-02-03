@@ -4,11 +4,12 @@ import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
-
+import session from "express-session";
 import { port, mongoDBUri, host } from "./config";
 import { errorHandler, loginRequired } from "./middlewares";
 import { indexRouter, oauthRouter } from "./routers";
 import { endPoint } from "./constants";
+import passport from "passport";
 
 const app = express();
 mongoose.connect(mongoDBUri);
@@ -16,19 +17,8 @@ mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
 });
 
-import mysql from "mysql2";
-
-const pool = mysql.createPool({
-  host: host,
-  port: 3306,
-  user: "admin",
-  password: "12341234",
-  database: "acoha",
-});
-
-export const getConn = async () => {
-  return pool.getConnection(async (conn) => conn);
-};
+require("./routers/passport/github");
+app.use(passport.initialize());
 
 app.use(cors());
 app.use(logger("dev"));
@@ -44,10 +34,6 @@ app.use(function (req, res, next) {
 });
 
 app.use(errorHandler);
-
-getConn().then((conn) => {
-  console.log(`Connected DB`);
-});
 
 app.listen(port, () => {
   console.log(`Server listening on port: ${port}`);
