@@ -5,8 +5,13 @@ import {
   NEXT_PUBLIC_APP_GITHUB_OAUTH_CLIENT_SECRET,
   NEXT_PUBLIC_APP_GITHUB_OAUTH_REDIRECT_URL,
 } from "../../config";
-import { connect } from "../../db/mysql";
-
+import { init , execute} from "../../db/mysql";
+interface IUser {
+  name : string;
+  githubID : string;
+  githubURL : string;
+  img : string;
+}
 passport.use(
   new GitHubStrategy(
     {
@@ -23,14 +28,16 @@ passport.use(
           avatar_url: img,
         } = profile._json;
 
-        // connect(async (con: any, id: string) => {
-        //   console.log(name, githubID, githubURL);
-        //   const result = await con.query("select * from user");
-        //   console.log(result);
+  init();
+  const isGuest =  await execute<IUser[]>(`select * from user where name = ? 
+  and githubID = ? 
+  and githubURL = ? 
+  and img = ? `, [name, githubID, githubURL, img] );
 
-        return cb(null, profile._json);
-        // }
-        // );
+  if (isGuest.length <= 0) {
+    await execute<IUser>(`insert into user (name, githubID, githubURL, img) values (?,?,?,?)`
+    ,[name, githubID, githubURL, img] );
+  }
       } catch (err) {
         return cb(err);
       }

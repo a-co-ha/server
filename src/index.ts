@@ -20,6 +20,8 @@ mongoose.connection.on("connected", () => {
 require("./routers/passport/github");
 app.use(passport.initialize());
 
+
+
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
@@ -35,6 +37,8 @@ app.use(function (req, res, next) {
 
 app.use(errorHandler);
 
-app.listen(port, () => {
+
+
+app. listen(port, () => {
   console.log(`Server listening on port: ${port}`);
 });
