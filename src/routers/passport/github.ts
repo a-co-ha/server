@@ -6,7 +6,7 @@ import {
   NEXT_PUBLIC_APP_GITHUB_OAUTH_REDIRECT_URL,
 } from "../../config";
 import { init , execute} from "../../db/mysql";
-interface IUser {
+export interface IUser {
   name : string;
   githubID : string;
   githubURL : string;
@@ -21,13 +21,13 @@ passport.use(
     },
     async (accessToken: any, refreshToken: any, profile: any, cb: any) => {
       try {
-        const {
+        const  {
           name,
           login: githubID,
           html_url: githubURL,
           avatar_url: img,
         } = profile._json;
-
+const user : IUser = {name, githubID, githubURL,  img};
   init();
   const isGuest =  await execute<IUser[]>(`select * from user where name = ? 
   and githubID = ? 
@@ -38,17 +38,18 @@ passport.use(
     await execute<IUser>(`insert into user (name, githubID, githubURL, img) values (?,?,?,?)`
     ,[name, githubID, githubURL, img] );
   }
+return cb(null, user );
       } catch (err) {
         return cb(err);
       }
     }
   )
 );
+
 passport.serializeUser((user, done) => {
   done(null, user);
 });
-// 로그인 성공 후, 페이지 접근 시 수행됨. session에 저장된 값을 이용해 DB에서 사용자 정보를 가져와 Request에 넘겨준다
-passport.deserializeUser((name: any, done) => {
-  console.log(name);
-  done(null, name);
+
+passport.deserializeUser((user : IUser, done) => {
+  done(null, user);
 });
