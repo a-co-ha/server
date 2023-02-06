@@ -30,6 +30,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "eslint-plugin-prettier": "^4.2.1",
     "express": "^4.18.2",
     "express-graphql": "^0.12.0",
     "express-session": "^1.17.3",
@@ -45,8 +46,8 @@
     "passport-github": "^1.1.0",
     "passport-github2": "^0.1.12",
     "promise-mysql": "^5.2.0",
-    "sequelize": "^6.28.0",
     "typeorm": "^0.3.11",
+    "sequelize": "^6.28.0",
     "uuidv4": "^6.2.13"
   },
   "description": "",
@@ -55,7 +56,22 @@
   "scripts": {
     "build": "babel --extensions '.ts' src -d dist",
     "dev": "nodemon -e js,ts,json --ignore dist/ --exec 'yarn build && node dist'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint:fix": "eslint src --ext .ts --parser-options=project:'tsconfig.json' --fix",
+    "lint-staged": "lint-staged"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn dev"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "yarn lint:fix",
+      "prettier --write"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -74,10 +90,13 @@
     "@types/express": "^4.17.17",
     "@types/express-serve-static-core": "^4.17.31",
     "@types/express-session": "^1.17.5",
-    "@types/http-errors": "^2.0.1",
-    "@types/jsonwebtoken": "^8.5.9",
+
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.3",
+
+    "@types/http-errors": "^2",
+    "@types/jsonwebtoken": "^9",
+
     "@types/mysql": "^2.15.21",
     "@types/node": "^18.11.18",
     "@types/node-cron": "^3.0.6",
@@ -87,22 +106,28 @@
     "@types/passport-google-oauth": "^1.0.42",
     "@types/passport-google-oauth20": "^2.0.11",
     "@types/pg": "^8.6.5",
-    "@types/sequelize": "^4.28.14",
+ 
     "@types/session-file-store": "^1.2.2",
     "@types/winston": "^2.4.4",
     "class-transformer": "^0.5.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "eslint": "^8.27.0",
-    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.32.1",
     "express": "^4.18.2",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.2",
     "morgan": "^1.10.0",
+    "@types/prettier": "^2",
+    "@types/sequelize": "^4.28.14",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-react": "^7.32.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.1.0",
     "node-cron": "^3.0.2",
@@ -110,11 +135,11 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.8.0",
-    "prettier": "^2.7.1",
-    "sequelize": "^6.28.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4",
     "winston": "^3.8.2",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "prettier": "^2.8.3",
+    "sequelize": "^6.28.0",
+    "typescript": "^4.9.5"
   }
 }
