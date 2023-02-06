@@ -39,7 +39,7 @@ export const githubLoginWithServer = async (req: any, res: any) => {
     const { data: requestToken } = await axios.post(finalUrl, body, {
       headers: { Accept: "application/json" },
     });
- 
+
     /// todo 디비에 저장 (login, name, avatar_url, html_url)
     const { access_token } = requestToken;
     console.log(access_token);
