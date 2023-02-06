@@ -101,5 +101,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "sourceMap": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/**/*",".eslintrc.cjs"]
 }

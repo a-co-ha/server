@@ -15,6 +15,7 @@ module.exports = {
     project: ["./tsconfig.json"],
     tsconfigRootDir: __dirname,
     sourceType: "module",
+    // createDefaultProgram : true
   },
   rules: {
     "@typescript-eslint/await-thenable": "error",
