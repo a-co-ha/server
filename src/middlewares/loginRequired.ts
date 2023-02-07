@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
-
+import { jwtSecret } from "../config";
+import jwt from "jsonwebtoken";
 export function loginRequired(req: Request, res: Response, next: NextFunction) {
   const userToken = req.headers.authorization?.split(" ")[1];
   if (!userToken || userToken === "null") {
@@ -15,8 +16,16 @@ export function loginRequired(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const secretKey = process.env.JWT_SECRET_KEY || "secret-key";
-    // const jwtDecoded = jwt.verify(userToken, secretKey);
+    const jwtDecoded = jwt.verify(userToken, jwtSecret);
+    const name = (<{ name: string }>jwtDecoded).name;
+    const githubID = (<{ githubID: string }>jwtDecoded).githubID;
+    const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
+    const img = (<{ img: string }>jwtDecoded).img;
+    req.body.name = name;
+    req.body.githubID = githubID;
+    req.body.githubURL = githubURL;
+    req.body.img = img;
+
     next();
   } catch (error) {
     errorResponse(res, "FORBIDDEN", "정상적인 토큰이 아닙니다.");
