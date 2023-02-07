@@ -8,10 +8,17 @@ export class UserService {
     this.userModel = userModel;
   }
 
-  //계정 로그인
   async login(user: any) {
     const { accessToken, refreshToken } = setUserToken(user);
     return { user, accessToken, refreshToken };
+  }
+
+  async get(user: UserType) {
+    return await userModel.get(user);
+  }
+
+  async insert(user: UserType) {
+    await userModel.save(user);
   }
 }
 

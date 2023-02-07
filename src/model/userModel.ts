@@ -11,6 +11,7 @@ export class UserModel implements IUserModel {
 
   async get(user: UserType): Promise<any> {
     const { name, githubID, githubURL, img } = user;
+
     const userInfo = await execute<UserType[]>(
       `select * from user where name = ? 
            and githubID = ? 
@@ -18,6 +19,7 @@ export class UserModel implements IUserModel {
            and img = ? `,
       [name, githubID, githubURL, img]
     );
+
     return userInfo;
   }
 }

@@ -21,22 +21,15 @@ passport.use(
           html_url: githubURL,
           avatar_url: img,
         } = profile._json;
+
         const user: UserType = { name, githubID, githubURL, img };
+
         init();
-        const isGuest = await execute<UserType[]>(
-          `select * from user where name = ?
-           and githubID = ?
-           and githubURL = ?
-           and img = ? `,
-          [name, githubID, githubURL, img]
-        );
-        // const isGuest = await userService.get(user);
+
+        const isGuest = await userService.get(user);
 
         if (isGuest.length <= 0) {
-          await execute<UserType>(
-            `insert into user (name, githubID, githubURL, img) values (?,?,?,?)`,
-            [name, githubID, githubURL, img]
-          );
+          await userService.insert(user);
         }
         return cb(null, user);
       } catch (err) {

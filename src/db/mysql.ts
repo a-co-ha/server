@@ -37,8 +37,9 @@ export const init = () => {
  * in the query
  */
 
-export const execute = <T>(
+export const execute = async <T>(
   query: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
   params: string[] | Object
 ): Promise<T> => {
   try {
