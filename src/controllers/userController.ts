@@ -7,7 +7,7 @@ interface IUserController {
 export class UserController implements IUserController {
   login: AsyncRequestHandler = async (req, res) => {
     const user = req.user;
-    const result = setUserTokendfds(req.user);
+    const result = setUserToken(req.user);
     res.json({ user, result });
   };
 }

@@ -10,20 +10,16 @@ const postSchema = new Schema(
           type: String,
           required: true,
         },
-        html: {
+        content: {
           type: String,
           required: false,
         },
-        imageUrl: {
+        imgUrl: {
           type: String,
           required: false,
         },
       },
     ],
-    creator: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
   },
   {
     timestamps: true,

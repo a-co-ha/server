@@ -1,5 +1,5 @@
 import express from "express";
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 import { request } from "http";
 import passport from "passport";
 import { userController } from "../controllers";
@@ -13,5 +13,4 @@ oauthRouter.get(
   "/github/callback",
   passport.authenticate("github", { failureRedirect: "/login" }),
   asyncHandler(userController.login)
-
 );

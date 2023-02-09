@@ -3,6 +3,7 @@ interface EndPointInterface {
   oauth: string;
   user: string;
   guest: string;
+  post: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -10,4 +11,5 @@ export const endPoint: EndPointInterface = {
   oauth: "/oauth",
   user: "/api/user",
   guest: "/api/guest",
+  post: "/api/post",
 };
