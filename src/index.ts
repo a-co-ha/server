@@ -7,7 +7,7 @@ import logger from "morgan";
 import session from "express-session";
 import { port, mongoDBUri } from "./config";
 import { errorHandler, loginRequired } from "./middlewares";
-import { indexRouter, oauthRouter } from "./routers";
+import { indexRouter, oauthRouter, inviteRouter } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
 
@@ -17,8 +17,8 @@ mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
 });
 
+// require("./models/index");
 require("./routers/passport/github");
-
 app.use(
   session({
     resave: false, // 매번 세션 강제 저장
@@ -42,7 +42,7 @@ app.use(cookieParser());
 
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
-
+app.use(endPoint.invite, loginRequired, inviteRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });

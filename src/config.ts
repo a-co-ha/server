@@ -17,3 +17,4 @@ export const mysqlPort = parseInt(process.env.MYSQL_PORT ?? "3306");
 export const mysqlUser = process.env.MYSQL_USER;
 export const mysqlPassword = process.env.MYSQL_PASSWORD;
 export const mysqlDataBase = process.env.MYSQL_DATABASE;
+export const inviteApi = process.env.INVITE_URL;
