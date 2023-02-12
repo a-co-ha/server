@@ -1,7 +1,4 @@
-
 import { findSourceMap } from "module";
-import mysql, { Pool, RowDataPacket } from "mysql2";
-import { port, mongoDBUri, host } from "../config";
 import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
@@ -10,7 +7,6 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
-
 
 /**
  * generates pool connection to be used throughout the app
@@ -41,7 +37,6 @@ export const init = () => {
  * @param {string[] | Object} params - provide the parameterized values used
  * in the query
  */
-
 
 export const execute = async <T>(
   query: string,

@@ -11,6 +11,8 @@ import { indexRouter, oauthRouter, inviteRouter } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
 import { postRouter } from "./routers/postRouter";
+import http from "http";
+import Websocket from "ws";
 
 const app = express();
 mongoose.connect(mongoDBUri);
@@ -51,6 +53,19 @@ app.use(function (req, res, next) {
 
 app.use(errorHandler);
 
-app.listen(port, () => {
+// app.listen(port, () => {
+//   console.log(`Server listening on port: ${port}`);
+// });
+
+const server = http.createServer(app);
+
+const wss = new Websocket.Server({ server });
+
+const handleConnection = (socket: any) => {
+  console.log(socket);
+};
+wss.on("connection", handleConnection);
+
+server.listen(port, () => {
   console.log(`Server listening on port: ${port}`);
 });
