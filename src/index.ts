@@ -10,6 +10,7 @@ import { errorHandler, loginRequired } from "./middlewares";
 import { indexRouter, oauthRouter, inviteRouter } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
+import { postRouter } from "./routers/postRouter";
 
 const app = express();
 mongoose.connect(mongoDBUri);
@@ -43,6 +44,7 @@ app.use(cookieParser());
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.invite, loginRequired, inviteRouter);
+app.use(endPoint.post, postRouter);
 app.use(function (req, res, next) {
   next(createError(404));
 });

@@ -34,6 +34,11 @@ module.exports = {
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    //
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/promise-function-async": "off",
   },
   root: true,
 };
