@@ -1,5 +1,16 @@
+<<<<<<< HEAD
 import mysql, { Pool, RowDataPacket } from "mysql2";
 import { port, mongoDBUri, host } from "../config";
+=======
+import mysql, { Pool } from "mysql2";
+import {
+  mysqlPort,
+  mysqlHost,
+  mysqlUser,
+  mysqlPassword,
+  mysqlDataBase,
+} from "../config";
+>>>>>>> feature
 
 /**
  * generates pool connection to be used throughout the app
@@ -8,11 +19,19 @@ let pool: Pool;
 export const init = () => {
   try {
     pool = mysql.createPool({
+<<<<<<< HEAD
       host: host,
       port: 3306,
       user: "admin",
       password: "12341234",
       database: "acoha",
+=======
+      host: mysqlHost,
+      port: mysqlPort,
+      user: mysqlUser,
+      password: mysqlPassword,
+      database: mysqlDataBase,
+>>>>>>> feature
       connectionLimit: 10000,
     });
 
@@ -31,8 +50,14 @@ export const init = () => {
  * in the query
  */
 
+<<<<<<< HEAD
 export const execute = <T>(
   query: string,
+=======
+export const execute = async <T>(
+  query: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+>>>>>>> feature
   params: string[] | Object
 ): Promise<T> => {
   try {

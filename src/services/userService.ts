@@ -1,23 +1,24 @@
-import { IUser } from "../routers/passport/github";
+import { userModel } from "./../model/userModel";
 import { setUserToken } from "./../utils/jwt";
-export interface IUserModel {
-  login(user: IUser): Promise<any>;
-}
-export class UserModel implements IUserModel {
-  async login(user: IUser) {}
-}
-
-export const userModel = new UserModel();
+import { UserType, IUserModel } from "../interface";
 
 export class UserService {
-  constructor(private User: UserModel) {
-    this.User = userModel;
+  private userModel;
+  constructor(userModel: IUserModel) {
+    this.userModel = userModel;
   }
 
-  //계정 로그인
   async login(user: any) {
     const { accessToken, refreshToken } = setUserToken(user);
     return { user, accessToken, refreshToken };
+  }
+
+  async get(user: UserType) {
+    return await userModel.get(user);
+  }
+
+  async insert(user: UserType) {
+    await userModel.save(user);
   }
 }
 

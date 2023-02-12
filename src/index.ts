@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
-import { port, mongoDBUri, host } from "./config";
+import { port, mongoDBUri } from "./config";
 import { errorHandler, loginRequired } from "./middlewares";
 import { indexRouter, oauthRouter } from "./routers";
 import { endPoint } from "./constants";
