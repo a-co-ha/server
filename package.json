@@ -46,7 +46,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/src/index.js",
-    "build": "tsc -p .",
+    "build": "babel --extensions '.ts' src -d dist",
     "dev": "nodemon -e js,ts,json --ignore dist/ --exec 'yarn build && node dist'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",

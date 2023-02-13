@@ -1,6 +1,6 @@
 import { IInviteModel } from "./../interface/index";
 import { inviteModel } from "./../model";
-import { ChannelType } from "../interface";
+import { ChannelType, ChannelMember } from "../interface";
 
 export class InviteService {
   private inviteModel;
@@ -9,12 +9,18 @@ export class InviteService {
   }
 
   async invite(info: ChannelType): Promise<any> {
-    return await inviteModel.make(info);
+    if (!(await inviteModel.make(info))) {
+      throw new Error(`failed to invite ${info}`);
+    }
+    return info;
   }
 
-  async join(userId: string, code: string) {
+  async join(userId: string, code: string): Promise<any> {
     const channelName = Buffer.from(code, "base64").toString("utf-8");
-    await inviteModel.join(userId, channelName);
+    if (!(await inviteModel.join(userId, channelName))) {
+      throw new Error(`failed to join`);
+    }
+    return { userId, channelName };
   }
 }
 

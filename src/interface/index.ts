@@ -33,7 +33,10 @@ export interface ChannelType {
   admin: string;
   channelName: string;
 }
+export interface ChannelMember extends ChannelType {
+  members: UserType[];
+}
 export interface IInviteModel {
-  make(channel: ChannelType): Promise<void>;
-  join(channelName: string, user: string): Promise<any>;
+  make(channel: ChannelType): Promise<Boolean>;
+  join(channelName: string, user: string): Promise<Boolean>;
 }

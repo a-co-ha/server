@@ -4,6 +4,7 @@ import { ChannelType } from "../interface";
 
 interface IInviteController {
   invite: AsyncRequestHandler;
+  join: AsyncRequestHandler;
 }
 export class InviteController implements IInviteController {
   invite: AsyncRequestHandler = async (req, res) => {
@@ -11,14 +12,16 @@ export class InviteController implements IInviteController {
       admin: req.body.name,
       channelName: req.body.channelName,
     };
-    return await inviteService.invite(channelInfo);
+    const result = await inviteService.invite(channelInfo);
+    res.json(result);
   };
 
   join: AsyncRequestHandler = async (req, res) => {
     const { code } = req.params;
     const { githubID } = req.body;
 
-    await inviteService.join(githubID, code);
+    const result = await inviteService.join(githubID, code);
+    res.json(result);
   };
 }
 
