@@ -11,8 +11,10 @@ import { indexRouter, oauthRouter, inviteRouter } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
 import { postRouter } from "./routers/postRouter";
-import http from "http";
-import Websocket from "ws";
+import { createServer } from "http";
+import { Server } from "socket.io";
+//socket 때문에 잠시 나중에 지울것
+import { Request, Response } from "express";
 
 const app = express();
 mongoose.connect(mongoDBUri);
@@ -43,29 +45,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.get(endPoint.index, indexRouter);
+//socket 때문에 잠시 주석
+// app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.invite, loginRequired, inviteRouter);
 app.use(endPoint.post, postRouter);
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+//socket 때문에 잠시 주석
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// socket 설정 나중에 지울것
+app.engine("pug", require("pug").__express);
+app.set("view engine", "pug");
+app.set("views", "src/front/views");
+app.use("/public", express.static("src/front/public"));
+app.get("/", (req: Request, res: Response) => res.render("home"));
 
 app.use(errorHandler);
 
-// app.listen(port, () => {
-//   console.log(`Server listening on port: ${port}`);
-// });
-
-const server = http.createServer(app);
-
-const wss = new Websocket.Server({ server });
-
-const handleConnection = (socket: any) => {
-  console.log(socket);
-};
-wss.on("connection", handleConnection);
-
-server.listen(port, () => {
+export const httpServer = app.listen(port, () => {
   console.log(`Server listening on port: ${port}`);
+});
+
+const io = new Server(httpServer);
+io.on("connection", (socket) => {
+  console.log("connected to Browser");
 });
