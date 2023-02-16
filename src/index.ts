@@ -7,10 +7,16 @@ import logger from "morgan";
 import session from "express-session";
 import { port, mongoDBUri } from "./config";
 import { errorHandler, loginRequired } from "./middlewares";
-import { indexRouter, oauthRouter, inviteRouter } from "./routers";
+import {
+  indexRouter,
+  oauthRouter,
+  inviteRouter,
+  postRouter,
+  usersSocketRouter,
+} from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
-import { postRouter } from "./routers/postRouter";
+
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -20,7 +26,6 @@ mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
 });
 
-// require("./models/index");
 require("./routers/passport/github");
 app.use(
   session({
@@ -47,21 +52,14 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.invite, loginRequired, inviteRouter);
 app.use(endPoint.post, postRouter);
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
 app.use(errorHandler);
-
-// app.listen(port, () => {
-//   console.log(`Server listening on port: ${port}`);
-// });
 
 const httpServer = createServer(app);
 
 const io = new Server(httpServer);
 io.on("connection", (socket) => {
   console.log("Socket connection");
+  usersSocketRouter(socket);
 });
 
 httpServer.listen(port, () => {
