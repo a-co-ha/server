@@ -19,11 +19,8 @@ class PostService {
     return await postModel.createPost(post);
   }
 
-  async pushPost(id: string, block: block, blockId: string): Promise<any> {
-    if (blockId) {
-      return await postModel.updatePost(id, block, blockId);
-    }
-    return await postModel.pushPost(id, block);
+  async pushPost(id: string, blocks: block): Promise<post> {
+    return await postModel.pushPost(id, blocks);
   }
 
   async deletePost(id: string): Promise<object> {

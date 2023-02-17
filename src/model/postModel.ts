@@ -21,30 +21,15 @@ export class PostModel implements IPostModel {
     return await Posts.create(post);
   }
 
-  async updatePost(id: string, block: block, blockId: string): Promise<post> {
-    const { tag, content, imgUrl } = block;
-
-    return await Posts.findOneAndUpdate(
-      { _id: id, blocks: { $elemMatch: { _id: blockId } } },
-      {
-        $set: {
-          "blocks.$": { tag: tag, content: content, imgUrl: imgUrl },
-        },
-      }
-    );
-  }
-
-  async pushPost(id: string, block: block): Promise<post> {
-    const { tag, content, imgUrl } = block;
-
+  async pushPost(id: string, blocks: block): Promise<post> {
     return await Posts.findOneAndUpdate(
       { _id: id },
       {
-        $push: {
-          blocks: { tag: tag, content: content, imgUrl: imgUrl },
-        },
+        blocks: blocks,
       }
-    );
+    ).then(() => {
+      return this.findPost(id);
+    });
   }
 
   async deletePost(id: string): Promise<object> {

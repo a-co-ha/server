@@ -42,16 +42,15 @@ export class PostController implements IPostController {
 
   pushPost: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const blockId = req.query.block as string;
-    const { tag, content, imgUrl } = req.body.blocks[0];
+    const blocks = req.body.blocks;
 
-    const block: block = {
-      tag: tag,
-      content: content,
-      imgUrl: imgUrl,
-    };
+    // const block: block = {
+    //   tag: tag,
+    //   content: content,
+    //   imgUrl: imgUrl,
+    // };
 
-    const pushPost = await postService.pushPost(id, block, blockId);
+    const pushPost = await postService.pushPost(id, blocks);
 
     res.json(pushPost);
   };
