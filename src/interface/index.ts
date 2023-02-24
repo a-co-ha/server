@@ -1,22 +1,30 @@
-interface block {
+export interface block {
   tag: string;
-  content?: string;
+  html?: string;
   imgUrl?: string;
 }
 
-interface post {
+export interface page {
+  channelId?: number;
+  postName?: string;
+  label?: {};
   blocks: {};
 }
 
-interface IPostModel {
-  findPost(id: string): Promise<post>;
-  findPostBlock(id: string, blockId: string): Promise<post>;
-  createPost(block: post): Promise<post>;
-  pushPost(id: string, post: block): Promise<post>;
+export interface IPostModel {
+  findPost(channelId: number, id: string): Promise<page>;
+  createPost(channelId: page): Promise<page>;
+  pushPost(id: string, page: page): Promise<page>;
   deletePost(id: string): Promise<object>;
 }
 
-export { post, block, IPostModel };
+export interface progress {
+  channelId: number;
+  postName: string;
+  page: page;
+}
+
+export interface IProgressModel {}
 
 export interface UserType {
   name: string;

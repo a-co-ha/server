@@ -1,34 +1,34 @@
 import { postSchema } from "../schema";
-import { post, IPostModel, block } from "../interface";
+import { IPostModel, block, page } from "../interface";
 import { model } from "mongoose";
 import mongoose from "mongoose";
 mongoose.set("strictQuery", true);
+
 const Posts = model("posts", postSchema);
 
 export class PostModel implements IPostModel {
-  async findPost(id: string): Promise<post> {
-    return await Posts.findById({ _id: id });
+  async findPost(channelId: number, id: string): Promise<page> {
+    const post = Posts.findOne({ _id: id });
+    return await post.findOne({ channelId });
   }
 
-  async findPostBlock(id: string, blockId: string): Promise<post> {
-    return await Posts.findOne(
-      { _id: id, blocks: { $elemMatch: { _id: blockId } } },
-      { "blocks.$": true }
-    );
+  async createPost(page: page): Promise<page> {
+    const post = await Posts.create(page);
+
+    return post;
   }
 
-  async createPost(post: post): Promise<post> {
-    return await Posts.create(post);
-  }
-
-  async pushPost(id: string, blocks: block): Promise<post> {
+  async pushPost(id: string, page: page): Promise<page> {
+    const { channelId, label, postName, blocks } = page;
     return await Posts.findOneAndUpdate(
       { _id: id },
       {
+        postName: postName,
+        label: label,
         blocks: blocks,
       }
     ).then(() => {
-      return this.findPost(id);
+      return this.findPost(channelId, id);
     });
   }
 

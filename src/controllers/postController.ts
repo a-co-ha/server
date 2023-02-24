@@ -1,56 +1,57 @@
 import { postService } from "../services";
-import { post, block } from "../interface";
+import { block, page } from "../interface";
 import { AsyncRequestHandler } from "../types";
 
 interface IPostController {
   createPost: AsyncRequestHandler;
   pushPost: AsyncRequestHandler;
   findPost: AsyncRequestHandler;
-  findPostBlock: AsyncRequestHandler;
   deletePost: AsyncRequestHandler;
 }
 
 export class PostController implements IPostController {
   findPost: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const findPost = await postService.findPost(id);
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const findPost = await postService.findPost(channelId, id);
     res.json(findPost);
   };
 
-  findPostBlock: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const blockId = req.query.block as string;
-
-    const findPostBlock = await postService.findPostBlock(id, blockId);
-    res.json(findPostBlock);
-  };
-
   createPost: AsyncRequestHandler = async (req, res) => {
-    const { tag, content, imgUrl } = req.body.blocks[0];
+    const { tag, html, imgUrl } = req.body.blocks[0];
+    const postName = req.body.postName;
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
 
     const block: block = {
       tag: tag,
-      content: content,
+      html: html,
       imgUrl: imgUrl,
     };
-    const post: post = {
+    const page: page = {
+      channelId: channelId,
+      postName: postName,
       blocks: block,
     };
-    const createPost = await postService.createPost(post);
+
+    const createPost = await postService.createPost(page);
     res.json(createPost);
   };
 
   pushPost: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const blocks = req.body.blocks;
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const { label, blocks, postName } = req.body;
+    const page: page = {
+      channelId: channelId,
+      postName: postName,
+      label: label,
+      blocks: blocks,
+    };
 
-    // const block: block = {
-    //   tag: tag,
-    //   content: content,
-    //   imgUrl: imgUrl,
-    // };
-
-    const pushPost = await postService.pushPost(id, blocks);
+    const pushPost = await postService.pushPost(id, page);
 
     res.json(pushPost);
   };
