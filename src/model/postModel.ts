@@ -12,24 +12,33 @@ export class PostModel implements IPostModel {
     return await post.findOne({ channelId });
   }
 
-  async createPost(page: page): Promise<page> {
-    const post = await Posts.create(page);
+  async createPost(channelId: number, progressStatus?: string): Promise<page> {
+    const blocks: block = {
+      tag: "p",
+      html: "",
+      imgUrl: "",
+    };
+    const post = await Posts.create({ channelId, blocks, progressStatus });
 
     return post;
   }
 
   async pushPost(id: string, page: page): Promise<page> {
-    const { channelId, label, postName, blocks } = page;
+    const { channelId, label, pageName, blocks } = page;
     return await Posts.findOneAndUpdate(
       { _id: id },
       {
-        postName: postName,
+        pageName: pageName,
         label: label,
         blocks: blocks,
       }
     ).then(() => {
       return this.findPost(channelId, id);
     });
+  }
+
+  async postStatusUpdate(id: string, progressStatus: string): Promise<page> {
+    return await Posts.findByIdAndUpdate({ _id: id }, { progressStatus });
   }
 
   async deletePost(id: string): Promise<object> {

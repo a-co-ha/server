@@ -13,6 +13,7 @@ import {
   inviteRouter,
   postRouter,
   usersSocketRouter,
+  progressRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
@@ -52,6 +53,7 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.invite, loginRequired, inviteRouter);
 app.use(endPoint.post, postRouter);
+app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
 
 const httpServer = createServer(app);

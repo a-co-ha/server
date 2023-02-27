@@ -11,8 +11,8 @@ class PostService {
     return await postModel.findPost(channelId, id);
   }
 
-  async createPost(page: page): Promise<page> {
-    return await postModel.createPost(page);
+  async createPost(channelId: number): Promise<page> {
+    return await postModel.createPost(channelId);
   }
 
   async pushPost(id: string, page: page): Promise<page> {

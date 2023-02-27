@@ -19,23 +19,9 @@ export class PostController implements IPostController {
   };
 
   createPost: AsyncRequestHandler = async (req, res) => {
-    const { tag, html, imgUrl } = req.body.blocks[0];
-    const postName = req.body.postName;
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-
-    const block: block = {
-      tag: tag,
-      html: html,
-      imgUrl: imgUrl,
-    };
-    const page: page = {
-      channelId: channelId,
-      postName: postName,
-      blocks: block,
-    };
-
-    const createPost = await postService.createPost(page);
+    const createPost = await postService.createPost(channelId);
     res.json(createPost);
   };
 
@@ -43,10 +29,10 @@ export class PostController implements IPostController {
     const id = req.params.id;
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const { label, blocks, postName } = req.body;
+    const { label, blocks, pageName } = req.body;
     const page: page = {
       channelId: channelId,
-      postName: postName,
+      pageName: pageName,
       label: label,
       blocks: blocks,
     };

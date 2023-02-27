@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
+import { progress } from "../interface/index";
 
 const Schema = mongoose.Schema;
 
 const postSchema = new Schema(
   {
     channelId: { type: Number, required: true },
-    postName: { type: String, required: false, default: "제목 없음" },
+    pageName: { type: String, required: false, default: "제목 없음" },
     label: [
       {
-        content: { type: String, required: false, default: "" },
+        content: { type: String, required: false },
       },
     ],
     blocks: [
@@ -30,6 +31,14 @@ const postSchema = new Schema(
         },
       },
     ],
+    type: {
+      type: String,
+      default: "normal",
+    },
+    progressStatus: {
+      type: String,
+      default: "todo",
+    },
   },
   {
     timestamps: true,
