@@ -1,4 +1,3 @@
-
 import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
