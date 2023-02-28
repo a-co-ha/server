@@ -1,6 +1,7 @@
 import { channelService } from "./../services";
 import { AsyncRequestHandler } from "../types";
-import { ChannelType } from "../interface";
+import { IChannelInfo } from "../interface";
+import { validationResult } from "express-validator";
 
 interface IChannelController {
   create: AsyncRequestHandler;
@@ -8,7 +9,11 @@ interface IChannelController {
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
-    const channelInfo: ChannelType = {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const channelInfo: IChannelInfo = {
       admin: req.body.name,
       channelName: req.body.channelName,
     };

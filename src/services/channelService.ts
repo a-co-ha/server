@@ -1,15 +1,16 @@
-import { IInviteModel } from "../interface/index";
-import { inviteModel } from "../model";
-import { ChannelType, ChannelMember } from "../interface";
+import { IChannelModel } from "../interface/index";
+import { channelModel } from "../model";
+import { IChannelInfo } from "../interface";
+import { decode, ENCTYPE } from "../utils/decode";
 
 export class ChannelService {
-  private inviteModel;
-  constructor(inviteModel: IInviteModel) {
-    this.inviteModel = inviteModel;
+  private channelModel;
+  constructor(channelModel: IChannelModel) {
+    this.channelModel = channelModel;
   }
 
-  async invite(info: ChannelType): Promise<any> {
-    if (!(await inviteModel.make(info))) {
+  async invite(info: IChannelInfo): Promise<any> {
+    if (!(await channelModel.make(info))) {
       throw new Error(`failed to invite ${info}`);
     }
     return info;
@@ -20,20 +21,18 @@ export class ChannelService {
     adminCode: string,
     channelNameCode: any
   ): Promise<any> {
-    const admin = Buffer.from(adminCode, "base64").toString("utf-8");
-    const channelName = Buffer.from(channelNameCode, "base64").toString(
-      "utf-8"
-    );
+    const admin = decode(adminCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
+    const channelName = decode(channelNameCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
-    const channelId = await inviteModel.getChannelId(channelName, admin);
+    const channelId = await channelModel.getChannelId(channelName, admin);
 
-    if (!(await inviteModel.join(userId, channelId))) {
+    if (!(await channelModel.join(userId, channelId))) {
       throw new Error(`failed to join`);
     }
     return { userId, channelName };
   }
 }
 
-const channelService = new ChannelService(inviteModel);
+const channelService = new ChannelService(channelModel);
 
 export { channelService };
