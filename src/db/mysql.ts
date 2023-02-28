@@ -1,4 +1,4 @@
-import { findSourceMap } from "module";
+
 import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
@@ -7,7 +7,6 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
-
 /**
  * generates pool connection to be used throughout the app
  */
