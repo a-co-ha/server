@@ -24,8 +24,6 @@ passport.use(
 
         const user: UserType = { name, githubID, githubURL, img };
 
-        init();
-
         const isGuest = await userService.get(user);
 
         if (isGuest.length <= 0) {
