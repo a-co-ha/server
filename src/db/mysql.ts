@@ -7,6 +7,7 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
+
 /**
  * generates pool connection to be used throughout the app
  */
