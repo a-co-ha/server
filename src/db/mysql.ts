@@ -1,5 +1,4 @@
-import { findSourceMap } from "module";
-import mysql, { Pool, RowDataPacket } from "mysql2";
+import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
   mysqlHost,

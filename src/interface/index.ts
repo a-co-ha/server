@@ -29,11 +29,14 @@ export interface IUserModel {
   get(user: UserType): Promise<any>;
 }
 
-export interface ChannelType {
+export interface IChannelInfo {
   admin: string;
   channelName: string;
 }
-export interface IInviteModel {
-  make(channel: ChannelType): Promise<void>;
-  join(channelName: string, user: string): Promise<any>;
+export interface IChannel extends IChannelInfo {
+  members: UserType[];
+}
+export interface IChannelModel {
+  make(channel: IChannelInfo): Promise<Boolean>;
+  join(channelName: string, user: number): Promise<Boolean>;
 }

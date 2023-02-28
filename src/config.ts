@@ -18,3 +18,6 @@ export const mysqlUser = process.env.MYSQL_USER;
 export const mysqlPassword = process.env.MYSQL_PASSWORD;
 export const mysqlDataBase = process.env.MYSQL_DATABASE;
 export const inviteApi = process.env.INVITE_URL;
+export const s3keyId = process.env.S3KEYID;
+export const s3accesskey = process.env.S3ACCESSKEY;
+export const s3region = process.env.REGION;

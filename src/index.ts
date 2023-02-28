@@ -6,17 +6,24 @@ import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
 import { port, mongoDBUri } from "./config";
-import { errorHandler, loginRequired } from "./middlewares";
-import { indexRouter, oauthRouter, inviteRouter } from "./routers";
+import {
+  DtoValidatorMiddleware,
+  errorHandler,
+  loginRequired,
+} from "./middlewares";
+import { indexRouter, oauthRouter, channelRouter } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
 import { postRouter } from "./routers/postRouter";
+import { init } from "./db/mysql";
 
 const app = express();
 mongoose.connect(mongoDBUri);
 mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
 });
+
+init();
 
 // require("./models/index");
 require("./routers/passport/github");
@@ -43,7 +50,7 @@ app.use(cookieParser());
 
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
-app.use(endPoint.invite, loginRequired, inviteRouter);
+app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.post, postRouter);
 app.use(function (req, res, next) {
   next(createError(404));
