@@ -38,5 +38,5 @@ export interface ChannelMember extends ChannelType {
 }
 export interface IInviteModel {
   make(channel: ChannelType): Promise<Boolean>;
-  join(channelName: string, user: string): Promise<Boolean>;
+  join(channelName: string, user: number): Promise<Boolean>;
 }
