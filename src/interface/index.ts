@@ -1,22 +1,59 @@
-interface block {
+export interface block {
   tag: string;
-  content?: string;
+  html?: string;
   imgUrl?: string;
 }
 
-interface post {
+export interface page {
+  channelId?: number;
+  pageName?: string;
+  _id?: {};
+  label?: {};
   blocks: {};
+  type?: string;
 }
 
-interface IPostModel {
-  findPost(id: string): Promise<post>;
-  findPostBlock(id: string, blockId: string): Promise<post>;
-  createPost(block: post): Promise<post>;
-  pushPost(id: string, post: block, blockId: string): Promise<post>;
+export interface IPostModel {
+  findPost(channelId: number, id: string): Promise<page>;
+  createPost(channelId: number): Promise<page>;
+  pushPost(id: string, page: page): Promise<page>;
   deletePost(id: string): Promise<object>;
 }
 
-export { post, block, IPostModel };
+export interface pages {
+  pageId: {};
+  pageName: string;
+  label: {};
+  status?: string;
+}
+export interface progress {
+  channelId: number;
+  pageName?: string;
+  pages: {};
+  type?: string;
+}
+export interface postStatusUpdate {
+  _id: string;
+  progressStatus?: string;
+}
+
+export interface addProgress {
+  channelId: number;
+  id: string;
+  pages?: {};
+}
+
+export interface IProgressModel {
+  createProgress(progress: progress, progressStatus: string): Promise<progress>;
+  findProgress(channelId: number, id: string): Promise<progress>;
+  addProgress(addProgress: addProgress): Promise<progress>;
+  updateProgress(
+    channelId: number,
+    id: string,
+    pages: [postStatusUpdate]
+  ): Promise<progress>;
+  deleteProgress(id: string): Promise<object>;
+}
 
 export interface UserType {
   name: string;

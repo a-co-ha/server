@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-import { findSourceMap } from "module";
-=======
->>>>>>> feature
+
 import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
@@ -10,10 +7,7 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
-<<<<<<< HEAD
 
-=======
->>>>>>> feature
 /**
  * generates pool connection to be used throughout the app
  */

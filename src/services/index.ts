@@ -1,7 +1,5 @@
 export * from "./userService";
-<<<<<<< HEAD
-export * from "./inviteService";
 export * from "./postService";
-=======
+export * from "./progressService";
 export * from "./channelService";
->>>>>>> feature
+export * from "./postService";

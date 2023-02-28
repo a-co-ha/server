@@ -1,50 +1,44 @@
 import { postSchema } from "../schema";
-import { post, IPostModel, block } from "../interface";
+import { IPostModel, block, page } from "../interface";
 import { model } from "mongoose";
 import mongoose from "mongoose";
 mongoose.set("strictQuery", true);
+
 const Posts = model("posts", postSchema);
 
 export class PostModel implements IPostModel {
-  async findPost(id: string): Promise<post> {
-    return await Posts.findById({ _id: id });
+  async findPost(channelId: number, id: string): Promise<page> {
+    const post = Posts.findOne({ _id: id });
+    return await post.findOne({ channelId });
   }
 
-  async findPostBlock(id: string, blockId: string): Promise<post> {
-    return await Posts.findOne(
-      { _id: id, blocks: { $elemMatch: { _id: blockId } } },
-      { "blocks.$": true }
-    );
+  async createPost(channelId: number, progressStatus?: string): Promise<page> {
+    const blocks: block = {
+      tag: "p",
+      html: "",
+      imgUrl: "",
+    };
+    const post = await Posts.create({ channelId, blocks, progressStatus });
+
+    return post;
   }
 
-  async createPost(post: post): Promise<post> {
-    return await Posts.create(post);
-  }
-
-  async updatePost(id: string, block: block, blockId: string): Promise<post> {
-    const { tag, content, imgUrl } = block;
-
-    return await Posts.findOneAndUpdate(
-      { _id: id, blocks: { $elemMatch: { _id: blockId } } },
-      {
-        $set: {
-          "blocks.$": { tag: tag, content: content, imgUrl: imgUrl },
-        },
-      }
-    );
-  }
-
-  async pushPost(id: string, block: block): Promise<post> {
-    const { tag, content, imgUrl } = block;
-
+  async pushPost(id: string, page: page): Promise<page> {
+    const { channelId, label, pageName, blocks } = page;
     return await Posts.findOneAndUpdate(
       { _id: id },
       {
-        $push: {
-          blocks: { tag: tag, content: content, imgUrl: imgUrl },
-        },
+        pageName: pageName,
+        label: label,
+        blocks: blocks,
       }
-    );
+    ).then(() => {
+      return this.findPost(channelId, id);
+    });
+  }
+
+  async postStatusUpdate(id: string, progressStatus: string): Promise<page> {
+    return await Posts.findByIdAndUpdate({ _id: id }, { progressStatus });
   }
 
   async deletePost(id: string): Promise<object> {

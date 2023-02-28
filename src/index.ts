@@ -6,16 +6,21 @@ import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
 import { port, mongoDBUri } from "./config";
-import { errorHandler, loginRequired } from "./middlewares";
 import {
   indexRouter,
   oauthRouter,
   channelRouter,
   postRouter,
   usersSocketRouter,
+  progressRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
+import {
+  DtoValidatorMiddleware,
+  errorHandler,
+  loginRequired,
+} from "./middlewares";
 
 import { init } from "./db/mysql";
 
@@ -58,6 +63,7 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.post, postRouter);
+app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
 const httpServer = createServer(app);
 

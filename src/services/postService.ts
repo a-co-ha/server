@@ -1,5 +1,5 @@
 import { postModel } from "../model";
-import { post, IPostModel, block } from "../interface";
+import { IPostModel, block, page } from "../interface";
 
 class PostService {
   private postModel;
@@ -7,23 +7,16 @@ class PostService {
     this.postModel = postModel;
   }
 
-  async findPost(id: string): Promise<post> {
-    return await postModel.findPost(id);
+  async findPost(channelId: number, id: string): Promise<page> {
+    return await postModel.findPost(channelId, id);
   }
 
-  async findPostBlock(id: string, blockId: string): Promise<post> {
-    return await postModel.findPostBlock(id, blockId);
+  async createPost(channelId: number): Promise<page> {
+    return await postModel.createPost(channelId);
   }
 
-  async createPost(post: post): Promise<post> {
-    return await postModel.createPost(post);
-  }
-
-  async pushPost(id: string, block: block, blockId: string): Promise<any> {
-    if (blockId) {
-      return await postModel.updatePost(id, block, blockId);
-    }
-    return await postModel.pushPost(id, block);
+  async pushPost(id: string, page: page): Promise<page> {
+    return await postModel.pushPost(id, page);
   }
 
   async deletePost(id: string): Promise<object> {
