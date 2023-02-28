@@ -6,18 +6,25 @@ import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
 import { port, mongoDBUri } from "./config";
+import { errorHandler, loginRequired } from "./middlewares";
 import {
-  DtoValidatorMiddleware,
-  errorHandler,
-  loginRequired,
-} from "./middlewares";
-import { indexRouter, oauthRouter, channelRouter } from "./routers";
+  indexRouter,
+  oauthRouter,
+  channelRouter,
+  postRouter,
+  usersSocketRouter,
+} from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
-import { postRouter } from "./routers/postRouter";
+
 import { init } from "./db/mysql";
 
-const app = express();
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { createClient } from "redis";
+import { createAdapter } from "@socket.io/redis-adapter";
+
+export const app = express();
 mongoose.connect(mongoDBUri);
 mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
@@ -25,7 +32,6 @@ mongoose.connection.on("connected", () => {
 
 init();
 
-// require("./models/index");
 require("./routers/passport/github");
 app.use(
   session({
@@ -52,12 +58,50 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.post, postRouter);
-app.use(function (req, res, next) {
-  next(createError(404));
+app.use(errorHandler);
+const httpServer = createServer(app);
+
+const io = new Server(httpServer);
+
+const pubClient = createClient({
+  password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+  socket: {
+    host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+    port: 10035,
+  },
+  legacyMode: true,
 });
 
-app.use(errorHandler);
+// const subClient = pubClient.duplicate();
 
-app.listen(port, () => {
+// pubClient.on("error", (err) => {
+//   console.log(err.message);
+// });
+
+// subClient.on("error", (err) => {
+//   console.log(err.message);
+// });
+// const initPubSub = async () => {
+//   await Promise.all([pubClient.connect(), subClient.connect()]);
+
+//   io.adapter(createAdapter(pubClient, subClient));
+// };
+
+// Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
+//   io.adapter(createAdapter(pubClient, subClient));
+//   io.on("connection", (socket) => {
+//     console.log("🚀 Socket connection");
+//     usersSocketRouter(socket);
+//   });
+// });
+// initPubSub();
+
+pubClient.on("connect", () => {
+  console.info("Redis connected!");
+});
+pubClient.connect().then(); // redis v4 연결 (비동기)
+const redisCli = pubClient.v4;
+
+httpServer.listen(port, () => {
   console.log(`Server listening on port: ${port}`);
 });
