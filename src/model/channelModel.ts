@@ -1,10 +1,10 @@
 import { ResultSetHeader } from "mysql2";
 import { ChannelQueries } from "../db/queries/channel";
-import { ChannelType, IChannelModel } from "../interface";
+import { IChannelInfo, IChannelModel } from "../interface";
 import { execute } from "../db/mysql";
 
 export class ChannelModel implements IChannelModel {
-  async make(channel: ChannelType): Promise<boolean> {
+  async make(channel: IChannelInfo): Promise<boolean> {
     const { admin, channelName } = channel;
     const result = await execute<ResultSetHeader>(ChannelQueries.AddChannel, [
       admin,
