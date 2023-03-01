@@ -1,3 +1,4 @@
+import { postModelType } from "./../model/index";
 export interface block {
   tag: string;
   html?: string;

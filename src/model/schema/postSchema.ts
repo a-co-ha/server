@@ -1,9 +1,23 @@
 import mongoose from "mongoose";
-import { progress } from "../interface/index";
 
 const Schema = mongoose.Schema;
 
-const postSchema = new Schema(
+export interface PostInterface {
+  channelId: number;
+  pageName: string;
+  label: string[];
+  blocks: [
+    {
+      tag: string;
+      html: string;
+      igUrl: string;
+    }
+  ];
+  type: string;
+  progressStatus: string;
+}
+
+export const PostSchema = new Schema<PostInterface>(
   {
     channelId: { type: Number, required: true },
     pageName: { type: String, required: false, default: "제목 없음" },
@@ -44,5 +58,3 @@ const postSchema = new Schema(
     timestamps: true,
   }
 );
-
-export { postSchema };
