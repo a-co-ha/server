@@ -1,6 +1,3 @@
-import { userService } from "./../services/userService";
-import { AsyncRequestHandler } from "../types";
-
 interface IMessageController {
   createMessage: any;
 }
