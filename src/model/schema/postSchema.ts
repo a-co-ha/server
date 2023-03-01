@@ -6,6 +6,7 @@ export interface PostInterface {
   channelId: number;
   pageName: string;
   label: string[];
+  initial: boolean;
   blocks: [
     {
       tag: string;
@@ -26,6 +27,7 @@ export const PostSchema = new Schema<PostInterface>(
         content: { type: String, required: false },
       },
     ],
+    initial: { type: Boolean, required: false, default: true },
     blocks: [
       {
         tag: {

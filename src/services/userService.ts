@@ -1,27 +1,25 @@
-import { userModel } from "./../model/userModel";
 import { setUserToken } from "./../utils/jwt";
-import { UserType, IUserModel } from "../interface";
-
+import { UserAttributes } from "../interface";
+import { User } from "../model/user";
 export class UserService {
-  private userModel;
-  constructor(userModel: IUserModel) {
-    this.userModel = userModel;
-  }
-
   async login(user: any) {
     const { accessToken, refreshToken } = setUserToken(user);
     return { user, accessToken, refreshToken };
   }
 
-  async get(user: UserType) {
-    return await userModel.get(user);
+  async get(user: UserAttributes) {
+    const { name, githubID, githubURL, img } = user;
+    return await User.findOne({
+      where: { name, githubID, githubURL, img },
+      raw: true,
+    });
   }
 
-  async insert(user: UserType) {
-    await userModel.save(user);
+  async insert(user: UserAttributes) {
+    await User.create(user);
   }
 }
 
-const userService = new UserService(userModel);
+const userService = new UserService();
 
 export { userService };

@@ -1,4 +1,3 @@
-import { postModelType } from "./../model/index";
 export interface block {
   tag: string;
   html?: string;
@@ -56,15 +55,27 @@ export interface IProgressModel {
   deleteProgress(id: string): Promise<object>;
 }
 
-export interface UserType {
+export interface UserAttributes {
+  id?: number;
   name: string;
   githubID: string;
   githubURL: string;
   img: string;
 }
+export interface Channel_UserAttributes {
+  userId: string;
+  channelId: number;
+}
+
+export interface ChannelAttributes {
+  id: number;
+  admin: string;
+  channelName: string;
+  channelImg: string;
+}
 export interface IUserModel {
-  save(user: UserType): Promise<any>;
-  get(user: UserType): Promise<any>;
+  save(user: UserAttributes): Promise<any>;
+  get(user: UserAttributes): Promise<any>;
 }
 
 export interface IChannelInfo {
@@ -72,9 +83,9 @@ export interface IChannelInfo {
   channelName: string;
 }
 export interface IChannel extends IChannelInfo {
-  members: UserType[];
+  members: UserAttributes[];
 }
 export interface IChannelModel {
-  join(channelName: string, user: number): Promise<Boolean>;
-  getChannelId(channelName: string, admin: string): Promise<number>;
+  invite(info: IChannelInfo): Promise<void>;
+  join(userId: string, adminCode: string, channelNameCode: any): Promise<any>;
 }

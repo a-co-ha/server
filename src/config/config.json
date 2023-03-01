@@ -1,9 +1,0 @@
-{
-    "development": {
-        "username": "admin",
-        "password": "12341234",
-        "database": "acoha",
-        "host": "a-co-ha.cjabijt3y6rf.ap-northeast-2.rds.amazonaws.com",
-        "dialect": "mysql"
-    }
-}

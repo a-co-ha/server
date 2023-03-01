@@ -6,8 +6,6 @@ import { ProgressInterface, ProgressSchema } from "./schema/progressSchema";
 export * from "./schema/progressSchema";
 export * from "./userModel";
 
-export * from "./channelModel";
-
 interface ModelIdentifierInterface {
   post: string;
   progress: string;

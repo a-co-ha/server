@@ -32,6 +32,8 @@ import { createAdapter } from "@socket.io/redis-adapter";
 import { sequelize } from "./model";
 
 export const app = express();
+
+mongoose.set("strictQuery", true);
 mongoose.connect(mongoDBUri);
 mongoose.connection.on("connected", () => {
   console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
