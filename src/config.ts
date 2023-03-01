@@ -21,3 +21,14 @@ export const inviteApi = process.env.INVITE_URL;
 export const s3keyId = process.env.S3KEYID;
 export const s3accesskey = process.env.S3ACCESSKEY;
 export const s3region = process.env.REGION;
+
+export const config = {
+  development: {
+    username: mysqlUser,
+    password: mysqlPassword,
+    database: mysqlDataBase,
+    host: mysqlHost,
+    port: mysqlPort,
+    dialect: process.env.TYPEORM_CONNECTION,
+  },
+};

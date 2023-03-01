@@ -1,19 +1,14 @@
 import { IChannelModel } from "../interface/index";
-import { channelModel } from "../model";
+
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
+import { Channel } from "../model/channel";
+import { ChannelUser } from "../model/channelUser";
 
-export class ChannelService {
-  private channelModel;
-  constructor(channelModel: IChannelModel) {
-    this.channelModel = channelModel;
-  }
-
-  async invite(info: IChannelInfo): Promise<any> {
-    if (!(await channelModel.make(info))) {
-      throw new Error(`failed to invite ${info}`);
-    }
-    return info;
+export class ChannelService implements IChannelModel {
+  async invite(info: IChannelInfo): Promise<void> {
+    const { admin, channelName } = info;
+    await Channel.create({ admin, channelName });
   }
 
   async join(
@@ -24,15 +19,16 @@ export class ChannelService {
     const admin = decode(adminCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelNameCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
-    const channelId = await channelModel.getChannelId(channelName, admin);
+    const { id } = await Channel.findOne({
+      where: { admin, channelName },
+      attributes: ["id"],
+      raw: true,
+    });
 
-    if (!(await channelModel.join(userId, channelId))) {
-      throw new Error(`failed to join`);
-    }
+    await ChannelUser.create({ userId, channelId: id });
+
     return { userId, channelName };
   }
 }
 
-const channelService = new ChannelService(channelModel);
-
-export { channelService };
+export const channelService = new ChannelService();

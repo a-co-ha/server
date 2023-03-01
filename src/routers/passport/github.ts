@@ -3,8 +3,7 @@ import { UserService, userService } from "./../../services/userService";
 const GitHubStrategy = require("passport-github2").Strategy;
 import passport from "passport";
 import { oauthClient, oauthSecret, oauthRedirect } from "../../config";
-import { init, execute } from "../../db/mysql";
-import { UserType, IUserModel } from "../../interface";
+import { UserAttributes, IUserModel } from "../../interface";
 
 passport.use(
   new GitHubStrategy(
@@ -22,11 +21,11 @@ passport.use(
           avatar_url: img,
         } = profile._json;
 
-        const user: UserType = { name, githubID, githubURL, img };
+        const user: UserAttributes = { name, githubID, githubURL, img };
 
         const isGuest = await userService.get(user);
 
-        if (isGuest.length <= 0) {
+        if (!isGuest) {
           await userService.insert(user);
         }
         return cb(null, user);
@@ -41,6 +40,6 @@ passport.serializeUser((user, done) => {
   done(null, user);
 });
 
-passport.deserializeUser((user: UserType, done) => {
+passport.deserializeUser((user: UserAttributes, done) => {
   done(null, user);
 });

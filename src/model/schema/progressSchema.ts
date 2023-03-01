@@ -1,8 +1,14 @@
+import { PostInterface, PostSchema } from "./postSchema";
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-
-const progressSchema = new Schema(
+export interface ProgressInterface {
+  channelId: number;
+  pageName: string;
+  pages: PostInterface[];
+  type: string;
+}
+export const ProgressSchema = new Schema<ProgressInterface>(
   {
     channelId: {
       type: Number,
@@ -24,5 +30,3 @@ const progressSchema = new Schema(
     timestamps: true,
   }
 );
-
-export { progressSchema };

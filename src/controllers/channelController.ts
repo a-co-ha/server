@@ -2,7 +2,6 @@ import { channelService } from "./../services";
 import { AsyncRequestHandler } from "../types";
 import { IChannelInfo } from "../interface";
 import { validationResult } from "express-validator";
-
 interface IChannelController {
   create: AsyncRequestHandler;
   join: AsyncRequestHandler;
