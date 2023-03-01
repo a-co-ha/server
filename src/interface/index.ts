@@ -74,7 +74,6 @@ export interface IChannel extends IChannelInfo {
   members: UserType[];
 }
 export interface IChannelModel {
-  make(channel: IChannelInfo): Promise<Boolean>;
   join(channelName: string, user: number): Promise<Boolean>;
   getChannelId(channelName: string, admin: string): Promise<number>;
 }

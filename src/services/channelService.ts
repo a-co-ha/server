@@ -2,6 +2,7 @@ import { IChannelModel } from "../interface/index";
 import { channelModel } from "../model";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
+import { Channels } from "../model/channel";
 
 export class ChannelService {
   private channelModel;
@@ -9,11 +10,9 @@ export class ChannelService {
     this.channelModel = channelModel;
   }
 
-  async invite(info: IChannelInfo): Promise<any> {
-    if (!(await channelModel.make(info))) {
-      throw new Error(`failed to invite ${info}`);
-    }
-    return info;
+  async invite(info: IChannelInfo): Promise<void> {
+    const { admin, channelName } = info;
+    await Channels.create({ admin, c_name: channelName });
   }
 
   async join(

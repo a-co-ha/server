@@ -11,11 +11,12 @@ import {
   oauthRouter,
   channelRouter,
   postRouter,
-  usersSocketRouter,
+  socket,
   progressRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
+
 import {
   DtoValidatorMiddleware,
   errorHandler,
@@ -26,8 +27,9 @@ import { init } from "./db/mysql";
 
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { createClient } from "redis";
+import { createClient, SocketClosedUnexpectedlyError } from "redis";
 import { createAdapter } from "@socket.io/redis-adapter";
+import { sequelize } from "./model";
 
 export const app = express();
 mongoose.connect(mongoDBUri);
@@ -68,15 +70,20 @@ app.use(errorHandler);
 const httpServer = createServer(app);
 
 const io = new Server(httpServer);
+socket(io);
+// io.on("connection", (socket) => {
+//   console.log("🚀 Socket connection");
+//   // usersSocketRouter(io);
+// });
 
-const pubClient = createClient({
-  password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
-  socket: {
-    host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
-    port: 10035,
-  },
-  legacyMode: true,
-});
+// const pubClient = createClient({
+//   password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+//   socket: {
+//     host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+//     port: 10035,
+//   },
+//   legacyMode: true,
+// });
 
 // const subClient = pubClient.duplicate();
 
@@ -95,19 +102,24 @@ const pubClient = createClient({
 
 // Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
 //   io.adapter(createAdapter(pubClient, subClient));
-//   io.on("connection", (socket) => {
-//     console.log("🚀 Socket connection");
-//     usersSocketRouter(socket);
-//   });
+//
 // });
 // initPubSub();
 
-pubClient.on("connect", () => {
-  console.info("Redis connected!");
-});
-pubClient.connect().then(); // redis v4 연결 (비동기)
-const redisCli = pubClient.v4;
+// pubClient.on("connect", () => {
+//   console.info("Redis connected!");
+// });
+// pubClient.connect().then(); // redis v4 연결 (비동기)
+// const redisCli = pubClient.v4;
 
-httpServer.listen(port, () => {
-  console.log(`Server listening on port: ${port}`);
+httpServer.listen(port, async () => {
+  try {
+    await sequelize.authenticate().then(() => {
+      console.log("DB connection success");
+    });
+    console.log(`Server listening on port: ${port}`);
+  } catch (err) {
+    console.error(err);
+    console.log("Server running failed");
+  }
 });

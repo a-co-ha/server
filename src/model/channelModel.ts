@@ -2,18 +2,9 @@ import { ResultSetHeader } from "mysql2";
 import { ChannelQueries } from "../db/queries/channel";
 import { IChannelInfo, IChannelModel } from "../interface";
 import { execute } from "../db/mysql";
+import { Channels } from "../model/channel";
 
 export class ChannelModel implements IChannelModel {
-  async make(channel: IChannelInfo): Promise<boolean> {
-    const { admin, channelName } = channel;
-    const result = await execute<ResultSetHeader>(ChannelQueries.AddChannel, [
-      admin,
-      channelName,
-    ]);
-
-    return result.affectedRows === 1;
-  }
-
   async join(user: string, channelId: number): Promise<boolean> {
     const result = await execute<ResultSetHeader>(ChannelQueries.JoinChannel, [
       user,
