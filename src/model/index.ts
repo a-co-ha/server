@@ -4,7 +4,6 @@ import { config } from "../config";
 import { PostInterface, PostSchema } from "./schema/postSchema";
 import { ProgressInterface, ProgressSchema } from "./schema/progressSchema";
 export * from "./schema/progressSchema";
-export * from "./userModel";
 
 interface ModelIdentifierInterface {
   post: string;
