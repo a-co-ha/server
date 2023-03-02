@@ -13,6 +13,7 @@ import {
   postRouter,
   socket,
   progressRouter,
+  userRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
@@ -65,6 +66,7 @@ app.use(cookieParser());
 
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
+app.use(endPoint.user, loginRequired, userRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.post, postRouter);
 app.use(endPoint.progress, progressRouter);

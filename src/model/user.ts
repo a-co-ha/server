@@ -11,7 +11,7 @@ export class User extends Model<UserAttributes> {
   public img!: string;
 
   public static associations: {
-    userHasManyChannels: Association<User, ChannelUser>;
+    userHasChannels: Association<User, ChannelUser>;
   };
 }
 
@@ -53,9 +53,3 @@ User.init(
     updatedAt: "updateTimestamp",
   }
 );
-
-User.hasMany(ChannelUser, {
-  sourceKey: "githubID",
-  foreignKey: "user_id",
-  as: "userHasManyChannels",
-});

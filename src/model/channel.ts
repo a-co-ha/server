@@ -58,9 +58,3 @@ Channel.init(
     updatedAt: "updateTimestamp",
   }
 );
-
-Channel.hasMany(ChannelUser, {
-  sourceKey: "id",
-  foreignKey: "channel_id",
-  as: "channelHasManyUsers",
-});
