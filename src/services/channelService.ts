@@ -6,9 +6,9 @@ import { Channel } from "../model/channel";
 import { ChannelUser } from "../model/channelUser";
 
 export class ChannelService implements IChannelModel {
-  async invite(info: IChannelInfo): Promise<void> {
+  async invite(info: IChannelInfo): Promise<any> {
     const { admin, channelName } = info;
-    await Channel.create({ admin, channelName });
+    return await Channel.create({ admin, channelName });
   }
 
   async join(

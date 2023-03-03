@@ -4,7 +4,8 @@ import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
 export function loginRequired(req: Request, res: Response, next: NextFunction) {
   const userToken = req.headers.authorization?.split(" ")[1];
-  if (!req.isAuthenticated() || !userToken || userToken === "null") {
+  //!req.isAuthenticated() ||
+  if (!userToken || userToken === "null") {
     console.log("서비스 사용 요청이 있습니다.하지만, Authorization 토큰: 없음");
     errorResponse(
       res,
