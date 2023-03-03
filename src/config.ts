@@ -1,4 +1,8 @@
 import dotenv from "dotenv";
+import connectRedis from "connect-redis";
+import session from "express-session";
+import * as redis from "redis";
+// import { redisClient } from "./utils/redisClient";
 
 const envFound = dotenv.config();
 
@@ -22,6 +26,12 @@ export const s3keyId = process.env.S3KEYID;
 export const s3accesskey = process.env.S3ACCESSKEY;
 export const s3region = process.env.REGION;
 
+export const REDIS_HOST = process.env.REDIS_HOST;
+export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
+export const REDIS_USERNAME = process.env.REDIS_USERNAME;
+export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
+export const REDIS_TIME_TO_LIVE = process.env.REDIS_TIME_TO_LIVE;
+export const { SESSION_SECRET } = process.env;
 export const config = {
   development: {
     username: mysqlUser,
@@ -32,3 +42,34 @@ export const config = {
     dialect: process.env.TYPEORM_CONNECTION,
   },
 };
+
+// const redisClient = redis.createClient({
+//   password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+//   socket: {
+//     host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+//     port: 10035,
+//   },
+// });
+// redisClient.on("connect", () => {
+//   console.info("Redis connected!");
+// });
+
+// const RedisStore = connectRedis(session);
+
+// export const sessionConfig = {
+//   store: new RedisStore({
+//     client: redisClient,
+//     port: REDIS_PORT,
+//     host: REDIS_HOST,
+//     ttl: REDIS_TIME_TO_LIVE,
+//   }),
+//   secret: SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: {
+//     httpOnly: false,
+//     path: "/",
+//     secure: false,
+//     maxAge: 604800000, // 1000 * 60 * 60 * 24 * 7 in milliseconds
+//   },
+// };

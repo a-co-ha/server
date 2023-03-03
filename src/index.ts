@@ -1,11 +1,19 @@
 import express from "express";
 import cors from "cors";
-import createError from "http-errors";
+
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
+import * as redis from "redis";
 import session from "express-session";
-import { port, mongoDBUri } from "./config";
+import {
+  port,
+  mongoDBUri,
+  REDIS_PORT,
+  REDIS_TIME_TO_LIVE,
+  SESSION_SECRET,
+  REDIS_HOST,
+} from "./config";
 import {
   indexRouter,
   oauthRouter,
@@ -23,14 +31,11 @@ import {
   errorHandler,
   loginRequired,
 } from "./middlewares";
-
 import { init } from "./db/mysql";
-
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { createClient, SocketClosedUnexpectedlyError } from "redis";
-import { createAdapter } from "@socket.io/redis-adapter";
 import { sequelize } from "./model";
+import connectRedis from "connect-redis";
 
 export const app = express();
 
@@ -43,21 +48,44 @@ mongoose.connection.on("connected", () => {
 init();
 
 require("./routers/passport/github");
+
+const redisClient = redis.createClient({
+  password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+  socket: {
+    host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+    port: 10035,
+  },
+  legacyMode: true,
+});
+redisClient.on("connect", () => {
+  console.info("Redis connected!");
+});
+redisClient.on("error", (err) => {
+  console.error("Redis Client Error", err);
+});
+redisClient.connect().then(); // redis v4 연결 (비동기)
+const redisCli = redisClient.v4; // 기본 redisClient 객체는 콜백기반인데 v4버젼은 프로미스 기반이라 사용
+const RedisStore = connectRedis(session);
+
 app.use(
   session({
-    resave: false, // 매번 세션 강제 저장
-    saveUninitialized: false, // 빈 값도 저장
-    secret: "session-secret", // cookie 암호화 키. dotenv 라이브러리로 감춤
+    // store: new RedisStore({
+    //   client: redisClient,
+    //   prefix: "session:",
+    // }),
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-      httpOnly: true, // javascript로 cookie에 접근하지 못하게 하는 옵션
-      secure: false, // https 프로토콜만 허락하는 지 여부
+      httpOnly: false,
+      path: "/",
+      secure: false,
+      maxAge: 604800000, // 1000 * 60 * 60 * 24 * 7 in milliseconds
     },
   })
 );
-
 app.use(passport.initialize());
-app.use(passport.session()); // express-session 모듈 아래에 코드를 작성해야 한다. 미들웨어 간에 서로 의존관계가 있는 경우 순서가 중요
-
+app.use(passport.session());
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
@@ -75,51 +103,10 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer);
 socket(io);
-// io.on("connection", (socket) => {
-//   console.log("🚀 Socket connection");
-//   // usersSocketRouter(io);
-// });
-
-// const pubClient = createClient({
-//   password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
-//   socket: {
-//     host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
-//     port: 10035,
-//   },
-//   legacyMode: true,
-// });
-
-// const subClient = pubClient.duplicate();
-
-// pubClient.on("error", (err) => {
-//   console.log(err.message);
-// });
-
-// subClient.on("error", (err) => {
-//   console.log(err.message);
-// });
-// const initPubSub = async () => {
-//   await Promise.all([pubClient.connect(), subClient.connect()]);
-
-//   io.adapter(createAdapter(pubClient, subClient));
-// };
-
-// Promise.all([pubClient.connect(), subClient.connect()]).then(() => {
-//   io.adapter(createAdapter(pubClient, subClient));
-//
-// });
-// initPubSub();
-
-// pubClient.on("connect", () => {
-//   console.info("Redis connected!");
-// });
-// pubClient.connect().then(); // redis v4 연결 (비동기)
-// const redisCli = pubClient.v4;
-
 httpServer.listen(port, async () => {
   try {
     await sequelize.authenticate().then(() => {
-      console.log("DB connection success");
+      console.log("DB sequelize connection success");
     });
     console.log(`Server listening on port: ${port}`);
   } catch (err) {
