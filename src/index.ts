@@ -33,8 +33,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
 
-import * as redis from "redis";
-import { any } from "bluebird";
 export const app = express();
 
 mongoose.set("strictQuery", true);

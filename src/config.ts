@@ -1,7 +1,4 @@
 import dotenv from "dotenv";
-import connectRedis from "connect-redis";
-import session from "express-session";
-import * as redis from "redis";
 import { redisClient } from "./utils/redisClient";
 import RedisStore from "connect-redis";
 
