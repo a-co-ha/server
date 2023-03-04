@@ -1,20 +1,10 @@
 import express from "express";
 import cors from "cors";
-
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
-
 import session from "express-session";
-import {
-  port,
-  mongoDBUri,
-  REDIS_PORT,
-  REDIS_TIME_TO_LIVE,
-  SESSION_SECRET,
-  REDIS_HOST,
-  sessionConfig,
-} from "./config";
+import { port, mongoDBUri, sessionConfig } from "./config";
 import {
   indexRouter,
   oauthRouter,
@@ -26,7 +16,6 @@ import {
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
-
 import { errorHandler, loginRequired } from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
@@ -45,14 +34,15 @@ init();
 
 require("./routers/passport/github");
 
-app.use(session(sessionConfig));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session(sessionConfig));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);

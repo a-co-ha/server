@@ -1,16 +1,17 @@
 import * as redis from "redis";
 import Promise from "bluebird";
-import { port, REDIS_HOST, REDIS_PASSWORD } from "../config";
-console.log(port);
+
+import dotenv from "dotenv";
+dotenv.config();
+
 const password = process.env.REDIS_PASSWORD;
 const host = process.env.REDIS_HOST;
-console.log(password, host);
 
 export const redisClient: any = Promise.promisifyAll(
   redis.createClient({
-    password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+    password: password,
     socket: {
-      host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+      host: host,
       port: 10035,
     },
     legacyMode: true,
