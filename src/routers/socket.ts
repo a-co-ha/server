@@ -1,17 +1,29 @@
-import { channelController, messageController } from "../controllers";
+/* eslint-disable prefer-const */
+import { messageController } from "../controllers";
 
 export const socket = (io: any) => {
   io.on("connection", (socket: any) => {
-    console.log("🚀 Socket connection");
+    const session = socket.request.session;
+    console.log(`saving sid ${socket.id} in session ${session.id}`);
+    session.socketId = socket.id;
+    session.save();
+
     socket.on("message-send", async (data: any) => {
       const response = await messageController.createMessage(data);
       io.emit("message-receive", response);
     });
 
-    // 소켓으로 할지 http로 할지 생각해봐야할듯..
-    socket.on("team-new-member", async (data: any) => {
-      // const response = await channelController.join(data);
-      // io.emit("team-receive-new-member", response);
+    socket.on("private message", ({ content, to }) => {
+      io.to(to).emit("private message", {
+        content,
+        from: socket.id,
+      });
+    });
+
+    // 연결 해제
+    socket.on("disconnect", () => {
+      console.log(`${socket.id} is disconnected`);
+      socket.broadcast.emit("user disconnected", socket.id);
     });
   });
 };

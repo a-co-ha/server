@@ -9,6 +9,7 @@ interface IUserController {
 export class UserController implements IUserController {
   login: AsyncRequestHandler = async (req, res) => {
     const result = await userService.login(req.user);
+    req.session.authenticated = true;
     res.json(result);
   };
   get: AsyncRequestHandler = async (req, res) => {

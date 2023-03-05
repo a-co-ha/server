@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
-import { port, mongoDBUri, sessionConfig } from "./config";
+import { port, mongoDBUri, sessionConfig, SESSION_SECRET } from "./config";
 import {
   indexRouter,
   oauthRouter,
@@ -21,8 +21,13 @@ import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
+import redisCache from "./utils/redisCache";
 
 export const app = express();
+const sessionMiddleware = session(sessionConfig);
+// convert a connect middleware to a Socket.IO middleware
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next);
 
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoDBUri);
@@ -38,8 +43,8 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(session(sessionConfig));
+app.use(cookieParser(SESSION_SECRET));
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -53,8 +58,24 @@ app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
 const httpServer = createServer(app);
 
-const io = new Server(httpServer);
+const io = new Server(httpServer, { cors: {} });
+
+io.use(wrap(sessionMiddleware));
+io.use(wrap(passport.initialize()));
+io.use(wrap(passport.session()));
+
+io.use((socket, next) => {
+  const session = socket.request.session;
+  // if (session && session.authenticated) {
+  // console.log(session);
+  next();
+  // } else {
+  //   next(new Error("unauthorized"));
+  // }
+});
+
 socket(io);
+
 httpServer.listen(port, async () => {
   try {
     await sequelize.authenticate().then(() => {
