@@ -1,12 +1,45 @@
+import { redisClient, subClient } from "./../utils/redisClient";
 /* eslint-disable prefer-const */
 import { messageController } from "../controllers";
+import redisCache from "../utils/redisCache";
+import { createAdapter } from "@socket.io/redis-adapter";
+const { setupMaster, setupWorker } = require("@socket.io/sticky");
 
 export const socket = (io: any) => {
-  io.on("connection", (socket: any) => {
+  // const pubClient = redisClient;
+  // const subClient = pubClient.duplicate();
+
+  Promise.all([redisClient, subClient]).then(() => {
+    io.adapter(createAdapter(redisClient, subClient));
+    io.listen(4000);
+  });
+
+  io.on("connection", async (socket: any) => {
     const session = socket.request.session;
+
     console.log(`saving sid ${socket.id} in session ${session.id}`);
-    session.socketId = socket.id;
-    session.save();
+
+    // 세션 저장
+    redisCache.saveSession(socket.sessionID, {
+      userID: socket.userID,
+      username: socket.username,
+      connected: "true",
+    });
+    // 내 세션확인
+    socket.emit("session", {
+      sessionID: socket.sessionID,
+      socketID: socket.userID,
+    });
+
+    // 내 채팅방 만듦
+    socket.join(socket.id);
+
+    // 커넥션했다고 알림
+    socket.broadcast.emit("user connected", {
+      userID: socket.userID,
+      username: socket.username,
+      connected: "true",
+    });
 
     socket.on("message-send", async (data: any) => {
       const response = await messageController.createMessage(data);
@@ -14,16 +47,32 @@ export const socket = (io: any) => {
     });
 
     socket.on("private message", ({ content, to }) => {
-      io.to(to).emit("private message", {
+      const message = {
         content,
-        from: socket.id,
-      });
+        from: socket.userID,
+        to,
+      };
+
+      socket.to(to).to(socket.userID);
+      io.emit("private message", message);
+      redisCache.saveMessage(message);
     });
 
     // 연결 해제
-    socket.on("disconnect", () => {
-      console.log(`${socket.id} is disconnected`);
-      socket.broadcast.emit("user disconnected", socket.id);
+    socket.on("disconnect", async () => {
+      // socket.userID가 들어가 있는 소켓들을 다 가져옴
+      const matchingSockets = await io.in(socket.userID).allSockets();
+
+      const isDisconnected = matchingSockets.size === 0;
+      if (isDisconnected) {
+        socket.broadcast.emit("user disconnected", socket.userID);
+
+        redisCache.saveSession(socket.sessionID, {
+          userID: socket.userID,
+          username: socket.username,
+          connected: "false",
+        });
+      }
     });
   });
 };

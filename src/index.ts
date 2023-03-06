@@ -1,3 +1,4 @@
+const { setupMaster, setupWorker } = require("@socket.io/sticky");
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -21,7 +22,6 @@ import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
-import redisCache from "./utils/redisCache";
 
 export const app = express();
 const sessionMiddleware = session(sessionConfig);
@@ -58,20 +58,38 @@ app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, { cors: {} });
+const io = new Server(httpServer, {
+  cors: {},
+});
 
 io.use(wrap(sessionMiddleware));
 io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 
-io.use((socket, next) => {
-  const session = socket.request.session;
-  // if (session && session.authenticated) {
-  // console.log(session);
-  next();
-  // } else {
-  //   next(new Error("unauthorized"));
+import crypto from "crypto";
+
+const randomId = () => crypto.randomBytes(8).toString("hex");
+
+io.use((socket: any, next) => {
+  // const sessionID = socket.handshake.auth.sessionID;
+  // if (sessionID) {
+  // const session = await sessionStore.findSession(sessionID);
+  // if (session) {
+  //   socket.sessionID = sessionID;
+  //   socket.userID = session.userID;
+  //   socket.username = session.username;
+  //   return next();
   // }
+  // }
+  const username = socket.handshake.headers.username;
+  // if (!username) {
+  //   return next(new Error("invalid username"));
+  // }
+  socket.sessionID = randomId();
+  socket.userID = randomId();
+  socket.username = username;
+
+  next();
 });
 
 socket(io);

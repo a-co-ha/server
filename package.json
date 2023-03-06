@@ -3,6 +3,7 @@
   "packageManager": "yarn@3.3.1",
   "dependencies": {
     "@socket.io/redis-adapter": "^8.1.0",
+    "@socket.io/sticky": "^1.0.3",
     "@types/aws-sdk": "^2.7.0",
     "@types/axios": "^0.14.0",
     "@types/bluebird": "^3.5.38",
@@ -41,6 +42,7 @@
     "express-validator": "^6.15.0",
     "global": "^4.4.0",
     "http-errors": "^2.0.0",
+    "ioredis": "^5.3.1",
     "jsonwebtoken": "^9.0.0",
     "koa-session2": "babel",
     "mongoose": "^6.9.0",
@@ -59,6 +61,7 @@
     "sequelize-typescript": "^2.1.5",
     "socket.io": "^4.6.0",
     "socket.io-adapter": "^2.5.2",
+    "socket.io-redis": "^6.1.1",
     "sqlite3": "^5.1.4",
     "typeorm": "^0.3.11",
     "uuidv4": "^6.2.13",
