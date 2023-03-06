@@ -1,4 +1,5 @@
 export interface block {
+  blockId?: string;
   tag: string;
   html?: string;
   imgUrl?: string;
@@ -15,7 +16,11 @@ export interface page {
 
 export interface IPostModel {
   findPost(channelId: number, id: string): Promise<page>;
-  createPost(channelId: number): Promise<page>;
+  createPost(
+    channelId: number,
+    blockId: string,
+    progressStatus?: string
+  ): Promise<page>;
   pushPost(id: string, page: page): Promise<page>;
   deletePost(id: string): Promise<object>;
 }
@@ -37,16 +42,14 @@ export interface postStatusUpdate {
   progressStatus?: string;
 }
 
-export interface addProgress {
-  channelId: number;
-  id: string;
-  pages?: {};
-}
-
 export interface IProgressModel {
-  createProgress(progress: progress, progressStatus: string): Promise<progress>;
+  createProgress(channelId: number, blockId: string): Promise<progress>;
   findProgress(channelId: number, id: string): Promise<progress>;
-  addProgress(addProgress: addProgress): Promise<progress>;
+  addProgress(
+    channelId: number,
+    id: string,
+    progressStatus: string
+  ): Promise<progress>;
   updateProgress(
     channelId: number,
     id: string,

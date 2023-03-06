@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const Schema = mongoose.Schema;
 
 export interface PostInterface {
@@ -9,6 +8,7 @@ export interface PostInterface {
   initial: boolean;
   blocks: [
     {
+      blockId: string;
       tag: string;
       html: string;
       igUrl: string;
@@ -30,6 +30,10 @@ export const PostSchema = new Schema<PostInterface>(
     initial: { type: Boolean, required: false, default: true },
     blocks: [
       {
+        blockId: {
+          type: String,
+          required: true,
+        },
         tag: {
           type: String,
           required: true,

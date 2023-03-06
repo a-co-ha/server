@@ -1,30 +1,24 @@
-import { progressModel, postModel } from "../model";
-import {
-  IProgressModel,
-  progress,
-  addProgress,
-  postStatusUpdate,
-} from "../interface";
+import { progressModel, progressModelType } from "../model";
+import { postService } from "./postService";
+import { IProgressModel, progress, postStatusUpdate } from "../interface";
 
-class ProgressService {
-  private progressModel;
-  constructor(progressModel: IProgressModel) {
+class ProgressService implements IProgressModel {
+  private progressModel: progressModelType;
+  constructor(progressModel: progressModelType) {
     this.progressModel = progressModel;
   }
 
-  async createProgress(channelId: number): Promise<progress> {
-    const page = await postModel.createPost(channelId);
-
-    const progress: progress = {
-      channelId: channelId,
-      pages: page,
-    };
-
-    return await progressModel.createProgress(progress);
+  async createProgress(channelId: number, blockId: string): Promise<progress> {
+    const pages = await postService.createPost(channelId, blockId);
+    return await this.progressModel.create({ channelId, pages });
   }
 
   async findProgress(channelId: number, id: string): Promise<progress> {
-    return await progressModel.findProgress(channelId, id);
+    const progress = progressModel.findOne({ _id: id }).populate({
+      path: "pages",
+      select: "pageName label progressStatus",
+    });
+    return await progress.findOne({ channelId });
   }
 
   async addProgress(
@@ -32,32 +26,33 @@ class ProgressService {
     id: string,
     progressStatus: string
   ): Promise<progress> {
-    const post = await postModel.createPost(channelId, progressStatus);
-    const addProgress: addProgress = {
-      channelId,
-      id,
-      pages: post,
-    };
-    return await progressModel.addProgress(addProgress);
+    const pages = await postService.createPost(channelId, progressStatus);
+    return this.progressModel
+      .findByIdAndUpdate({ _id: id }, { $push: { pages } })
+      .then(() => {
+        return this.findProgress(channelId, id);
+      });
   }
-
   async updateProgress(
     channelId: number,
     id: string,
     pages: [postStatusUpdate]
   ): Promise<progress> {
-    pages.map((a) => {
-      if (a.progressStatus) {
-        return postModel.postStatusUpdate(a._id, a.progressStatus);
+    pages.map((page) => {
+      if (page.progressStatus) {
+        return postService.postStatusUpdate(page._id, page.progressStatus);
       }
     });
-
-    return await progressModel.updateProgress(channelId, id, pages);
+    return await this.progressModel
+      .findByIdAndUpdate({ _id: id }, { pages })
+      .then(() => {
+        return this.findProgress(channelId, id);
+      });
   }
+
   async deleteProgress(id: string): Promise<object> {
-    return await progressModel.deleteProgress(id);
+    return await progressModel.deleteOne({ _id: id });
   }
 }
 
-const progressService = new ProgressService(progressModel);
-export { progressService };
+export const progressService = new ProgressService(progressModel);

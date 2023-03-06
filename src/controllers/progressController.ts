@@ -13,10 +13,14 @@ export class ProgressController implements IProgressController {
   createProgress: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-
-    const createProgress = await progressService.createProgress(channelId);
+    const blockId = req.body.blockId;
+    const createProgress = await progressService.createProgress(
+      channelId,
+      blockId
+    );
     res.json(createProgress);
   };
+
   findProgress: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const id = req.params.id;
@@ -30,6 +34,7 @@ export class ProgressController implements IProgressController {
     const channelId = parseInt(channel);
     const id = req.params.id;
     const progressStatus = req.body.progressStatus;
+
     const addProgress = await progressService.addProgress(
       channelId,
       id,

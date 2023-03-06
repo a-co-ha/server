@@ -19,7 +19,7 @@ export const ProgressSchema = new Schema<ProgressInterface>(
       required: false,
       default: "진행현황",
     },
-    pages: [{ type: mongoose.Schema.Types.ObjectId, ref: "posts" }],
+    pages: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
 
     type: {
       type: String,

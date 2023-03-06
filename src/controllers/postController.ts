@@ -21,7 +21,8 @@ export class PostController implements IPostController {
   createPost: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const createPost = await postService.createPost(channelId);
+    const blockId = req.body.blockId;
+    const createPost = await postService.createPost(channelId, blockId);
     res.json(createPost);
   };
 
