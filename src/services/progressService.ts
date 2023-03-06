@@ -24,9 +24,14 @@ class ProgressService implements IProgressModel {
   async addProgress(
     channelId: number,
     id: string,
+    blockId: string,
     progressStatus: string
   ): Promise<progress> {
-    const pages = await postService.createPost(channelId, progressStatus);
+    const pages = await postService.createPost(
+      channelId,
+      blockId,
+      progressStatus
+    );
     return this.progressModel
       .findByIdAndUpdate({ _id: id }, { $push: { pages } })
       .then(() => {

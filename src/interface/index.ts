@@ -48,6 +48,7 @@ export interface IProgressModel {
   addProgress(
     channelId: number,
     id: string,
+    blockId: string,
     progressStatus: string
   ): Promise<progress>;
   updateProgress(

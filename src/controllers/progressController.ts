@@ -33,11 +33,12 @@ export class ProgressController implements IProgressController {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
     const id = req.params.id;
-    const progressStatus = req.body.progressStatus;
+    const { progressStatus, blockId } = req.body;
 
     const addProgress = await progressService.addProgress(
       channelId,
       id,
+      blockId,
       progressStatus
     );
     res.json(addProgress);
