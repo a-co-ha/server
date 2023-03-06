@@ -5,13 +5,13 @@ interface IMessageController {
   createMessage: any;
 }
 export class MessageController implements IMessageController {
-  createMessage = async (socket: any) => {
-    const { name, githubID, img, text, channelId } = socket;
+  createMessage = async (data: any) => {
+    const { name, githubID, img, text, channelId } = data;
 
-    redisCache.delete(`messageList:${channelId}`);
-
+    // redisCache.delete(`messageList:${channelId}`);
+    console.log({ name, githubID, img, text, channelId });
     const messageResponse = await Message.create({
-      name,
+      name: name,
       githubID,
       img,
       text,
@@ -19,7 +19,8 @@ export class MessageController implements IMessageController {
     });
     const message = messageResponse.get({ plain: true });
 
-    redisCache.set(channelId, { name, githubID, img, text });
+    redisCache.saveMessage(data);
+
     return {
       meta: {
         type: "success",

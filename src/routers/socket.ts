@@ -3,12 +3,8 @@ import { redisClient, subClient } from "./../utils/redisClient";
 import { messageController } from "../controllers";
 import redisCache from "../utils/redisCache";
 import { createAdapter } from "@socket.io/redis-adapter";
-const { setupMaster, setupWorker } = require("@socket.io/sticky");
 
 export const socket = (io: any) => {
-  // const pubClient = redisClient;
-  // const subClient = pubClient.duplicate();
-
   Promise.all([redisClient, subClient]).then(() => {
     io.adapter(createAdapter(redisClient, subClient));
     io.listen(4000);
@@ -41,21 +37,18 @@ export const socket = (io: any) => {
       connected: "true",
     });
 
+    // 전체 메세지
     socket.on("message-send", async (data: any) => {
       const response = await messageController.createMessage(data);
       io.emit("message-receive", response);
     });
 
-    socket.on("private message", ({ content, to }) => {
-      const message = {
-        content,
-        from: socket.userID,
-        to,
-      };
-
+    // DM
+    socket.on("private message", async (data: any) => {
+      const { to } = data;
+      const response = await messageController.createMessage(data);
       socket.to(to).to(socket.userID);
-      io.emit("private message", message);
-      redisCache.saveMessage(message);
+      io.emit("private message", response);
     });
 
     // 연결 해제

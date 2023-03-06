@@ -63,11 +63,11 @@ Message.init(
   }
 );
 // todo
-// Channel.belongsTo(Message, {
-//   targetKey: "id",
-// });
-// User.belongsTo(Message, {
-//   targetKey: "githubID",
-// });
-// Message.hasOne(User);
-// Message.hasOne(Channel);
+Channel.belongsTo(Message, {
+  targetKey: "id",
+});
+User.belongsTo(Message, {
+  targetKey: "githubID",
+});
+Message.hasOne(User);
+Message.hasOne(Channel);
