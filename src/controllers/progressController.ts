@@ -62,6 +62,12 @@ export class ProgressController implements IProgressController {
     const deleteProgress = await progressService.deleteProgress(id);
     res.json(deleteProgress);
   };
+
+  percentageProgress: AsyncRequestHandler = async (req, res) => {
+    const id = req.params.id;
+    const percentageProgress = await progressService.percentageProgress(id);
+    res.json(percentageProgress);
+  };
 }
 
 export const progressController = new ProgressController();

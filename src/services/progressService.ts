@@ -58,6 +58,27 @@ class ProgressService implements IProgressModel {
   async deleteProgress(id: string): Promise<object> {
     return await progressModel.deleteOne({ _id: id });
   }
+
+  async percentageProgress(id: string): Promise<object> {
+    const progress = progressModel.findOne({ _id: id }).populate({
+      path: "pages",
+      select: "progressStatus",
+    });
+
+    const progressPages = (await progress).pages;
+    const length = progressPages.length;
+    let count = 0;
+    progressPages.map((page) => {
+      if (page.progressStatus === "complete") {
+        count++;
+      }
+    });
+    const percentage = Math.floor((count / length) * 100);
+    const progressPercentage = {
+      percentage,
+    };
+    return progressPercentage;
+  }
 }
 
 export const progressService = new ProgressService(progressModel);
