@@ -6,9 +6,9 @@ import * as redis from "redis";
 
 const envFound = dotenv.config();
 
-if (envFound.error) {
-  throw new Error("Couldn't find .env file");
-}
+// if (envFound.error) {
+//   throw new Error("Couldn't find .env file");
+// }
 
 export const port = parseInt(process.env.PORT ?? "8080", 10);
 export const mongoDBUri = process.env.DB_MONGO || "not found";
