@@ -31,7 +31,7 @@ export class UserService {
   }
 
   async insert(user: UserAttributes) {
-    // await User.create(user);
+    await User.create(user);
   }
 }
 
