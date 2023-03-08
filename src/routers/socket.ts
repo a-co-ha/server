@@ -7,7 +7,6 @@ import { createAdapter } from "@socket.io/redis-adapter";
 export const socket = (io: any) => {
   Promise.all([redisClient, subClient]).then(() => {
     io.adapter(createAdapter(redisClient, subClient));
-    io.listen(4000);
   });
 
   io.on("connection", async (socket: any) => {
@@ -21,11 +20,23 @@ export const socket = (io: any) => {
       username: socket.username,
       connected: "true",
     });
+
     // 내 세션확인
     socket.emit("session", {
       sessionID: socket.sessionID,
-      socketID: socket.userID,
+      userID: socket.userID,
     });
+
+    // 유저, 메세지 가져오기
+    const users = [];
+    // const [messages, sessions] = await Promise.all([
+    //   redisCache.findMessagesForUser(socket.userID),
+    //   redisCache.findAllSessions(),
+    // ]);
+    // const messages = await redisCache.findMessagesForUser(socket.userID);
+    const sessions = await redisCache.findAllSessions();
+    // console.log(messages);
+    console.log(sessions);
 
     // 내 채팅방 만듦
     socket.join(socket.id);

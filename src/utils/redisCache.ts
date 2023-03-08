@@ -1,5 +1,9 @@
+import { promisify } from "bluebird";
+import { redisCli } from "./redisClient";
 /* eslint-disable prefer-const */
 import { redisClient } from "./redisClient";
+const mapSession = ([userID, username, connected]) =>
+  userID ? { userID, username, connected: connected === "true" } : undefined;
 
 export default {
   set: async (key, data) => {
@@ -9,6 +13,53 @@ export default {
       86400, // 60 * 60 * 24 seconds
       JSON.stringify({ ...data })
     );
+  },
+  findSession(id) {
+    return redisClient
+      .hmget(`session:${id}`, "userID", "username", "connected")
+      .then(mapSession);
+  },
+  findMessagesForUser: async (userID) => {
+    return await redisClient
+      .lrange(`messages:${userID}`, 0, -1)
+      .then((results) => {
+        return results.map((result) => JSON.parse(result));
+      });
+  },
+
+  async findAllSessions() {
+    const keys = new Set();
+    let nextIndex = 0;
+    do {
+      const [nextIndexAsStr, results] = await redisClient.scanAsync(
+        nextIndex,
+        "MATCH",
+        "session:*",
+        "COUNT",
+        "100"
+      );
+
+      nextIndex = parseInt(nextIndexAsStr, 10);
+      results.forEach((s) => keys.add(s));
+    } while (nextIndex !== 0);
+
+    const commands = [];
+    keys.forEach((key) => {
+      commands.push(["hmget", key, "userID", "username", "connected"]);
+    });
+    console.log(commands);
+    // const multi = redisClient.multi(commands);
+    // console.log(multi)
+    // return promisify(multi.exec).call(multi);
+    return redisClient
+      .multi(commands)
+      .exec()
+      .then((results) => {
+        console.log(results);
+        return results
+          .map(([err, session]) => (err ? undefined : mapSession(session)))
+          .filter((v) => !!v);
+      });
   },
 
   saveMessage: async (message) => {

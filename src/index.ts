@@ -1,4 +1,4 @@
-const { setupMaster, setupWorker } = require("@socket.io/sticky");
+import { setupWorker } from "@socket.io/sticky";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -28,6 +28,44 @@ const sessionMiddleware = session(sessionConfig);
 // convert a connect middleware to a Socket.IO middleware
 const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
+
+import cluster from "cluster";
+import http from "http";
+import { setupMaster } from "@socket.io/sticky";
+
+const WORKERS_COUNT = require("os").cpus().length;
+
+if (cluster.isPrimary) {
+  console.log(`Master ${process.pid} is running`);
+
+  for (let i = 0; i < WORKERS_COUNT; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (worker) => {
+    console.log(`Worker ${worker.process.pid} died`);
+    cluster.fork();
+  });
+
+  const httpServer = http.createServer();
+  setupMaster(httpServer, {
+    loadBalancingMethod: "least-connection", // either "random", "round-robin" or "least-connection"
+  });
+
+  httpServer.listen(port, async () => {
+    try {
+      await sequelize.authenticate().then(() => {
+        console.log("DB sequelize connection success");
+      });
+      console.log(`server listening at http://localhost:${port}`);
+    } catch (err) {
+      console.error(err);
+      console.log("Server running failed");
+    }
+  });
+} else {
+  console.log(`Worker ${process.pid} started`);
+}
 
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoDBUri);
@@ -67,24 +105,26 @@ io.use(wrap(passport.initialize()));
 io.use(wrap(passport.session()));
 
 import crypto from "crypto";
+import redisCache from "./utils/redisCache";
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
-io.use((socket: any, next) => {
+io.use(async (socket: any, next) => {
   // const sessionID = socket.handshake.auth.sessionID;
-  // if (sessionID) {
-  // const session = await sessionStore.findSession(sessionID);
-  // if (session) {
-  //   socket.sessionID = sessionID;
-  //   socket.userID = session.userID;
-  //   socket.username = session.username;
-  //   return next();
-  // }
-  // }
+  const sessionID = socket.handshake.headers.sessionID;
+  if (sessionID) {
+    const session = await redisCache.findSession(sessionID);
+    if (session) {
+      socket.sessionID = sessionID;
+      socket.userID = session.userID;
+      socket.username = session.username;
+      return next();
+    }
+  }
   const username = socket.handshake.headers.username;
-  // if (!username) {
-  //   return next(new Error("invalid username"));
-  // }
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
   socket.sessionID = randomId();
   socket.userID = randomId();
   socket.username = username;
@@ -93,15 +133,3 @@ io.use((socket: any, next) => {
 });
 
 socket(io);
-
-httpServer.listen(port, async () => {
-  try {
-    await sequelize.authenticate().then(() => {
-      console.log("DB sequelize connection success");
-    });
-    console.log(`Server listening on port: ${port}`);
-  } catch (err) {
-    console.error(err);
-    console.log("Server running failed");
-  }
-});
