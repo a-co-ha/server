@@ -1,5 +1,10 @@
-import { promisify } from "bluebird";
+/* eslint-disable no-var */
+
 import { redisCli } from "./redisClient";
+import { promisify } from "util";
+const hmgetAsync = promisify(redisClient.hmget).bind(redisClient);
+const lrangeAsync = promisify(redisClient.lrange).bind(redisClient);
+const hgetallAsync = promisify(redisClient.hgetall).bind(redisClient);
 /* eslint-disable prefer-const */
 import { redisClient } from "./redisClient";
 const mapSession = ([userID, username, connected]) =>
@@ -14,20 +19,23 @@ export default {
       JSON.stringify({ ...data })
     );
   },
-  findSession(id) {
-    return redisClient
-      .hmget(`session:${id}`, "userID", "username", "connected")
-      .then(mapSession);
-  },
-  findMessagesForUser: async (userID) => {
-    return await redisClient
-      .lrange(`messages:${userID}`, 0, -1)
-      .then((results) => {
-        return results.map((result) => JSON.parse(result));
-      });
+
+  findSession: async (id) => {
+    return await hmgetAsync(
+      `session:${id}`,
+      "userID",
+      "username",
+      "connected"
+    ).then(mapSession);
   },
 
-  async findAllSessions() {
+  findMessagesForUser: async (userID) => {
+    return await lrangeAsync(`messages:${userID}`, 0, -1).then((results) => {
+      return results.map((result) => JSON.parse(result));
+    });
+  },
+
+  findAllSessions: async () => {
     const keys = new Set();
     let nextIndex = 0;
     do {
@@ -47,10 +55,7 @@ export default {
     keys.forEach((key) => {
       commands.push(["hmget", key, "userID", "username", "connected"]);
     });
-    console.log(commands);
-    // const multi = redisClient.multi(commands);
-    // console.log(multi)
-    // return promisify(multi.exec).call(multi);
+
     return redisClient
       .multi(commands)
       .exec()
@@ -60,6 +65,21 @@ export default {
           .map(([err, session]) => (err ? undefined : mapSession(session)))
           .filter((v) => !!v);
       });
+
+    // var multi = redisClient.multi();
+
+    // for (var i = 0; i < commands.length; i++) {
+    //   multi = multi.hgetall(commands[i]);
+    // }
+    // let result;
+    // multi.exec(function (err, replies) {
+    //   if (err) {
+    //     console.error(err);
+    //   } else {
+    //     result = replies;
+    //   }
+    // });
+    // return result;
   },
 
   saveMessage: async (message) => {
@@ -104,3 +124,6 @@ export default {
     });
   },
 };
+// function getSessions(keys: Set<unknown>) {
+//   throw new Error("Function not implemented.");
+// }

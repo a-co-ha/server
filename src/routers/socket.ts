@@ -27,19 +27,37 @@ export const socket = (io: any) => {
       userID: socket.userID,
     });
 
+    // 내 채팅방 참여하기
+    socket.join(socket.userID);
+
     // 유저, 메세지 가져오기
     const users = [];
-    // const [messages, sessions] = await Promise.all([
-    //   redisCache.findMessagesForUser(socket.userID),
-    //   redisCache.findAllSessions(),
-    // ]);
-    // const messages = await redisCache.findMessagesForUser(socket.userID);
-    const sessions = await redisCache.findAllSessions();
-    // console.log(messages);
-    console.log(sessions);
+    const [messages] = await Promise.all([
+      redisCache.findMessagesForUser(socket.userID),
+      // redisCache.findAllSessions(),
+    ]);
 
-    // 내 채팅방 만듦
-    socket.join(socket.id);
+    const messagesPerUser = new Map();
+    messages.forEach((message) => {
+      const { from, to } = message;
+      const otherUser = socket.userID === from ? to : from;
+      if (messagesPerUser.has(otherUser)) {
+        messagesPerUser.get(otherUser).push(message);
+      } else {
+        messagesPerUser.set(otherUser, [message]);
+      }
+    });
+    // sessions.forEach((session) => {
+    users.push({
+      // userID: session.userID,
+      // username: session.username,
+      // connected: session.connected,
+      messages: messagesPerUser.get(session.userID) || [],
+    });
+
+    socket.emit("users", users);
+
+    socket.join(socket.userID);
 
     // 커넥션했다고 알림
     socket.broadcast.emit("user connected", {
@@ -69,7 +87,11 @@ export const socket = (io: any) => {
 
       const isDisconnected = matchingSockets.size === 0;
       if (isDisconnected) {
-        socket.broadcast.emit("user disconnected", socket.userID);
+        socket.broadcast.emit("user disconnected", {
+          userID: socket.userID,
+          username: socket.username,
+          connected: "false",
+        });
 
         redisCache.saveSession(socket.sessionID, {
           userID: socket.userID,

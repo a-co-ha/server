@@ -3797,6 +3797,7 @@ __metadata:
     ts-node: ^10.9.1
     typeorm: ^0.3.11
     typescript: ^4.9.5
+    util: ^0.12.5
     uuidv4: ^6.2.13
     winston: ^3.8.2
     winston-daily-rotate-file: ^4.7.1
@@ -10581,7 +10582,7 @@ sequelize@latest:
   languageName: node
   linkType: hard
 
-"util@npm:^0.12.4":
+"util@npm:^0.12.4, util@npm:^0.12.5":
   version: 0.12.5
   resolution: "util@npm:0.12.5"
   dependencies:
