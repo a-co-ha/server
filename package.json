@@ -2,6 +2,7 @@
   "name": "acoha",
   "packageManager": "yarn@3.3.1",
   "dependencies": {
+    "@socket.io/cluster-adapter": "^0.2.1",
     "@socket.io/redis-adapter": "^8.1.0",
     "@socket.io/sticky": "^1.0.3",
     "@types/aws-sdk": "^2.7.0",
