@@ -48,6 +48,13 @@ export class PostController implements IPostController {
     const deletePost = await postService.deletePost(id);
     res.json(deletePost);
   };
+
+  imageUpload: AsyncRequestHandler = async (req, res) => {
+    const id = req.params.id;
+    const filePath = { filePath: req.file.location };
+
+    res.json(filePath);
+  };
 }
 
 export const postController = new PostController();
