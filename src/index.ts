@@ -22,11 +22,12 @@ import {
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
-import { errorHandler, loginRequired } from "./middlewares";
+import { decode, errorHandler, loginRequired } from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
+import { SocketClosedUnexpectedlyError } from "redis";
 
 export const app = express();
 const sessionMiddleware = session(sessionConfig);
@@ -107,23 +108,29 @@ io.use(async (socket: any, next) => {
   // const sessionID = socket.handshake.auth.sessionID;
   const sessionID = socket.handshake.headers.sessionid;
 
+  const jwt = socket.handshake.query.token;
+  if (jwt) {
+    const user = await decode(jwt);
+
+    if (!user) {
+      throw new Error("Invalid User");
+    }
+
+    socket.username = user.name;
+    socket.img = user.img;
+  }
   if (sessionID) {
     const session = await redisCache.findSession(sessionID);
 
     if (session) {
       socket.sessionID = sessionID;
       socket.userID = session.userID;
-      socket.username = session.username;
       return next();
     }
   }
-  const username = socket.handshake.headers.username;
-  if (!username) {
-    return next(new Error("invalid username"));
-  }
+
   socket.sessionID = randomId();
   socket.userID = randomId();
-  socket.username = username;
 
   next();
 });

@@ -2,9 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
-export function loginRequired(req: Request, res: Response, next: NextFunction) {
+export async function loginRequired(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const userToken = req.headers.authorization?.split(" ")[1];
-  if (!req.isAuthenticated() || !userToken || userToken === "null") {
+  if (!userToken || userToken === "null") {
     console.log("서비스 사용 요청이 있습니다.하지만, Authorization 토큰: 없음");
     errorResponse(
       res,
@@ -15,15 +19,11 @@ export function loginRequired(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const jwtDecoded = jwt.verify(userToken, jwtSecret);
-    const name = (<{ name: string }>jwtDecoded).name;
-    const githubID = (<{ githubID: string }>jwtDecoded).githubID;
-    const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
-    const img = (<{ img: string }>jwtDecoded).img;
-    req.body.name = name;
-    req.body.githubID = githubID;
-    req.body.githubURL = githubURL;
-    req.body.img = img;
+    const decoded = await decode(userToken);
+    req.body.name = decoded.name;
+    req.body.githubID = decoded.githubID;
+    req.body.githubURL = decoded.githubURL;
+    req.body.img = decoded.img;
 
     next();
   } catch (error) {
@@ -31,4 +31,13 @@ export function loginRequired(req: Request, res: Response, next: NextFunction) {
 
     return;
   }
+}
+
+export async function decode(userToken: string) {
+  const jwtDecoded = jwt.verify(userToken, jwtSecret);
+  const name = (<{ name: string }>jwtDecoded).name;
+  const githubID = (<{ githubID: string }>jwtDecoded).githubID;
+  const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
+  const img = (<{ img: string }>jwtDecoded).img;
+  return { name, githubID, githubURL, img };
 }

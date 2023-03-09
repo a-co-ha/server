@@ -30,16 +30,18 @@ passport.use(
         }
         return cb(null, user);
       } catch (err) {
-        return cb(err);
+        return cb(err, false);
       }
     }
   )
 );
 
 passport.serializeUser((user, done) => {
+  console.log(`serializeUser ${user}`);
   done(null, user);
 });
 
 passport.deserializeUser((user: UserAttributes, done) => {
+  console.log(`deserializeUser ${user}`);
   done(null, user);
 });

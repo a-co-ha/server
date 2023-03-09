@@ -5,6 +5,7 @@ import { validationResult } from "express-validator";
 interface IChannelController {
   create: AsyncRequestHandler;
   join: AsyncRequestHandler;
+  // get: AsyncRequestHandler;
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
@@ -27,6 +28,10 @@ export class ChannelController implements IChannelController {
     const result = await channelService.join(githubID, admin, channelName);
     res.json(result);
   };
+
+  // get: AsyncRequestHandler = async (req, res) => {
+
+  // };
 }
 
 const channelController = new ChannelController();

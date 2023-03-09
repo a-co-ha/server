@@ -12,7 +12,9 @@ export const socket = (io: any) => {
   io.on("connection", async (socket: any) => {
     const session = socket.request.session;
 
-    console.log(`saving sid ${socket.id} in session ${session.id}`);
+    console.log(
+      `sid ${socket.id}, session ${session.id}, username ${socket.username}`
+    );
 
     // 세션 저장
     redisCache.saveSession(socket.sessionID, {
@@ -27,7 +29,9 @@ export const socket = (io: any) => {
       userID: socket.userID,
     });
 
-    // 내 채팅방 참여하기
+    // 내 채널 참여하기
+
+    // 내 채팅방 참여하기 (DM)
     socket.join(socket.userID);
 
     // 유저, 메세지 가져오기

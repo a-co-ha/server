@@ -11,6 +11,7 @@ export class UserService {
 
   async get(user: UserAttributes) {
     const { name, githubID, githubURL, img } = user;
+
     return await User.findAll({
       include: {
         model: ChannelUser,

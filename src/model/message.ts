@@ -62,12 +62,12 @@ Message.init(
     updatedAt: "updateTimestamp",
   }
 );
-// todo
-Channel.belongsTo(Message, {
+
+ChannelUser.belongsTo(Message, {
   targetKey: "id",
 });
-User.belongsTo(Message, {
+ChannelUser.belongsTo(Message, {
   targetKey: "githubID",
 });
-Message.hasOne(User);
-Message.hasOne(Channel);
+Message.hasOne(ChannelUser);
+Message.hasOne(ChannelUser);
