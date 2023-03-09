@@ -1,5 +1,6 @@
 import { postModel, postModelType } from "../model";
 import { IPostModel, block, page } from "../interface";
+import { progressModel } from "../model/index";
 class PostService implements IPostModel {
   private postModel: postModelType;
   constructor(postModel: postModelType) {
@@ -14,7 +15,8 @@ class PostService implements IPostModel {
   async createPost(
     channelId: number,
     blockId: string,
-    progressStatus?: string
+    progressStatus?: string,
+    type?: string
   ): Promise<page> {
     const blocks: block = {
       blockId: blockId,
@@ -26,6 +28,7 @@ class PostService implements IPostModel {
       channelId,
       blocks,
       progressStatus,
+      type,
     });
 
     return post;
@@ -56,6 +59,32 @@ class PostService implements IPostModel {
 
   async deletePost(id: string): Promise<object> {
     return await this.postModel.deleteOne({ _id: id });
+  }
+
+  async findPageList(channelId: number): Promise<any> {
+    const findPost = await postModel.aggregate([
+      { $match: { channelId: channelId, type: "normal" } },
+      {
+        $group: {
+          _id: "$_id",
+          pageName: { $last: "$pageName" },
+          type: { $last: "$type" },
+        },
+      },
+    ]);
+    const findProgress = await progressModel.aggregate([
+      { $match: { channelId: channelId, type: "progress" } },
+      {
+        $group: {
+          _id: "$_id",
+          pageName: { $last: "$pageName" },
+          type: { $last: "$type" },
+        },
+      },
+    ]);
+
+    const findList = { List: [...findPost, ...findProgress] };
+    return findList;
   }
 }
 

@@ -43,7 +43,11 @@ export interface postStatusUpdate {
 }
 
 export interface IProgressModel {
-  createProgress(channelId: number, blockId: string): Promise<progress>;
+  createProgress(
+    channelId: number,
+    blockId: string,
+    type?: string
+  ): Promise<progress>;
   findProgress(channelId: number, id: string): Promise<progress>;
   addProgress(
     channelId: number,
@@ -57,6 +61,7 @@ export interface IProgressModel {
     pages: [postStatusUpdate]
   ): Promise<progress>;
   deleteProgress(id: string): Promise<object>;
+  percentageProgress(id: string): Promise<object>;
 }
 
 export interface UserAttributes {

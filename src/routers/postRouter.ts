@@ -9,7 +9,8 @@ postRouter.post("/", asyncHandler(postController.createPost));
 postRouter.put("/:id", asyncHandler(postController.pushPost));
 postRouter.delete("/:id", asyncHandler(postController.deletePost));
 postRouter.post(
-  "/images/:id",
+  "/images",
   imageUpload.single("image"),
   asyncHandler(postController.imageUpload)
 );
+postRouter.get("/", asyncHandler(postController.findPageList));

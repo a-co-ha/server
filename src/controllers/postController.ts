@@ -7,6 +7,7 @@ interface IPostController {
   pushPost: AsyncRequestHandler;
   findPost: AsyncRequestHandler;
   deletePost: AsyncRequestHandler;
+  findPageList: AsyncRequestHandler;
 }
 
 export class PostController implements IPostController {
@@ -50,10 +51,23 @@ export class PostController implements IPostController {
   };
 
   imageUpload: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const filePath = { filePath: req.file.location };
+    // const id = req.params.id;
+    // const channel = req.query.channel as string;
+    // const channelId = parseInt(channel);
+    const file = {
+      // _id: id,
+      // channelId: channelId,
+      filePath: req.file.location,
+    };
 
-    res.json(filePath);
+    res.json(file);
+  };
+
+  findPageList: AsyncRequestHandler = async (req, res) => {
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const findPageList = await postService.findPageList(channelId);
+    res.json(findPageList);
   };
 }
 
