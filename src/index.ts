@@ -28,6 +28,8 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { SocketClosedUnexpectedlyError } from "redis";
+import { userController } from "./controllers";
+import { userService } from "./services";
 
 export const app = express();
 const sessionMiddleware = session(sessionConfig);
@@ -115,9 +117,11 @@ io.use(async (socket: any, next) => {
     if (!user) {
       throw new Error("Invalid User");
     }
+    const userChannel = await userService.getChannels(user);
 
     socket.username = user.name;
     socket.img = user.img;
+    socket.channel = userChannel;
   }
   if (sessionID) {
     const session = await redisCache.findSession(sessionID);

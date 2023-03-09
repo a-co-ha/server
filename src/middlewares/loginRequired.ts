@@ -39,5 +39,6 @@ export async function decode(userToken: string) {
   const githubID = (<{ githubID: string }>jwtDecoded).githubID;
   const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
   const img = (<{ img: string }>jwtDecoded).img;
+
   return { name, githubID, githubURL, img };
 }
