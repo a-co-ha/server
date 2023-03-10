@@ -54,11 +54,13 @@ export class UserService {
       where: { name, githubID, githubURL, img },
     });
 
-    return query.map((el) => {
-      return el.dataValues["userHasChannels"].map(
-        (i) => i.dataValues["channelId"]
-      );
-    });
+    return query
+      .map((el) => {
+        return el.dataValues["userHasChannels"].map(
+          (i) => i.dataValues["channelId"]
+        );
+      })
+      .flat();
   }
 
   async insert(user: UserAttributes) {

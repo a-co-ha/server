@@ -80,7 +80,7 @@ require("./routers/passport/github");
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(SESSION_SECRET));
 app.use(sessionMiddleware);
 
@@ -111,17 +111,32 @@ io.use(async (socket: any, next) => {
   const sessionID = socket.handshake.headers.sessionid;
 
   const jwt = socket.handshake.query.token;
+
   if (jwt) {
     const user = await decode(jwt);
 
     if (!user) {
       throw new Error("Invalid User");
     }
+
     const userChannel = await userService.getChannels(user);
 
     socket.username = user.name;
     socket.img = user.img;
     socket.channel = userChannel;
+  }
+  // 승하 [12,3,8]
+  // 수호
+  if (sessionID === "d8aa54570e8d7c99") {
+    socket.channel = ["12", "8"];
+  }
+  // 정현
+  if (sessionID === "7a262192e5f22f89") {
+    socket.channel = ["3", "8"];
+  }
+  //상진
+  if (sessionID === "06cd34b02c8c71f7") {
+    socket.channel = ["9"];
   }
   if (sessionID) {
     const session = await redisCache.findSession(sessionID);

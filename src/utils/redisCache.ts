@@ -1,3 +1,4 @@
+import { config } from "./../config";
 /* eslint-disable no-var */
 
 import { redisCli } from "./redisClient";
@@ -9,7 +10,6 @@ const hgetallAsync = promisify(redisClient.hgetall).bind(redisClient);
 import { redisClient } from "./redisClient";
 const mapSession = ([userID, username, connected]) =>
   userID ? { userID, username, connected: connected === "true" } : undefined;
-
 export default {
   set: async (key, data) => {
     console.log(key, data);
@@ -35,8 +35,9 @@ export default {
     });
   },
 
-  findAllSessions: async () => {
+  findAllSessions: async (): Promise<any> => {
     const keys = new Set();
+
     let nextIndex = 0;
     do {
       const [nextIndexAsStr, results] = await redisClient.scanAsync(
@@ -53,37 +54,33 @@ export default {
 
     const commands = [];
     keys.forEach((key) => {
-      commands.push(["hmget", key, "userID", "username", "connected"]);
+      commands.push(key);
     });
 
-    return redisClient
-      .multi(commands)
-      .exec()
-      .then((results) => {
-        console.log(results);
-        return results
-          .map(([err, session]) => (err ? undefined : mapSession(session)))
-          .filter((v) => !!v);
+    var multi = redisClient.multi();
+
+    for (var i = 0; i < commands.length; i++) {
+      multi = multi.hmget(`${commands[i]}`, "userID", "username", "connected");
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      multi.exec((err, replies) => {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const sessions = replies.map((el) => mapSession(el));
+          resolve(sessions);
+        }
       });
-
-    // var multi = redisClient.multi();
-
-    // for (var i = 0; i < commands.length; i++) {
-    //   multi = multi.hgetall(commands[i]);
-    // }
-    // let result;
-    // multi.exec(function (err, replies) {
-    //   if (err) {
-    //     console.error(err);
-    //   } else {
-    //     result = replies;
-    //   }
-    // });
-    // return result;
+    });
+    return result;
   },
 
   saveMessage: async (message) => {
+    message.createAt = new Date();
     const value = JSON.stringify(message);
+
     await redisClient
       .multi()
       .rpush(`messages:${message.from}`, value)

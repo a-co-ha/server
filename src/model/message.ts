@@ -13,7 +13,6 @@ export class Message extends Model<MessageAttributes> {
   public text!: string;
   public channelId!: string;
   public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 
   public static associations: {
     belongToChannel: Association<Channel, Message>;
@@ -26,9 +25,6 @@ Message.init(
     id: {
       type: DataTypes.NUMBER,
       primaryKey: true,
-      get() {
-        return this.getDataValue("id");
-      },
     },
     name: {
       type: DataTypes.STRING(45),
@@ -52,14 +48,19 @@ Message.init(
       primaryKey: true,
       field: "channel_id",
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: "create_at",
+    },
   },
   {
     modelName: "message",
     tableName: "message",
     sequelize,
     freezeTableName: true,
-    timestamps: false,
-    updatedAt: "updateTimestamp",
+    timestamps: true,
+    createdAt: true,
+    updatedAt: false,
   }
 );
 // todo
