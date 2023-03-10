@@ -12,7 +12,6 @@ const mapSession = ([userID, username, connected]) =>
   userID ? { userID, username, connected: connected === "true" } : undefined;
 export default {
   set: async (key, data) => {
-    console.log(key, data);
     await redisClient.setex(
       `${key}`,
       86400, // 60 * 60 * 24 seconds
@@ -30,9 +29,11 @@ export default {
   },
 
   findMessagesForUser: async (userID) => {
-    return await lrangeAsync(`messages:${userID}`, 0, -1).then((results) => {
+    const a = await lrangeAsync(`messages:${userID}`, 0, -1).then((results) => {
       return results.map((result) => JSON.parse(result));
     });
+
+    return a;
   },
 
   findAllSessions: async (): Promise<any> => {
@@ -69,11 +70,16 @@ export default {
           console.error(err);
           reject(err);
         } else {
-          const sessions = replies.map((el) => mapSession(el));
+          const sessions = replies.map((el) => {
+            console.log(replies);
+            return mapSession(el);
+          });
+
           resolve(sessions);
         }
       });
     });
+    console.log(result);
     return result;
   },
 

@@ -30,7 +30,6 @@ export const socket = (io: any) => {
       redisCache.findMessagesForUser(socket.userID),
       redisCache.findAllSessions(),
     ]);
-    console.log(sessions);
 
     const messagesPerUser = new Map();
     messages.forEach((message) => {
