@@ -4,6 +4,7 @@ const GitHubStrategy = require("passport-github2").Strategy;
 import passport from "passport";
 import { oauthClient, oauthSecret, oauthRedirect } from "../../config";
 import { UserAttributes, IUserModel } from "../../interface";
+import { userController } from "../../controllers";
 
 passport.use(
   new GitHubStrategy(
@@ -28,6 +29,7 @@ passport.use(
         if (!isGuest) {
           await userService.insert(user);
         }
+
         return cb(null, user);
       } catch (err) {
         return cb(err, false);
@@ -37,11 +39,11 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  console.log(`serializeUser ${user}`);
+  console.log(`serializeUser : ${user.name}`);
   done(null, user);
 });
 
 passport.deserializeUser((user: UserAttributes, done) => {
-  console.log(`deserializeUser ${user}`);
+  console.log(`deserializeUser : ${user.name}`);
   done(null, user);
 });

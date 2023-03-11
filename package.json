@@ -64,6 +64,7 @@
     "socket.io": "^4.6.0",
     "socket.io-adapter": "^2.5.2",
     "socket.io-redis": "^6.1.1",
+    "socket.io-sessions": "^0.6.1",
     "sqlite3": "^5.1.4",
     "typeorm": "^0.3.11",
     "util": "^0.12.5",

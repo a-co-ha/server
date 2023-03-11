@@ -22,7 +22,7 @@ import {
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
-import { decode, errorHandler, loginRequired } from "./middlewares";
+import { decode, errorHandler, loginRequired, wrap } from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -30,42 +30,12 @@ import { sequelize } from "./model";
 import { SocketClosedUnexpectedlyError } from "redis";
 import { userController } from "./controllers";
 import { userService } from "./services";
+import { shareSession } from "socket.io-sessions";
 
 export const app = express();
 const sessionMiddleware = session(sessionConfig);
-
-// convert a connect middleware to a Socket.IO middleware
-const wrap = (middleware) => (socket, next) =>
-  middleware(socket.request, {}, next);
-
-// const WORKERS_COUNT = require("os").cpus().length;
-
-// if (cluster.isPrimary) {
-//   console.log(`Master ${process.pid} is running`);
-
-//   const httpServer = http.createServer();
-//   setupMaster(httpServer, {
-//     loadBalancingMethod: "least-connection",
-//   });
-
-//   // 작업자 간의 연결 설정
-//   setupPrimary();
-
-//   httpServer.listen(4000);
-
-//   for (let i = 0; i < WORKERS_COUNT; i++) {
-//     cluster.fork();
-//   }
-
-//   cluster.on("exit", (worker) => {
-//     console.log(`Worker ${worker.process.pid} died`);
-//     cluster.fork();
-//   });
-// } else {
-//   console.log(`Worker ${process.pid} started`);
-
-// const httpServer = http.createServer();
-// const io = new Server(httpServer);
+const passportMiddleware = passport.initialize();
+const randomId = () => crypto.randomBytes(8).toString("hex");
 
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoDBUri);
@@ -82,9 +52,9 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(SESSION_SECRET));
-app.use(sessionMiddleware);
 
-app.use(passport.initialize());
+app.use(sessionMiddleware);
+app.use(passportMiddleware);
 app.use(passport.session());
 
 app.get(endPoint.index, indexRouter);
@@ -94,6 +64,7 @@ app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.post, postRouter);
 app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
+
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
@@ -101,30 +72,23 @@ const io = new Server(httpServer, {
 });
 
 io.use(wrap(sessionMiddleware));
-io.use(wrap(passport.initialize()));
+io.use(wrap(passportMiddleware));
 io.use(wrap(passport.session()));
-
-const randomId = () => crypto.randomBytes(8).toString("hex");
 
 io.use(async (socket: any, next) => {
   // const sessionID = socket.handshake.auth.sessionID;
-  const sessionID = socket.handshake.headers.sessionid;
+  const session = socket.request.session;
+  const sessionID = socket.id;
 
-  const jwt = socket.handshake.query.token;
+  const { user } = session.passport;
 
-  if (jwt) {
-    const user = await decode(jwt);
+  console.log(user);
+  const userChannel = await userService.getChannels(user);
 
-    if (!user) {
-      throw new Error("Invalid User");
-    }
+  socket.username = user.name;
+  socket.img = user.img;
+  socket.channel = userChannel;
 
-    const userChannel = await userService.getChannels(user);
-
-    socket.username = user.name;
-    socket.img = user.img;
-    socket.channel = userChannel;
-  }
   // 승하 [12,3,8]
   // 수호
   if (sessionID === "d8aa54570e8d7c99") {
@@ -148,7 +112,6 @@ io.use(async (socket: any, next) => {
     }
   }
 
-  socket.sessionID = randomId();
   socket.userID = randomId();
 
   next();
@@ -167,4 +130,3 @@ httpServer.listen(port, async () => {
     console.log("Server running failed");
   }
 });
-// }

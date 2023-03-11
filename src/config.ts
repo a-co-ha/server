@@ -47,9 +47,5 @@ export const sessionConfig = {
   }),
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-  },
+  saveUninitialized: false,
 };

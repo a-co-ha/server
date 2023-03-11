@@ -71,7 +71,6 @@ export default {
           reject(err);
         } else {
           const sessions = replies.map((el) => {
-            console.log(replies);
             return mapSession(el);
           });
 
@@ -79,7 +78,7 @@ export default {
         }
       });
     });
-    console.log(result);
+
     return result;
   },
 

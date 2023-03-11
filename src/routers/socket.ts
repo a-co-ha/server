@@ -11,6 +11,12 @@ export const socket = (io: any) => {
   });
 
   io.on("connection", async (socket: any) => {
+    console.log(`55555 new connection ${socket.id}`);
+
+    const session = socket.request.session;
+    console.log(`666666 saving sid ${socket.id} in session ${session.id}`);
+
+    console.log(`saving sid ${socket.id} in session ${session.id}`);
     // 세션 저장
     redisCache.saveSession(socket.sessionID, {
       userID: socket.userID,
@@ -26,30 +32,30 @@ export const socket = (io: any) => {
 
     // 유저, 메세지 가져오기
     const users = [];
-    const [messages, sessions] = await Promise.all([
-      redisCache.findMessagesForUser(socket.userID),
-      redisCache.findAllSessions(),
-    ]);
+    // const [messages, sessions] = await Promise.all([
+    //   redisCache.findMessagesForUser(socket.userID),
+    //   redisCache.findAllSessions(),
+    // ]);
 
-    const messagesPerUser = new Map();
-    messages.forEach((message) => {
-      const { from, to } = message;
-      const otherUser = socket.userID === from ? to : from;
-      if (messagesPerUser.has(otherUser)) {
-        messagesPerUser.get(otherUser).push(message);
-      } else {
-        messagesPerUser.set(otherUser, [message]);
-      }
-    });
+    // const messagesPerUser = new Map();
+    // messages.forEach((message) => {
+    //   const { from, to } = message;
+    //   const otherUser = socket.userID === from ? to : from;
+    //   if (messagesPerUser.has(otherUser)) {
+    //     messagesPerUser.get(otherUser).push(message);
+    //   } else {
+    //     messagesPerUser.set(otherUser, [message]);
+    //   }
+    // });
 
-    sessions.forEach((session) => {
-      users.push({
-        userID: session.userID,
-        username: session.username,
-        connected: session.connected,
-        messages: messagesPerUser.get(session.userID) || [],
-      });
-    });
+    // sessions.forEach((session) => {
+    //   users.push({
+    //     userID: session.userID,
+    //     username: session.username,
+    //     connected: session.connected,
+    //     messages: messagesPerUser.get(session.userID) || [],
+    //   });
+    // });
 
     socket.emit("users", users);
 

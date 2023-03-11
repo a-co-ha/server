@@ -8,8 +8,7 @@ import { escapeId } from "mysql2";
 import e from "express";
 export class UserService {
   async login(user: any) {
-    const { accessToken, refreshToken } = setUserToken(user);
-    return { user, accessToken, refreshToken };
+    return setUserToken(user);
   }
 
   async get(user: UserAttributes) {

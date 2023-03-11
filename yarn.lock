@@ -3793,6 +3793,7 @@ __metadata:
     socket.io: ^4.6.0
     socket.io-adapter: ^2.5.2
     socket.io-redis: ^6.1.1
+    socket.io-sessions: ^0.6.1
     sqlite3: ^5.1.4
     ts-node: ^10.9.1
     typeorm: ^0.3.11
@@ -9709,6 +9710,13 @@ sequelize@latest:
     socket.io-adapter: ~2.2.0
     uid2: 0.0.3
   checksum: 3add75bc82101747175425477b961d69421f10ce92616bea1a4991f08c41456ea737d0ccf660730eaeb88b674a370c82e5a360418c5d391d19ee66461b957b38
+  languageName: node
+  linkType: hard
+
+"socket.io-sessions@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "socket.io-sessions@npm:0.6.1"
+  checksum: 5c3446c8c2c59961b88ad3570f5a072a314866c9051ce6c914d5c373c29222549ab84109e55437d1a80930910a0c6b18fcc7ec622d4b1d7a273e2eae1fb3caf6
   languageName: node
   linkType: hard
 
