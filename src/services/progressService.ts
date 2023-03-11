@@ -23,7 +23,7 @@ class ProgressService implements IProgressModel {
   async findProgress(channelId: number, id: string): Promise<progress> {
     const progress = progressModel.findOne({ _id: id }).populate({
       path: "pages",
-      select: "pageName label progressStatus",
+      select: "pageName label progressStatus type",
     });
     return await progress.findOne({ channelId });
   }
@@ -57,11 +57,7 @@ class ProgressService implements IProgressModel {
         return postService.postStatusUpdate(page._id, page.progressStatus);
       }
     });
-    return await this.progressModel
-      .findByIdAndUpdate({ _id: id }, { pages })
-      .then(() => {
-        return this.findProgress(channelId, id);
-      });
+    return await this.findProgress(channelId, id);
   }
 
   async deleteProgress(id: string): Promise<object> {
