@@ -76,19 +76,17 @@ io.use(wrap(passportMiddleware));
 io.use(wrap(passport.session()));
 
 io.use(async (socket: any, next) => {
-  // const sessionID = socket.handshake.auth.sessionID;
   const session = socket.request.session;
-  const sessionID = socket.id;
+  const sessionID = session.id;
 
   const { user } = session.passport;
 
-  console.log(user);
   const userChannel = await userService.getChannels(user);
 
   socket.username = user.name;
   socket.img = user.img;
   socket.channel = userChannel;
-
+  socket.sessionID = sessionID;
   // 승하 [12,3,8]
   // 수호
   if (sessionID === "d8aa54570e8d7c99") {
@@ -102,17 +100,14 @@ io.use(async (socket: any, next) => {
   if (sessionID === "06cd34b02c8c71f7") {
     socket.channel = ["9"];
   }
-  if (sessionID) {
-    const session = await redisCache.findSession(sessionID);
 
-    if (session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      return next();
-    }
+  const userInfo = await redisCache.findSession(sessionID);
+
+  if (userInfo?.userID === undefined) {
+    socket.userID = randomId();
+  } else {
+    socket.userID = userInfo.userID;
   }
-
-  socket.userID = randomId();
 
   next();
 });

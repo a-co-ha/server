@@ -3,6 +3,7 @@ import { config } from "./../config";
 
 import { redisCli } from "./redisClient";
 import { promisify } from "util";
+const getAsync = promisify(redisClient.get).bind(redisClient);
 const hmgetAsync = promisify(redisClient.hmget).bind(redisClient);
 const lrangeAsync = promisify(redisClient.lrange).bind(redisClient);
 const hgetallAsync = promisify(redisClient.hgetall).bind(redisClient);
@@ -20,14 +21,25 @@ export default {
   },
 
   findSession: async (id) => {
-    return await hmgetAsync(
-      `session:${id}`,
-      "userID",
-      "username",
-      "connected"
-    ).then(mapSession);
-  },
+    // return await hmgetAsync(
+    //   `session:${id}`,
+    //   "userID",
+    //   "username",
+    //   "connected"
+    // ).then(mapSession);
+    try {
+      const session = await redisCli.get(`session:${id}`);
 
+      if (session) {
+        return JSON.parse(session);
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  },
   findMessagesForUser: async (userID) => {
     const a = await lrangeAsync(`messages:${userID}`, 0, -1).then((results) => {
       return results.map((result) => JSON.parse(result));

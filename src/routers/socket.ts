@@ -11,12 +11,6 @@ export const socket = (io: any) => {
   });
 
   io.on("connection", async (socket: any) => {
-    console.log(`55555 new connection ${socket.id}`);
-
-    const session = socket.request.session;
-    console.log(`666666 saving sid ${socket.id} in session ${session.id}`);
-
-    console.log(`saving sid ${socket.id} in session ${session.id}`);
     // 세션 저장
     redisCache.saveSession(socket.sessionID, {
       userID: socket.userID,
