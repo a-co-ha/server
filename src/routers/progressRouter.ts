@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { progressController } from "../controllers";
 import { asyncHandler } from "../utils/asyncHandler";
+import { progressCascade } from "../middlewares";
 export const progressRouter = Router();
 
 progressRouter.post("/", asyncHandler(progressController.createProgress));
@@ -10,4 +11,12 @@ progressRouter.patch(
   "/update/:id",
   asyncHandler(progressController.updateProgress)
 );
-progressRouter.delete("/:id", asyncHandler(progressController.deleteProgress));
+progressRouter.delete(
+  "/:id",
+  progressCascade,
+  asyncHandler(progressController.deleteProgress)
+);
+progressRouter.get(
+  "/percentage/:id",
+  asyncHandler(progressController.percentageProgress)
+);

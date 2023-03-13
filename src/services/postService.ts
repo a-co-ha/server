@@ -11,8 +11,13 @@ class PostService implements IPostModel {
     return await post.findOne({ channelId });
   }
 
-  async createPost(channelId: number, progressStatus?: string): Promise<page> {
+  async createPost(
+    channelId: number,
+    blockId: string,
+    progressStatus?: string
+  ): Promise<page> {
     const blocks: block = {
+      blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
