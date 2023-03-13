@@ -26,7 +26,7 @@ passport.use(
 
         const isGuest = await userService.get(user);
 
-        if (!isGuest) {
+        if (isGuest.length === 0) {
           await userService.insert(user);
         }
 

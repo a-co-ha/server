@@ -27,10 +27,8 @@ import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
-import { SocketClosedUnexpectedlyError } from "redis";
-import { userController } from "./controllers";
+
 import { userService } from "./services";
-import { shareSession } from "socket.io-sessions";
 
 export const app = express();
 const sessionMiddleware = session(sessionConfig);
@@ -87,19 +85,6 @@ io.use(async (socket: any, next) => {
   socket.img = user.img;
   socket.channel = userChannel;
   socket.sessionID = sessionID;
-  // 승하 [12,3,8]
-  // 수호
-  if (sessionID === "d8aa54570e8d7c99") {
-    socket.channel = ["12", "8"];
-  }
-  // 정현
-  if (sessionID === "7a262192e5f22f89") {
-    socket.channel = ["3", "8"];
-  }
-  //상진
-  if (sessionID === "06cd34b02c8c71f7") {
-    socket.channel = ["9"];
-  }
 
   const userInfo = await redisCache.findSession(sessionID);
 

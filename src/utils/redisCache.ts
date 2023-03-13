@@ -21,14 +21,8 @@ export default {
   },
 
   findSession: async (id) => {
-    // return await hmgetAsync(
-    //   `session:${id}`,
-    //   "userID",
-    //   "username",
-    //   "connected"
-    // ).then(mapSession);
     try {
-      const session = await redisCli.get(`session:${id}`);
+      const session = await redisCli.get(`passport:${id}`);
 
       if (session) {
         return JSON.parse(session);
