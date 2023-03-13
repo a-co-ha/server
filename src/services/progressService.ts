@@ -57,7 +57,11 @@ class ProgressService implements IProgressModel {
         return postService.postStatusUpdate(page._id, page.progressStatus);
       }
     });
-    return await this.findProgress(channelId, id);
+    return await this.progressModel
+      .findByIdAndUpdate({ _id: id }, { pages })
+      .then(() => {
+        return this.findProgress(channelId, id);
+      });
   }
 
   async deleteProgress(id: string): Promise<object> {
