@@ -27,7 +27,7 @@ User.init(
     },
     name: {
       type: DataTypes.STRING(45),
-      allowNull: false,
+      allowNull: true,
     },
     githubID: {
       type: DataTypes.STRING(45),

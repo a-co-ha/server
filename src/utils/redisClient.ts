@@ -1,18 +1,31 @@
 import * as redis from "redis";
 import Promise from "bluebird";
 
-export const redisClient = Promise.promisifyAll(
+import dotenv from "dotenv";
+dotenv.config();
+
+const password = process.env.REDIS_PASSWORD;
+const host = process.env.REDIS_HOST;
+
+export const redisClient: any = Promise.promisifyAll(
   redis.createClient({
-    password: "0KK02ZRj590s30wkDg47o3hYTuviGIpg",
+    password: password,
     socket: {
-      host: "redis-10035.c232.us-east-1-2.ec2.cloud.redislabs.com",
+      host: host,
       port: 10035,
     },
+    legacyMode: true,
   })
 );
+
+export const subClient = redisClient.duplicate();
+
 redisClient.on("connect", () => {
   console.info("Redis connected!");
 });
-redisClient.on("error", (err: any) => {
-  console.log(`Error ${err}`);
+redisClient.on("error", (err) => {
+  console.error("Redis Client Error", err);
 });
+redisClient.connect().then().catch(console.error); // redis v4 연결 (비동기)
+
+export const redisCli = redisClient.v4;

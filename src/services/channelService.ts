@@ -1,9 +1,11 @@
+import { UserAttributes } from "./../interface/index";
 import { IChannelModel } from "../interface/index";
 
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
 import { Channel } from "../model/channel";
 import { ChannelUser } from "../model/channelUser";
+import { User } from "../model/user";
 
 export class ChannelService implements IChannelModel {
   async invite(info: IChannelInfo): Promise<any> {
