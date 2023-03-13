@@ -4,6 +4,13 @@ import RedisStore from "connect-redis";
 
 const envFound = dotenv.config();
 
+<<<<<<< HEAD
+=======
+// if (envFound.error) {
+//   throw new Error("Couldn't find .env file");
+// }
+
+>>>>>>> feature
 export const port = parseInt(process.env.PORT ?? "8080", 10);
 export const mongoDBUri = process.env.DB_MONGO || "not found";
 export const mysqlHost = process.env.DB_NAME || "localhost";

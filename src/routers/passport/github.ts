@@ -23,7 +23,6 @@ passport.use(
         } = profile._json;
 
         const user: UserAttributes = { name, githubID, githubURL, img };
-
         const isGuest = await userService.get(user);
 
         if (isGuest.length === 0) {
