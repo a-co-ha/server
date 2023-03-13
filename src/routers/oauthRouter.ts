@@ -1,7 +1,16 @@
 import express from "express";
-import { githubLoginPage, githubLoginWithServer } from "../controllers";
+import passport from "passport";
+import { userController } from "../controllers";
+import { asyncHandler } from "../utils";
 
 export const oauthRouter = express.Router();
 
-oauthRouter.get("/github", githubLoginPage);
-oauthRouter.get("/github/callback", githubLoginWithServer);
+oauthRouter.get("/github", passport.authenticate("github"));
+oauthRouter.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/login",
+    successRedirect: "/",
+  }),
+  asyncHandler(userController.login)
+);
