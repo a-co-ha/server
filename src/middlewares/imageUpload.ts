@@ -35,31 +35,17 @@ export const imageUpload = multer({
   },
 });
 
-//todo
-export const deleteS3ImageMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.log(req.body);
-  if (req.body.deleteImageKey) {
-    const key = req.body.deleteImageKey;
-
-    deleteImage(key);
-  }
-  next();
-};
-
-const deleteImage = async (key: any) => {
-  const command = new DeleteObjectCommand({
+export const deleteImage = async (key: string) => {
+  const params = {
     Bucket: "acoha",
     Key: key,
-  });
+  };
 
   try {
-    await s3.send(command);
-    console.log(`File ${key} deleted from S3`);
+    const command = new DeleteObjectCommand(params);
+    const response = await s3.send(command);
+    return response;
   } catch (err) {
-    console.log(`Error deleting ${key} from S3: ${err}`);
+    console.log("Error deleting image", err);
   }
 };
