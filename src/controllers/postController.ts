@@ -1,4 +1,4 @@
-import { postService } from "../services";
+import { postService, progressService } from "../services";
 import { block, page } from "../interface";
 import { AsyncRequestHandler } from "../types";
 import { deleteImage } from "../middlewares";
@@ -18,8 +18,15 @@ export class PostController implements IPostController {
     const id = req.params.id;
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const findPost = await postService.findPost(channelId, id);
-    res.json(findPost);
+    const type = req.query.type;
+    if (type === "normal" || type === "progress-normal") {
+      const findPost = await postService.findPost(channelId, id);
+      res.json(findPost);
+    }
+    if (type === "progress") {
+      const findProgress = await progressService.findProgress(channelId, id);
+      res.json(findProgress);
+    }
   };
 
   createPost: AsyncRequestHandler = async (req, res) => {

@@ -7,7 +7,7 @@ class PostService implements IPostModel {
     this.postModel = postModel;
   }
 
-  async findPost(channelId: number, id: string): Promise<page> {
+  async findPost(channelId: number, id: string): Promise<any> {
     const post = this.postModel.findOne({ _id: id });
     return await post.findOne({ channelId });
   }
