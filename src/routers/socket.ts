@@ -3,12 +3,8 @@ import { redisClient, subClient } from "./../utils/redisClient";
 /* eslint-disable prefer-const */
 import { messageController } from "../controllers";
 import redisCache from "../utils/redisCache";
-import { createAdapter } from "@socket.io/redis-adapter";
 
 export const socket = (io: any) => {
-  Promise.all([redisClient, subClient]).then(() => {
-    io.adapter(createAdapter(redisClient, subClient));
-  });
   io.on("connection", async (socket: any) => {
     console.log(
       `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID} userName : ${socket.username}`
@@ -72,7 +68,6 @@ export const socket = (io: any) => {
 
       // 연결 해제
       socket.on("disconnect", async () => {
-        // socket.userID가 들어가 있는 소켓들을 다 가져옴
         const matchingSockets = await io.in(socket.userID).allSockets();
 
         const isDisconnected = matchingSockets.size === 0;
