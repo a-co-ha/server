@@ -79,7 +79,7 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.user, loginRequired, userRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
-app.use(endPoint.post, postRouter);
+app.use(endPoint.page, postRouter);
 app.use(endPoint.progress, progressRouter);
 app.use(errorHandler);
 
