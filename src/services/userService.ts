@@ -36,7 +36,7 @@ export class UserService {
         return i.dataValues.channel.dataValues;
       });
     }
-    return userInfo;
+    return userInfo[0];
   }
 
   async getChannels(user: UserAttributes) {
