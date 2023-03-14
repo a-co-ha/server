@@ -7,6 +7,7 @@ interface IProgressController {
   addProgress: AsyncRequestHandler;
   updateProgress: AsyncRequestHandler;
   deleteProgress: AsyncRequestHandler;
+  percentageProgress: AsyncRequestHandler;
 }
 
 export class ProgressController implements IProgressController {

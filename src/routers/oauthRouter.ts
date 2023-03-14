@@ -7,7 +7,7 @@ export const oauthRouter = express.Router();
 
 oauthRouter.get("/github", passport.authenticate("github"));
 oauthRouter.get(
-  "/github/callback",
+  "/callback",
   passport.authenticate("github", {
     failureRedirect: "/login",
     successRedirect: "/",

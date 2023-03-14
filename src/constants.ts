@@ -4,7 +4,7 @@ interface EndPointInterface {
   channel: string;
   user: string;
   guest: string;
-  post: string;
+  page: string;
   progress: string;
 }
 
@@ -14,6 +14,6 @@ export const endPoint: EndPointInterface = {
   channel: "/api/channel",
   user: "/api/user",
   guest: "/api/guest",
-  post: "/api/post",
+  page: "/api/page",
   progress: "/api/progress",
 };

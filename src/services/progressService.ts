@@ -1,4 +1,4 @@
-import { progressModel, progressModelType } from "../model";
+import { postModel, progressModel, progressModelType } from "../model";
 import { postService } from "./postService";
 import { IProgressModel, progress, postStatusUpdate } from "../interface";
 
@@ -9,14 +9,21 @@ class ProgressService implements IProgressModel {
   }
 
   async createProgress(channelId: number, blockId: string): Promise<progress> {
-    const pages = await postService.createPost(channelId, blockId);
+    const type = "progress-normal";
+    const progressStatus = "todo";
+    const pages = await postService.createPost(
+      channelId,
+      blockId,
+      progressStatus,
+      type
+    );
     return await this.progressModel.create({ channelId, pages });
   }
 
   async findProgress(channelId: number, id: string): Promise<progress> {
     const progress = progressModel.findOne({ _id: id }).populate({
       path: "pages",
-      select: "pageName label progressStatus",
+      select: "pageName label progressStatus type",
     });
     return await progress.findOne({ channelId });
   }
@@ -27,10 +34,12 @@ class ProgressService implements IProgressModel {
     blockId: string,
     progressStatus: string
   ): Promise<progress> {
+    const type = "progress-normal";
     const pages = await postService.createPost(
       channelId,
       blockId,
-      progressStatus
+      progressStatus,
+      type
     );
     return this.progressModel
       .findByIdAndUpdate({ _id: id }, { $push: { pages } })
