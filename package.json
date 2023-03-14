@@ -9,7 +9,6 @@
     "@socket.io/redis-adapter": "^8.1.0",
     "@socket.io/sticky": "^1.0.3",
     "@types/aws-sdk": "^2.7.0",
-    "@types/axios": "^0.14.0",
     "@types/bluebird": "^3.5.38",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.3",
