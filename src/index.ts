@@ -65,8 +65,6 @@ mongoose.connection.on("connected", () => {
 
 init();
 
-require("./routers/passport/github");
-
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
