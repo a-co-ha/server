@@ -5,6 +5,7 @@ export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
+
 export const socketMiddleware = async (socket, next) => {
   const session = socket.request.session;
   // const sessionID = socket.request.handshake.auth.sessionid;

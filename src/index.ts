@@ -29,79 +29,75 @@ import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
 // const WORKERS_COUNT = require("os").cpus().length;
-const WORKERS_COUNT = 4;
+// const WORKERS_COUNT = 4;
 
-if (cluster.isPrimary) {
-  console.log(`Master ${process.pid} is running`);
+// if (cluster.isPrimary) {
+//   console.log(`Master ${process.pid} is running`);
 
-  for (let i = 0; i < WORKERS_COUNT; i++) {
-    cluster.fork();
+//   for (let i = 0; i < WORKERS_COUNT; i++) {
+//     cluster.fork();
+//   }
+
+//   cluster.on("exit", (worker) => {
+//     console.log(`Worker ${worker.process.pid} died`);
+//     cluster.fork();
+//   });
+// } else {
+//   console.log(`Worker ${process.pid} started`);
+
+const app = express(); // export const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {},
+});
+
+Promise.all([redisClient, subClient]).then(() => {
+  io.adapter(createAdapter(redisClient, subClient));
+});
+
+const sessionMiddleware = session(sessionConfig);
+
+mongoose.set("strictQuery", true);
+mongoose.connect(mongoDBUri);
+mongoose.connection.on("connected", () => {
+  console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
+});
+
+init();
+
+require("./routers/passport/github");
+
+app.use(cors());
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser(SESSION_SECRET));
+
+app.use(sessionMiddleware);
+
+app.get(endPoint.index, indexRouter);
+app.use(endPoint.oauth, oauthRouter);
+app.use(endPoint.user, loginRequired, userRouter);
+app.use(endPoint.channel, loginRequired, channelRouter);
+app.use(endPoint.post, postRouter);
+app.use(endPoint.progress, progressRouter);
+app.use(errorHandler);
+
+io.use(wrap(sessionMiddleware));
+
+io.use(socketMiddleware);
+
+socket(io);
+
+httpServer.listen(port, async () => {
+  try {
+    await sequelize.authenticate().then(() => {
+      console.log("DB sequelize connection success");
+    });
+    console.log(`server listening at http://localhost:${port}`);
+  } catch (err) {
+    console.error(err);
+    console.log("Server running failed");
   }
-
-  cluster.on("exit", (worker) => {
-    console.log(`Worker ${worker.process.pid} died`);
-    cluster.fork();
-  });
-} else {
-  console.log(`Worker ${process.pid} started`);
-
-  const app = express(); // export const app = express();
-  const httpServer = createServer(app);
-  const io = new Server(httpServer, {
-    cors: {},
-  });
-
-  Promise.all([redisClient, subClient]).then(() => {
-    io.adapter(createAdapter(redisClient, subClient));
-  });
-
-  const sessionMiddleware = session(sessionConfig);
-  const passportMiddleware = passport.initialize();
-
-  mongoose.set("strictQuery", true);
-  mongoose.connect(mongoDBUri);
-  mongoose.connection.on("connected", () => {
-    console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
-  });
-
-  init();
-
-  require("./routers/passport/github");
-
-  app.use(cors());
-  app.use(logger("dev"));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(cookieParser(SESSION_SECRET));
-
-  app.use(sessionMiddleware);
-  app.use(passportMiddleware);
-  app.use(passport.session());
-
-  app.get(endPoint.index, indexRouter);
-  app.use(endPoint.oauth, oauthRouter);
-  app.use(endPoint.user, loginRequired, userRouter);
-  app.use(endPoint.channel, loginRequired, channelRouter);
-  app.use(endPoint.post, postRouter);
-  app.use(endPoint.progress, progressRouter);
-  app.use(errorHandler);
-
-  io.use(wrap(sessionMiddleware));
-  io.use(wrap(passportMiddleware));
-  io.use(wrap(passport.session()));
-  io.use(socketMiddleware);
-
-  socket(io);
-
-  httpServer.listen(port, async () => {
-    try {
-      await sequelize.authenticate().then(() => {
-        console.log("DB sequelize connection success");
-      });
-      console.log(`server listening at http://localhost:${port}`);
-    } catch (err) {
-      console.error(err);
-      console.log("Server running failed");
-    }
-  });
-}
+});
+// }
