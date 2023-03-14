@@ -14,7 +14,8 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strictPropertyInitialization": false,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": false, 
   },
   "include": ["src/**/**/*",".eslintrc.cjs"]
 }

@@ -75,7 +75,16 @@ export interface Channel_UserAttributes {
   userId: string;
   channelId: number;
 }
-
+export interface MessageAttributes {
+  id?: string;
+  name: string;
+  githubID: string;
+  img?: string;
+  text?: string;
+  channelId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 export interface ChannelAttributes {
   id: number;
   admin: string;
