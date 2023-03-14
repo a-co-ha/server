@@ -34,6 +34,7 @@ export default {
       return null;
     }
   },
+
   findMessagesForUser: async (userID) => {
     const a = await lrangeAsync(`messages:${userID}`, 0, -1).then((results) => {
       return results.map((result) => JSON.parse(result));

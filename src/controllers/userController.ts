@@ -15,13 +15,16 @@ export class UserController implements IUserController {
       console.log("unknown user");
     }
     const token = await userService.login(req.user);
-    req.session.authenticated = true;
-    req.session.token = token;
-    res.sendFile(
-      req.isAuthenticated()
-        ? "/Users/seungha/dev/acoha_server/src/routers/index.html"
-        : "login.html"
-    );
+
+    req.session.user = {
+      name: req.user.name,
+      githubID: req.user.githubID,
+      connected: true,
+    };
+    res.status(200).json({
+      token,
+      user: req.user,
+    });
   };
   get: AsyncRequestHandler = async (req, res) => {
     const { name, githubID, githubURL, img }: UserAttributes = req.body;
