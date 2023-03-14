@@ -5,11 +5,16 @@ export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
+
 export const socketMiddleware = async (socket, next) => {
   const session = socket.request.session;
-  const sessionID = session.id;
+  // const sessionID = socket.request.handshake.auth.sessionid;
+  const sessionID = socket.handshake.headers.sessionid;
 
-  const { user } = session.passport;
+  const userInfo = await redisCache.findSession(sessionID);
+
+  const user = userInfo.passport.user;
+  // const { user } = session.passport;
 
   const userChannel = await userService.getChannels(user);
 
@@ -18,8 +23,6 @@ export const socketMiddleware = async (socket, next) => {
   socket.channel = userChannel;
   socket.sessionID = sessionID;
 
-  const userInfo = await redisCache.findSession(sessionID);
-  console.log(userInfo.userID);
   if (userInfo?.userID === undefined) {
     socket.userID = randomId();
   } else {

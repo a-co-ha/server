@@ -9,7 +9,7 @@ export class MessageController implements IMessageController {
     const { name, githubID, img, text, channelId } = data;
 
     // redisCache.delete(`messageList:${channelId}`);
-    console.log({ name, githubID, img, text, channelId });
+    // console.log({ name, githubID, img, text, channelId });
     const messageResponse = await Message.create({
       name: name,
       githubID,
