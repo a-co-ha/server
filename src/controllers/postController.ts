@@ -1,6 +1,7 @@
 import { postService } from "../services";
 import { block, page } from "../interface";
 import { AsyncRequestHandler } from "../types";
+import { deleteImage } from "../middlewares";
 
 interface IPostController {
   createPost: AsyncRequestHandler;
@@ -8,6 +9,8 @@ interface IPostController {
   findPost: AsyncRequestHandler;
   deletePost: AsyncRequestHandler;
   findPageList: AsyncRequestHandler;
+  imageDelete: AsyncRequestHandler;
+  imageUpload: AsyncRequestHandler;
 }
 
 export class PostController implements IPostController {
@@ -61,6 +64,13 @@ export class PostController implements IPostController {
     };
 
     res.json(file);
+  };
+
+  imageDelete: AsyncRequestHandler = async (req, res) => {
+    const deleteImageKey = req.body.imgKey;
+    const fileKey = deleteImageKey.split("/").pop().split("?")[0];
+    const deleteImg = await deleteImage(fileKey);
+    res.json(deleteImg);
   };
 
   findPageList: AsyncRequestHandler = async (req, res) => {
