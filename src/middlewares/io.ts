@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { SocketClosedUnexpectedlyError } from "redis";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 export const wrap = (middleware) => (socket, next) =>
@@ -13,8 +14,7 @@ export const socketMiddleware = async (socket, next) => {
 
   const userInfo = await redisCache.findSession(sessionID);
 
-  const user = userInfo.passport.user;
-  // const { user } = session.passport;
+  const user = userInfo.user.user;
 
   const userChannel = await userService.getChannels(user);
 

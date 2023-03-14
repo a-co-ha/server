@@ -22,7 +22,7 @@ export default {
 
   findSession: async (id) => {
     try {
-      const session = await redisCli.get(`passport:${id}`);
+      const session = await redisCli.get(`login:${id}`);
 
       if (session) {
         return JSON.parse(session);
