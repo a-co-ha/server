@@ -17,9 +17,7 @@ export class UserController implements IUserController {
     const token = await userService.login(req.user);
 
     req.session.user = {
-      name: req.user.name,
-      githubID: req.user.githubID,
-      connected: true,
+      user: req.user,
     };
     res.status(200).json({
       token,

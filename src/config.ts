@@ -43,7 +43,7 @@ export const sessionConfig = {
   store: new RedisStore({
     client: redisCli,
     ttl: REDIS_TIME_TO_LIVE,
-    prefix: "session:",
+    prefix: "login:",
   }),
   secret: SESSION_SECRET,
   resave: false,
