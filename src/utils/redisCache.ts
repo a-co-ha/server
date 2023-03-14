@@ -20,7 +20,12 @@ export default {
     );
   },
 
-  findSession: async (id) => {
+  findSession(id) {
+    return redisClient
+      .hmgetAsync(`session:${id}`, "userID", "username", "connected")
+      .then(mapSession);
+  },
+  findLogin: async (id) => {
     try {
       const session = await redisCli.get(`login:${id}`);
 
