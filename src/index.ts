@@ -1,3 +1,4 @@
+import { githubLogin } from "./middlewares/login";
 import { socketMiddleware } from "./middlewares/io";
 import crypto from "crypto";
 import redisCache from "./utils/redisCache";
@@ -17,6 +18,7 @@ import {
   socket,
   progressRouter,
   userRouter,
+  githubRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
@@ -28,6 +30,7 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
+
 // const WORKERS_COUNT = require("os").cpus().length;
 // const WORKERS_COUNT = 4;
 
@@ -79,6 +82,7 @@ app.use(endPoint.user, loginRequired, userRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.page, postRouter);
 app.use(endPoint.progress, progressRouter);
+app.use(endPoint.github, githubRouter);
 app.use(errorHandler);
 
 io.use(wrap(sessionMiddleware));

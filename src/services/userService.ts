@@ -26,7 +26,7 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { name, githubID, githubURL, img },
+      where: { githubID, githubURL },
       attributes: ["github_id", "github_url", "img", "name"],
     });
     const userInfo = query.map((el) => el.dataValues);
@@ -63,6 +63,9 @@ export class UserService {
   }
 
   async insert(user: UserAttributes) {
+    if (user.name === null) {
+      user.name = user.githubID;
+    }
     await User.create(user);
   }
 }

@@ -1,7 +1,7 @@
 import { UserAttributes } from "./../interface/index";
 import { userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../types";
-
+import { Octokit, App } from "octokit";
 interface IUserController {
   login: AsyncRequestHandler;
   get: AsyncRequestHandler;
@@ -19,6 +19,7 @@ export class UserController implements IUserController {
     req.session.user = {
       user: req.user,
     };
+
     res.status(200).json({
       token,
       user: req.user,
