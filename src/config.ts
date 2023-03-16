@@ -19,7 +19,7 @@ export const inviteApi = process.env.INVITE_URL;
 export const s3keyId = process.env.S3KEYID;
 export const s3accesskey = process.env.S3ACCESSKEY;
 export const s3region = process.env.REGION;
-
+export const GITHUBAUTH = process.env.GITHUBAUTH;
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;

@@ -17,6 +17,7 @@ import {
   socket,
   progressRouter,
   userRouter,
+  githubRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
@@ -79,6 +80,7 @@ app.use(endPoint.user, loginRequired, userRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
 app.use(endPoint.page, postRouter);
 app.use(endPoint.progress, progressRouter);
+app.use(endPoint.github, githubRouter);
 app.use(errorHandler);
 
 io.use(wrap(sessionMiddleware));
