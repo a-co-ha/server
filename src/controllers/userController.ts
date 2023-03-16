@@ -1,3 +1,4 @@
+import { githubLogin } from "./../middlewares/login";
 import { UserAttributes } from "./../interface/index";
 import { userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../types";
@@ -13,6 +14,10 @@ export class UserController implements IUserController {
       console.log(`user is authenticated, session is ${req.session.id}`);
     } else {
       console.log("unknown user");
+    }
+
+    if (req.user.name === undefined) {
+      req.user.name = req.user.githubID;
     }
     const token = await userService.login(req.user);
 

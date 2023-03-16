@@ -12,6 +12,7 @@ export class ChannelController implements IChannelController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    console.log(req.body);
     const channelInfo: IChannelInfo = {
       admin: req.body.name,
       channelName: req.body.channelName,
