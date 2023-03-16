@@ -18,7 +18,7 @@ export const githubLogin = async (req, res, next) => {
       method: "get",
       url: `https://api.github.com/user`,
       headers: {
-        Authorization: "token " + access_token,
+        Authorization: "Bearer " + access_token,
       },
     }).then(async (response) => {
       const {
