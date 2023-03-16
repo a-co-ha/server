@@ -16,7 +16,8 @@ export class ChannelController implements IChannelController {
       admin: req.body.name,
       channelName: req.body.channelName,
     };
-    const result = await channelService.invite(channelInfo);
+    await channelService.invite(channelInfo);
+    const result = await channelService.get(channelInfo);
     res.json(result);
   };
   join: AsyncRequestHandler = async (req, res) => {

@@ -30,9 +30,9 @@ Channel.init(
     id: {
       type: DataTypes.NUMBER,
       primaryKey: true,
-      get() {
-        return this.getDataValue("id");
-      },
+      // get() {
+      //   return this.getDataValue("id");
+      // },
     },
     admin: {
       type: DataTypes.STRING(45),

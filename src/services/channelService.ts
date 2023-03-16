@@ -12,6 +12,13 @@ export class ChannelService implements IChannelModel {
     const { admin, channelName } = info;
     return await Channel.create({ admin, channelName });
   }
+  async get(info: IChannelInfo): Promise<any> {
+    const { admin, channelName } = info;
+    return await Channel.findOne({
+      where: { admin, channelName },
+      raw: true,
+    });
+  }
 
   async join(
     userId: string,
