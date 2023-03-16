@@ -10,8 +10,10 @@ import { User } from "../model/user";
 export class ChannelService implements IChannelModel {
   async invite(info: IChannelInfo): Promise<any> {
     const { admin, channelName } = info;
-    return await Channel.create({ admin, channelName });
+    await Channel.create({ admin, channelName });
+    return await this.get(info);
   }
+
   async get(info: IChannelInfo): Promise<any> {
     const { admin, channelName } = info;
     return await Channel.findOne({
@@ -28,11 +30,7 @@ export class ChannelService implements IChannelModel {
     const admin = decode(adminCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelNameCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
-    const { id } = await Channel.findOne({
-      where: { admin, channelName },
-      attributes: ["id"],
-      raw: true,
-    });
+    const { id } = await this.get({ admin, channelName });
 
     await ChannelUser.create({ userId, channelId: id });
 
