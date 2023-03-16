@@ -36,8 +36,8 @@ export async function loginRequired(
 export async function decode(userToken: string) {
   const jwtDecoded = jwt.verify(userToken, jwtSecret);
   const name = (<{ name: string }>jwtDecoded).name;
-  const githubID = (<{ githubID: string }>jwtDecoded).githubID;
-  const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
+  const githubID = (<{ github_id: string }>jwtDecoded).github_id;
+  const githubURL = (<{ github_url: string }>jwtDecoded).github_url;
   const img = (<{ img: string }>jwtDecoded).img;
 
   return { name, githubID, githubURL, img };
