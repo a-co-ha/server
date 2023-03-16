@@ -1,4 +1,3 @@
-import { errorResponse } from "./../utils/errorResponse";
 import axios from "axios";
 import { AsyncRequestHandler } from "../types";
 import { Octokit } from "octokit";
