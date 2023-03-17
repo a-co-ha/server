@@ -34,7 +34,6 @@ export class UserService {
     const [{ id: userId, githubID, githubURL, img, name, ...rest }] = query.map(
       (el) => el.dataValues
     );
-    console.log(query);
     const channels: ChannelAttributes[] = rest["userHasChannels"].map(
       (i) => i.dataValues.channel.dataValues
     );
