@@ -58,8 +58,6 @@ Promise.all([redisClient, subClient]).then(() => {
   io.adapter(createAdapter(redisClient, subClient));
 });
 
-const sessionMiddleware = session(sessionConfig);
-
 mongoose.set("strictQuery", true);
 mongoose.connect(mongoDBUri);
 mongoose.connection.on("connected", () => {
@@ -72,9 +70,9 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(SESSION_SECRET));
 
-app.use(sessionMiddleware);
+app.use(cookieParser(SESSION_SECRET));
+app.use(session(sessionConfig));
 
 app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
@@ -85,7 +83,7 @@ app.use(endPoint.progress, progressRouter);
 app.use(endPoint.github, githubRouter);
 app.use(errorHandler);
 
-io.use(wrap(sessionMiddleware));
+io.use(wrap(session(sessionConfig)));
 
 io.use(socketMiddleware);
 

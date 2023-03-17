@@ -31,7 +31,7 @@ export const githubLogin = async (req, res, next) => {
 
       const user: UserAttributes = { id, name, githubID, githubURL, img };
 
-      const isGuest = await userService.get(user);
+      const isGuest = await userService.get(id);
       if (!isGuest) {
         await userService.insert(user);
       }

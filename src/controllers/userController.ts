@@ -16,6 +16,9 @@ export class UserController implements IUserController {
       console.log("unknown user");
     }
 
+    req.session.userId = req.user.id;
+    req.session.auth = true;
+
     if (req.user.name === undefined) {
       req.user.name = req.user.githubID;
     }
@@ -26,18 +29,10 @@ export class UserController implements IUserController {
       user: req.user,
     });
   };
-  get: AsyncRequestHandler = async (req, res) => {
-    const { userId, name, githubID, githubURL, img } = req.body;
 
-    res.json(
-      await userService.get({
-        id: userId,
-        name,
-        githubID,
-        githubURL,
-        img,
-      })
-    );
+  get: AsyncRequestHandler = async (req, res) => {
+    const { userId } = req.body;
+    res.json(await userService.get(userId));
   };
 }
 
