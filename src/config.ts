@@ -28,6 +28,7 @@ export const REDIS_TIME_TO_LIVE = parseInt(
   process.env.REDIS_TIME_TO_LIVE ?? "300"
 );
 export const SESSION_SECRET = process.env.SESSION_SECRET;
+export const GITHUBAUTH = process.env.GITHUBAUTH;
 export const config = {
   development: {
     username: mysqlUser,

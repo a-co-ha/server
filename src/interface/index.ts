@@ -1,3 +1,4 @@
+import { channelJoinInterface } from "./../controllers/channelController";
 export interface block {
   blockId?: string;
   tag: string;
@@ -72,8 +73,10 @@ export interface UserAttributes {
   img: string;
 }
 export interface Channel_UserAttributes {
-  userId: string;
+  userId: number;
+  userName: string;
   channelId: number;
+  channelName: string;
 }
 export interface MessageAttributes {
   id?: string;
@@ -105,5 +108,5 @@ export interface IChannel extends IChannelInfo {
 }
 export interface IChannelModel {
   invite(info: IChannelInfo): Promise<void>;
-  join(userId: string, adminCode: string, channelNameCode: any): Promise<any>;
+  join(channelJoinInterface: channelJoinInterface): Promise<any>;
 }

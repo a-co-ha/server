@@ -1,3 +1,4 @@
+import { githubLogin } from "./middlewares/login";
 import { socketMiddleware } from "./middlewares/io";
 import crypto from "crypto";
 import redisCache from "./utils/redisCache";
@@ -29,6 +30,7 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
+
 // const WORKERS_COUNT = require("os").cpus().length;
 // const WORKERS_COUNT = 4;
 

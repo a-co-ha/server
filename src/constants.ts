@@ -11,7 +11,7 @@ interface EndPointInterface {
 
 export const endPoint: EndPointInterface = {
   index: "/",
-  oauth: "/oauth",
+  oauth: "/api/oauth",
   channel: "/api/channel",
   user: "/api/user",
   guest: "/api/guest",

@@ -19,7 +19,7 @@ module.exports = {
   },
   rules: {
     "@typescript-eslint/await-thenable": "error",
-    "@typescript-eslint/promise-function-async": "error",
+
     //any 관련
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",
@@ -39,7 +39,7 @@ module.exports = {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/promise-function-async": "off",
-    "@typescript-eslint/no-empty-interface":"off"
+    "@typescript-eslint/no-empty-interface": "off",
   },
   root: true,
 };

@@ -12,21 +12,35 @@ export class ChannelController implements IChannelController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const channelInfo: IChannelInfo = {
-      admin: req.body.name,
-      channelName: req.body.channelName,
+    const { channelName, userId, name } = req.body;
+    const channelInfo: channelJoinInterface = {
+      admin: userId,
+      channelName,
+      userId,
+      name,
     };
+
     const result = await channelService.invite(channelInfo);
+
     res.json(result);
   };
   join: AsyncRequestHandler = async (req, res) => {
-    const { admin } = req.params;
-    const { channelName } = req.query;
-    const { githubID } = req.body;
-
-    const result = await channelService.join(githubID, admin, channelName);
+    const { adminCode } = req.params;
+    const channelCode = req.query.channelCode as string;
+    const { userId, name } = req.body;
+    const joinInfo: channelJoinInterface = {
+      admin: adminCode,
+      channelName: channelCode,
+      userId,
+      name,
+    };
+    const result = await channelService.join(joinInfo);
     res.json(result);
   };
+}
+export interface channelJoinInterface extends IChannelInfo {
+  userId: number;
+  name: string;
 }
 
 const channelController = new ChannelController();

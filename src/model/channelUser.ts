@@ -6,8 +6,10 @@ import { User } from "./user";
 
 export class ChannelUser extends Model<Channel_UserAttributes> {
   public readonly id!: number;
-  public userId: string; // githubID
-  public channelId: number; // channel id
+  public userId: number;
+  public userName: string;
+  public channelId: number;
+  public channelName: string;
   public static associations: {
     hasUsers: Association<Channel, ChannelUser>;
     hasChannels: Association<Channel, ChannelUser>;
@@ -17,14 +19,25 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
 ChannelUser.init(
   {
     userId: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: false,
       field: "user_id",
     },
+    userName: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+      field: "user_name",
+    },
+
     channelId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: "channel_id",
+    },
+    channelName: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "channel_name",
     },
   },
   {
@@ -46,7 +59,7 @@ Channel.hasMany(ChannelUser, {
   as: "channelHasManyUsers",
 });
 User.hasMany(ChannelUser, {
-  sourceKey: "githubID",
+  sourceKey: "id",
   foreignKey: "user_id",
   as: "userHasChannels",
 });
