@@ -18,7 +18,7 @@ import {
   githubRouter,
 } from "./routers";
 import { endPoint } from "./constants";
-import passport from "passport";
+
 import { decode, errorHandler, loginRequired, wrap } from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
@@ -92,11 +92,9 @@ class AppServer {
       console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
     });
   }
-  private redis(io) {}
+
   private mysql() {
     init();
   }
 }
 AppServer.start();
-
-// httpServer.listen();

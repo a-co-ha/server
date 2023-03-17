@@ -11,7 +11,7 @@ export class UserService {
     return setUserToken(user);
   }
 
-  async get(userId: number): Promise<userHasChannels> {
+  async get(id: number): Promise<userHasChannels | boolean> {
     const query = await User.findAll({
       include: {
         model: ChannelUser,
@@ -24,14 +24,17 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { id: userId },
+      where: { id },
       attributes: ["id", "githubID", "githubURL", "img", "name"],
     });
 
-    const [{ id, githubID, githubURL, img, name, ...rest }] = query.map(
+    if (query.length <= 0) {
+      return false;
+    }
+    const [{ id: userId, githubID, githubURL, img, name, ...rest }] = query.map(
       (el) => el.dataValues
     );
-
+    console.log(query);
     const channels: ChannelAttributes[] = rest["userHasChannels"].map(
       (i) => i.dataValues.channel.dataValues
     );
@@ -47,6 +50,9 @@ export class UserService {
   }
 
   async insert(user: UserAttributes) {
+    if (user.name === null || user.name === undefined) {
+      user.name = user.githubID;
+    }
     await User.create(user);
   }
 }
