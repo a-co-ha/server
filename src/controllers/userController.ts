@@ -21,10 +21,6 @@ export class UserController implements IUserController {
     }
     const token = await userService.login(req.user);
 
-    req.session.user = {
-      user: req.user,
-    };
-
     res.status(200).json({
       token,
       user: req.user,
