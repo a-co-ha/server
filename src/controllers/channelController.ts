@@ -35,6 +35,7 @@ export class ChannelController implements IChannelController {
   };
 }
 export interface channelJoinInterface extends IChannelInfo {
+  //userId, channelName
   userId: number;
   name: string;
 }

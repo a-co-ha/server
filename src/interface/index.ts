@@ -103,7 +103,7 @@ export interface IUserModel {
 }
 
 export interface IChannelInfo {
-  admin: string;
+  admin: string; // userId
   channelName: string;
 }
 export interface IChannel extends IChannelInfo {

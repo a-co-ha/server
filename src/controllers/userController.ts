@@ -19,7 +19,7 @@ export class UserController implements IUserController {
     req.session.userId = req.user.id;
     req.session.auth = true;
 
-    if (req.user.name === undefined) {
+    if (req.user.name === undefined || req.user.name === null) {
       req.user.name = req.user.githubID;
     }
     const token = await userService.login(req.user);
