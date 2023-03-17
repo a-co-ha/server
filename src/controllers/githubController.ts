@@ -38,11 +38,6 @@ export class GithubController implements IGithubController {
 
       res.json({ orgName, orgUrl, orgImg, desc, repos });
     });
-
-    // const event = axios({
-    //   method: "get",
-    //   url: data.events_url,
-    // }).then((res) => res.data);
   };
 
   getIssue: AsyncRequestHandler = async (req, res) => {

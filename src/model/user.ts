@@ -4,7 +4,7 @@ import { ChannelUser } from "./channelUser";
 import { sequelize } from "./index";
 
 export class User extends Model<UserAttributes> {
-  public readonly id!: number;
+  public id!: number;
   public name!: string;
   public githubID!: string;
   public githubURL!: string;

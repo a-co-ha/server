@@ -22,20 +22,21 @@ export const githubLogin = async (req, res, next) => {
       },
     }).then(async (response) => {
       const {
+        id,
         name,
         login: githubID,
         html_url: githubURL,
         avatar_url: img,
       } = response.data;
 
-      const user: UserAttributes = { name, githubID, githubURL, img };
+      const user: UserAttributes = { id, name, githubID, githubURL, img };
 
       const isGuest = await userService.get(user);
       if (!isGuest) {
         await userService.insert(user);
       }
 
-      req.user = isGuest;
+      req.user = user;
       next();
     });
   });

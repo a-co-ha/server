@@ -12,8 +12,8 @@ export class UserService {
   }
 
   async get(user: UserAttributes) {
-    const { name, githubID, githubURL, img } = user;
-
+    const { id } = user;
+    console.log(user);
     const query = await User.findAll({
       include: {
         model: ChannelUser,
@@ -26,8 +26,7 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { githubID, githubURL },
-      attributes: ["github_id", "github_url", "img", "name"],
+      where: { id },
     });
     const userInfo = query.map((el) => el.dataValues);
 

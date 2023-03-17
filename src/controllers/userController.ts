@@ -27,9 +27,17 @@ export class UserController implements IUserController {
     });
   };
   get: AsyncRequestHandler = async (req, res) => {
-    console.log(req.body);
-    const { name, githubID, githubURL, img }: UserAttributes = req.body;
-    res.json(await userService.get({ name, githubID, githubURL, img }));
+    const { userId, name, githubID, githubURL, img } = req.body;
+
+    res.json(
+      await userService.get({
+        id: userId,
+        name,
+        githubID,
+        githubURL,
+        img,
+      })
+    );
   };
 }
 
