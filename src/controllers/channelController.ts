@@ -8,10 +8,6 @@ interface IChannelController {
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
     const { channelName, userId, name } = req.body;
     const channelInfo: channelJoinInterface = {
       admin: userId,

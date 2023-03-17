@@ -1,21 +1,17 @@
-import { ChannelAttributes } from "./../interface/index";
+import { ChannelAttributes, userHasChannels } from "./../interface/index";
 import { DataTypes } from "sequelize";
 import { Channel } from "./../model/channel";
 import { setUserToken } from "./../utils/jwt";
 import { UserAttributes } from "../interface";
 import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
-import { escapeId } from "mysql2";
-import e from "express";
-interface userHasChannels extends UserAttributes {
-  channels: ChannelAttributes[];
-}
+
 export class UserService {
   async login(user: any) {
     return setUserToken(user);
   }
 
-  async get(userId: number) {
+  async get(userId: number): Promise<userHasChannels> {
     const query = await User.findAll({
       include: {
         model: ChannelUser,
@@ -48,27 +44,6 @@ export class UserService {
       img,
       channels,
     };
-  }
-
-  async getChannels(userId: number) {
-    const query = await User.findAll({
-      include: {
-        model: ChannelUser,
-        as: "userHasChannels",
-        required: true,
-        attributes: ["channelId"],
-      },
-
-      where: { id: userId },
-    });
-
-    return query
-      .map((el) => {
-        return el.dataValues["userHasChannels"].map(
-          (i) => i.dataValues["channelId"]
-        );
-      })
-      .flat();
   }
 
   async insert(user: UserAttributes) {

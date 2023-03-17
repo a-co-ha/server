@@ -64,6 +64,9 @@ export interface IProgressModel {
   deleteProgress(id: string): Promise<object>;
   percentageProgress(id: string): Promise<object>;
 }
+export interface userHasChannels extends UserAttributes {
+  channels: ChannelAttributes[];
+}
 
 export interface UserAttributes {
   id?: number;
