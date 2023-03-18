@@ -7,7 +7,8 @@ import { User } from "./user";
 export class ChannelUser extends Model<Channel_UserAttributes> {
   public readonly id!: number;
   public userId: number;
-  public userName: string;
+  // 유저 네임
+  public name: string;
   public channelId: number;
   public channelName: string;
   public static associations: {
@@ -23,7 +24,7 @@ ChannelUser.init(
       allowNull: false,
       field: "user_id",
     },
-    userName: {
+    name: {
       type: DataTypes.STRING(45),
       allowNull: false,
       field: "user_name",
@@ -35,7 +36,7 @@ ChannelUser.init(
       field: "channel_id",
     },
     channelName: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(45),
       allowNull: false,
       field: "channel_name",
     },

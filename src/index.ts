@@ -19,7 +19,13 @@ import {
 } from "./routers";
 import { endPoint } from "./constants";
 
-import { decode, errorHandler, loginRequired, wrap } from "./middlewares";
+import {
+  decode,
+  DtoValidatorMiddleware,
+  errorHandler,
+  loginRequired,
+  wrap,
+} from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -27,6 +33,7 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
+import { ChannelDto } from "./dto/channelDto";
 
 class AppServer {
   app: express.Application;
@@ -79,7 +86,12 @@ class AppServer {
     this.app.get(endPoint.index, indexRouter);
     this.app.use(endPoint.oauth, oauthRouter);
     this.app.use(endPoint.user, loginRequired, userRouter);
-    this.app.use(endPoint.channel, loginRequired, channelRouter);
+    this.app.use(
+      endPoint.channel,
+      loginRequired,
+      DtoValidatorMiddleware(ChannelDto),
+      channelRouter
+    );
     this.app.use(endPoint.page, postRouter);
     this.app.use(endPoint.progress, progressRouter);
     this.app.use(endPoint.github, githubRouter);

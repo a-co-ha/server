@@ -8,6 +8,7 @@ export const DtoValidatorMiddleware = (
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const dto = plainToInstance(type, req.body);
+
     validateOrReject(dto, { skipMissingProperties })
       .then(() => {
         req.body = dto;

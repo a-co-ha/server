@@ -1,8 +1,7 @@
-import { githubLogin } from "./../middlewares/login";
-import { UserAttributes } from "./../interface/index";
+import { errorResponse } from "./../utils/errorResponse";
 import { userService } from "./../services/userService";
-import { AsyncRequestHandler } from "../types";
-import { Octokit, App } from "octokit";
+import { AsyncRequestHandler, ErrorType } from "../types";
+
 interface IUserController {
   login: AsyncRequestHandler;
   get: AsyncRequestHandler;
@@ -10,10 +9,8 @@ interface IUserController {
 export class UserController implements IUserController {
   login: AsyncRequestHandler = async (req, res) => {
     const isAuthenticated = !!req.user;
-    if (isAuthenticated) {
-      console.log(`user is authenticated, session is ${req.session.id}`);
-    } else {
-      console.log("unknown user");
+    if (!isAuthenticated) {
+      errorResponse(res, ErrorType.BADREQUEST, " unknown user");
     }
 
     req.session.userId = req.user.id;

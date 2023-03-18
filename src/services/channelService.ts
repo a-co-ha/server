@@ -9,12 +9,12 @@ export class ChannelService implements IChannelModel {
   async invite(info: channelJoinInterface): Promise<any> {
     const { admin, channelName, userId, name } = info;
 
-    await Channel.create({ admin, channelName });
+    await Channel.create({ userId: admin as number, channelName });
 
     const channel = await this.get(info);
     await ChannelUser.create({
       userId,
-      userName: name,
+      name,
       channelId: channel.id,
       channelName,
     });
@@ -25,7 +25,7 @@ export class ChannelService implements IChannelModel {
   async get(info: IChannelInfo): Promise<any> {
     const { admin, channelName } = info;
     return await Channel.findOne({
-      where: { admin, channelName },
+      where: { userId: admin, channelName },
       raw: true,
     });
   }
@@ -37,7 +37,7 @@ export class ChannelService implements IChannelModel {
       name,
       userId,
     } = joinInfo;
-    const admin = decode(adminCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
+    const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
     const channelInfo = await this.get({ admin, channelName });
@@ -45,7 +45,7 @@ export class ChannelService implements IChannelModel {
     if (channelName === channelInfo.channelName) {
       await ChannelUser.create({
         userId,
-        userName: name,
+        name,
         channelId: channelInfo.id,
         channelName,
       });

@@ -1,14 +1,18 @@
 import { UserAttributes } from "./userInterface";
 
-export interface ChannelAttributes {
-  id: number;
-  admin: string;
+export interface ChannelAttributes extends UserAttributes {
+  id?: number;
+  // admin: string;
   channelName: string;
-  channelImg: string;
+  channelImg?: string;
+}
+export interface Channel_UserAttributes extends ChannelAttributes {
+  id?: number;
+  channelId: number;
 }
 
 export interface IChannelInfo {
-  admin: string; // userId
+  admin: string | number; // userId
   channelName: string;
 }
 export interface IChannel extends IChannelInfo {
@@ -17,12 +21,6 @@ export interface IChannel extends IChannelInfo {
 export interface IChannelModel {
   invite(info: IChannelInfo): Promise<void>;
   join(channelJoinInfo: channelJoinInterface): Promise<any>;
-}
-export interface Channel_UserAttributes {
-  userId: number;
-  userName: string;
-  channelId: number;
-  channelName: string;
 }
 export interface userHasChannels extends UserAttributes {
   channels: ChannelAttributes[];

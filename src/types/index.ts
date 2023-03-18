@@ -6,4 +6,9 @@ export type AsyncRequestHandler = (
   next?: NextFunction
 ) => Promise<any>;
 
-export type ErrorType = "FORBIDDEN" | "NOTFOUND" | "SERVERERROR" | "BADREQUEST";
+export enum ErrorType {
+  FORBIDDEN,
+  NOTFOUND,
+  BADREQUEST,
+  SERVERERROR,
+}
