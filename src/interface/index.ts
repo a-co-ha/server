@@ -1,4 +1,3 @@
-import { channelJoinInterface } from "./../controllers/channelController";
 export interface block {
   blockId?: string;
   tag: string;
@@ -64,23 +63,7 @@ export interface IProgressModel {
   deleteProgress(id: string): Promise<object>;
   percentageProgress(id: string): Promise<object>;
 }
-export interface userHasChannels extends UserAttributes {
-  channels: ChannelAttributes[];
-}
 
-export interface UserAttributes {
-  id?: number;
-  name: string;
-  githubID: string;
-  githubURL: string;
-  img: string;
-}
-export interface Channel_UserAttributes {
-  userId: number;
-  userName: string;
-  channelId: number;
-  channelName: string;
-}
 export interface MessageAttributes {
   id?: string;
   name: string;
@@ -91,25 +74,6 @@ export interface MessageAttributes {
   createdAt?: Date;
   updatedAt?: Date;
 }
-export interface ChannelAttributes {
-  id: number;
-  admin: string;
-  channelName: string;
-  channelImg: string;
-}
-export interface IUserModel {
-  save(user: UserAttributes): Promise<any>;
-  get(user: UserAttributes): Promise<any>;
-}
 
-export interface IChannelInfo {
-  admin: string; // userId
-  channelName: string;
-}
-export interface IChannel extends IChannelInfo {
-  members: UserAttributes[];
-}
-export interface IChannelModel {
-  invite(info: IChannelInfo): Promise<void>;
-  join(channelJoinInterface: channelJoinInterface): Promise<any>;
-}
+export * from "./channelInterface";
+export * from "./userInterface";

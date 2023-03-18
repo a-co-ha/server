@@ -59,7 +59,6 @@ Channel.hasMany(ChannelUser, {
   as: "channelHasManyUsers",
 });
 User.hasMany(ChannelUser, {
-  sourceKey: "id",
   foreignKey: "user_id",
   as: "userHasChannels",
 });

@@ -24,14 +24,14 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { id },
-      attributes: ["id", "githubID", "githubURL", "img", "name"],
+      where: { userId: id },
+      attributes: ["user_id", "githubID", "githubURL", "img", "name"],
     });
 
     if (query.length <= 0) {
       return false;
     }
-    const [{ id: userId, githubID, githubURL, img, name, ...rest }] = query.map(
+    const [{ userId, githubID, githubURL, img, name, ...rest }] = query.map(
       (el) => el.dataValues
     );
     const channels: ChannelAttributes[] = rest["userHasChannels"].map(
@@ -39,7 +39,7 @@ export class UserService {
     );
 
     return {
-      id: userId,
+      userId,
       name,
       githubID,
       githubURL,

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
+import { UserAttributes } from "../interface";
 export async function loginRequired(
   req: Request,
   res: Response,
@@ -34,12 +35,12 @@ export async function loginRequired(
   }
 }
 
-export async function decode(userToken: string) {
+export async function decode(userToken: string): Promise<UserAttributes> {
   const jwtDecoded = jwt.verify(userToken, jwtSecret);
-  const userId = (<{ id: number }>jwtDecoded).id;
+  const userId = (<{ userId: number }>jwtDecoded).userId;
   const name = (<{ name: string }>jwtDecoded).name;
-  const githubID = (<{ github_id: string }>jwtDecoded).github_id;
-  const githubURL = (<{ github_url: string }>jwtDecoded).github_url;
+  const githubID = (<{ githubId: string }>jwtDecoded).githubId;
+  const githubURL = (<{ githubUrl: string }>jwtDecoded).githubUrl;
   const img = (<{ img: string }>jwtDecoded).img;
 
   return { userId, name, githubID, githubURL, img };

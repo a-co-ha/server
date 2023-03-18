@@ -1,17 +1,14 @@
-import { UserAttributes } from "./../interface/index";
+import { channelJoinInterface, UserAttributes } from "./../interface/index";
 import { IChannelModel } from "../interface/index";
-
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
 import { Channel } from "../model/channel";
 import { ChannelUser } from "../model/channelUser";
-import { User } from "../model/user";
-import { ifError } from "assert";
-import { channelJoinInterface } from "../controllers";
 
 export class ChannelService implements IChannelModel {
   async invite(info: channelJoinInterface): Promise<any> {
     const { admin, channelName, userId, name } = info;
+
     await Channel.create({ admin, channelName });
 
     const channel = await this.get(info);

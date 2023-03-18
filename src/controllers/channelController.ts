@@ -1,6 +1,6 @@
 import { channelService } from "./../services";
 import { AsyncRequestHandler } from "../types";
-import { IChannelInfo } from "../interface";
+import { channelJoinInterface, IChannelInfo } from "../interface";
 import { validationResult } from "express-validator";
 interface IChannelController {
   create: AsyncRequestHandler;
@@ -33,11 +33,6 @@ export class ChannelController implements IChannelController {
     const result = await channelService.join(joinInfo);
     res.json(result);
   };
-}
-export interface channelJoinInterface extends IChannelInfo {
-  //userId, channelName
-  userId: number;
-  name: string;
 }
 
 const channelController = new ChannelController();

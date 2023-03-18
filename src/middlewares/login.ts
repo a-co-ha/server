@@ -33,7 +33,13 @@ export const githubLogin = async (req, res, next) => {
         avatar_url: img,
       } = data;
 
-      const user: UserAttributes = { id, name, githubID, githubURL, img };
+      const user: UserAttributes = {
+        userId: id,
+        name,
+        githubID,
+        githubURL,
+        img,
+      };
 
       const isGuest = await userService.get(id);
 
