@@ -141,6 +141,7 @@
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
+    "@yarnpkg/pnpify": "^4.0.0-rc.40",
     "class-transformer": "^0.5.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

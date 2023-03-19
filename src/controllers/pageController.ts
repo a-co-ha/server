@@ -24,11 +24,15 @@ export class PageController implements IPageController {
       type === "progress-page" ||
       type === "normal-page"
     ) {
-      const findPost = await pageService.findPage(channelId, id);
+      const findPost = await pageService.findPage(channelId, id, type);
       res.json(findPost);
     }
     if (type === "template-progress" || type === "template-normal") {
-      const findProgress = await templateService.findTemplate(channelId, id);
+      const findProgress = await templateService.findTemplate(
+        channelId,
+        id,
+        type
+      );
       res.json(findProgress);
     }
   };

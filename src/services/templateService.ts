@@ -1,7 +1,6 @@
 import { pageModel, templateModel, templateModelType } from "../model";
 import { pageService } from "./pageService";
 import { ITemplateModel, template, pageStatusUpdate } from "../interface";
-import { async } from "../middlewares/loginRequired";
 
 class TemplateService implements ITemplateModel {
   private templateModel: templateModelType;
@@ -25,8 +24,12 @@ class TemplateService implements ITemplateModel {
     return await templateModel.create({ channelId, pages, type });
   }
 
-  async findTemplate(channelId: number, id: string): Promise<template> {
-    const progress = templateModel.findOne({ _id: id }).populate({
+  async findTemplate(
+    channelId: number,
+    id: string,
+    type?: string
+  ): Promise<template> {
+    const progress = templateModel.findOne({ _id: id, type }).populate({
       path: "pages",
       select: "pageName label progressStatus type",
     });
@@ -37,9 +40,10 @@ class TemplateService implements ITemplateModel {
     channelId: number,
     id: string,
     blockId: string,
+    type: string,
     progressStatus?: string
   ): Promise<template> {
-    const template = await this.findTemplate(channelId, id);
+    const template = await this.findTemplate(channelId, id, type);
     let pageType = "";
     const templateType = template.type;
     if (templateType === "template-progress") {
@@ -56,7 +60,7 @@ class TemplateService implements ITemplateModel {
       return this.templateModel
         .findByIdAndUpdate({ _id: id }, { $push: { pages } })
         .then(() => {
-          return this.findTemplate(channelId, id);
+          return this.findTemplate(channelId, id, type);
         });
     }
   }
@@ -64,7 +68,9 @@ class TemplateService implements ITemplateModel {
   async updateTemplateProgress(
     channelId: number,
     id: string,
-    pages: [pageStatusUpdate]
+    pageName: string,
+    pages: [pageStatusUpdate],
+    type: string
   ): Promise<template> {
     pages.map((page) => {
       if (page.progressStatus) {
@@ -72,9 +78,9 @@ class TemplateService implements ITemplateModel {
       }
     });
     return await this.templateModel
-      .findByIdAndUpdate({ _id: id }, { pages })
+      .findByIdAndUpdate({ _id: id }, { pageName, pages })
       .then(() => {
-        return this.findTemplate(channelId, id);
+        return this.findTemplate(channelId, id, type);
       });
   }
 

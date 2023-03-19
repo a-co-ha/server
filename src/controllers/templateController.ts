@@ -55,12 +55,14 @@ export class TemplateController implements ITemplateController {
     const channelId = parseInt(channel);
     const id = req.params.id;
     const type = req.query.type as string;
+    console.log(type);
     const { progressStatus, blockId } = req.body;
     if (type === "template-progress") {
       const addTemplatePage = await templateService.addTemplatePage(
         channelId,
         id,
         blockId,
+        type,
         progressStatus
       );
       res.json(addTemplatePage);
@@ -69,6 +71,7 @@ export class TemplateController implements ITemplateController {
         channelId,
         id,
         blockId,
+        type,
         progressStatus
       );
       res.json(addTemplatePage);
@@ -86,12 +89,20 @@ export class TemplateController implements ITemplateController {
       const updateProgress = await templateService.updateTemplateProgress(
         channelId,
         id,
-        pages
+        pageName,
+        pages,
+        type
       );
       res.json(updateProgress);
     } else {
       const updateNormalTemplate =
-        await templateNormalService.updateTemplateNormal(channelId, id, pages);
+        await templateNormalService.updateTemplateNormal(
+          channelId,
+          id,
+          pageName,
+          pages,
+          type
+        );
       res.json(updateNormalTemplate);
     }
   };

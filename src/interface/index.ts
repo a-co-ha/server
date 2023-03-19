@@ -15,7 +15,7 @@ export interface page {
 }
 
 export interface IPageModel {
-  findPage(channelId: number, id: string): Promise<page>;
+  findPage(channelId: number, id: string, type?: string): Promise<page>;
   createPage(
     channelId: number,
     blockId: string,
@@ -49,17 +49,20 @@ export interface ITemplateModel {
     blockId: string,
     type: string
   ): Promise<template>;
-  findTemplate(channelId: number, id: string): Promise<template>;
+  findTemplate(channelId: number, id: string, type?: string): Promise<template>;
   addTemplatePage(
     channelId: number,
     id: string,
     blockId: string,
+    type: string,
     progressStatus?: string
   ): Promise<template>;
   updateTemplateProgress(
     channelId: number,
     id: string,
-    pages: [pageStatusUpdate]
+    pageName: string,
+    pages: [pageStatusUpdate],
+    type: string
   ): Promise<template>;
   deleteTemplate(id: string): Promise<object>;
   percentageProgress(id: string): Promise<object>;
@@ -70,17 +73,20 @@ export interface ITemplateNormalModel {
     blockId: string,
     type: string
   ): Promise<template>;
-  findTemplate(channelId: number, id: string): Promise<template>;
+  findTemplate(channelId: number, id: string, type?: string): Promise<template>;
   addTemplatePage(
     channelId: number,
     id: string,
     blockId: string,
+    type: string,
     progressStatus?: string
   ): Promise<template>;
   updateTemplateNormal(
     channelId: number,
     id: string,
-    pages: [pageStatusUpdate]
+    pageName: string,
+    pages: [pageStatusUpdate],
+    type: string
   ): Promise<template>;
 }
 

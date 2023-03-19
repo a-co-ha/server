@@ -6,8 +6,8 @@ class PageService implements IPageModel {
     this.pageModel = pageModel;
   }
 
-  async findPage(channelId: number, id: string): Promise<page> {
-    const page = this.pageModel.findOne({ _id: id });
+  async findPage(channelId: number, id: string, type?: string): Promise<page> {
+    const page = this.pageModel.findOne({ _id: id, type });
     return await page.findOne({ channelId });
   }
 
@@ -35,18 +35,15 @@ class PageService implements IPageModel {
 
   async pushPage(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
-    return await this.pageModel
-      .findOneAndUpdate(
-        { _id: id },
-        {
-          pageName: pageName,
-          label: label,
-          blocks: blocks,
-        }
-      )
-      .then(() => {
-        return this.findPage(channelId, id);
-      });
+    return await this.pageModel.findOneAndUpdate(
+      { _id: id },
+      {
+        pageName: pageName,
+        label: label,
+        blocks: blocks,
+      },
+      { new: true }
+    );
   }
 
   async pageStatusUpdate(id: string, progressStatus: string): Promise<page> {
