@@ -14,15 +14,16 @@ export interface page {
   type?: string;
 }
 
-export interface IPostModel {
-  findPost(channelId: number, id: string): Promise<page>;
-  createPost(
+export interface IPageModel {
+  findPage(channelId: number, id: string): Promise<page>;
+  createPage(
     channelId: number,
     blockId: string,
-    progressStatus?: string
+    progressStatus?: string,
+    type?: string
   ): Promise<page>;
-  pushPost(id: string, page: page): Promise<page>;
-  deletePost(id: string): Promise<object>;
+  pushPage(id: string, page: page): Promise<page>;
+  deletePage(id: string): Promise<object>;
 }
 
 export interface pages {
@@ -31,37 +32,56 @@ export interface pages {
   label: {};
   status?: string;
 }
-export interface progress {
+export interface template {
   channelId: number;
   pageName?: string;
   pages: {};
   type?: string;
 }
-export interface postStatusUpdate {
+export interface pageStatusUpdate {
   _id: string;
   progressStatus?: string;
 }
 
-export interface IProgressModel {
-  createProgress(
+export interface ITemplateModel {
+  createTemplate(
     channelId: number,
     blockId: string,
-    type?: string
-  ): Promise<progress>;
-  findProgress(channelId: number, id: string): Promise<progress>;
-  addProgress(
+    type: string
+  ): Promise<template>;
+  findTemplate(channelId: number, id: string): Promise<template>;
+  addTemplatePage(
     channelId: number,
     id: string,
     blockId: string,
-    progressStatus: string
-  ): Promise<progress>;
-  updateProgress(
+    progressStatus?: string
+  ): Promise<template>;
+  updateTemplateProgress(
     channelId: number,
     id: string,
-    pages: [postStatusUpdate]
-  ): Promise<progress>;
-  deleteProgress(id: string): Promise<object>;
+    pages: [pageStatusUpdate]
+  ): Promise<template>;
+  deleteTemplate(id: string): Promise<object>;
   percentageProgress(id: string): Promise<object>;
+}
+export interface ITemplateNormalModel {
+  createTemplate(
+    channelId: number,
+    blockId: string,
+    type: string
+  ): Promise<template>;
+  findTemplate(channelId: number, id: string): Promise<template>;
+  addTemplatePage(
+    channelId: number,
+    id: string,
+    blockId: string,
+    progressStatus?: string
+  ): Promise<template>;
+  updateTemplateNormal(
+    channelId: number,
+    id: string,
+    pages: [pageStatusUpdate]
+  ): Promise<template>;
 }
 
 export interface UserAttributes {

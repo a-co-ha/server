@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-export interface PostInterface {
+export interface PageInterface {
   channelId: number;
   pageName: string;
   label: string[];
@@ -16,9 +16,10 @@ export interface PostInterface {
   ];
   type: string;
   progressStatus: string;
+  categories: string;
 }
 
-export const PostSchema = new Schema<PostInterface>(
+export const PageSchema = new Schema<PageInterface>(
   {
     channelId: { type: Number, required: true },
     pageName: { type: String, required: false, default: "제목 없음" },
@@ -57,7 +58,11 @@ export const PostSchema = new Schema<PostInterface>(
     },
     progressStatus: {
       type: String,
-      default: "todo",
+      default: "null",
+    },
+    categories: {
+      type: String,
+      default: "page",
     },
   },
   {

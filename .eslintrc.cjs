@@ -39,7 +39,7 @@ module.exports = {
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/promise-function-async": "off",
-    "@typescript-eslint/no-empty-interface":"off"
+    "@typescript-eslint/no-empty-interface": "off",
   },
   root: true,
 };

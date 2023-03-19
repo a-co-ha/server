@@ -1,26 +1,25 @@
 import { Model, model } from "mongoose";
 import { Sequelize } from "sequelize";
 import { config } from "../config";
-import { PostInterface, PostSchema } from "./schema/postSchema";
-import { ProgressInterface, ProgressSchema } from "./schema/progressSchema";
-export * from "./schema/progressSchema";
+import { PageInterface, PageSchema } from "./schema/pageSchema";
+import { TemplateInterface, TemplateSchema } from "./schema/templateSchema";
 
 interface ModelIdentifierInterface {
-  post: string;
-  progress: string;
+  page: string;
+  template: string;
 }
 export const modelIdentifier: ModelIdentifierInterface = {
-  post: "post",
-  progress: "progress",
+  page: "page",
+  template: "template",
 };
 
-export const postModel = model<PostInterface>(modelIdentifier.post, PostSchema);
-export const progressModel = model<ProgressInterface>(
-  modelIdentifier.progress,
-  ProgressSchema
+export const pageModel = model<PageInterface>(modelIdentifier.page, PageSchema);
+export const templateModel = model<TemplateInterface>(
+  modelIdentifier.template,
+  TemplateSchema
 );
-export type postModelType = Model<PostInterface>;
-export type progressModelType = Model<ProgressInterface>;
+export type pageModelType = Model<PageInterface>;
+export type templateModelType = Model<TemplateInterface>;
 
 export const sequelize = new Sequelize(
   config.development.database,

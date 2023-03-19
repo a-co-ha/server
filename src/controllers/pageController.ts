@@ -1,36 +1,47 @@
-import { postService } from "../services";
+import { pageService, templateService } from "../services";
 import { block, page } from "../interface";
 import { AsyncRequestHandler } from "../types";
 import { deleteImage } from "../middlewares";
 
-interface IPostController {
-  createPost: AsyncRequestHandler;
-  pushPost: AsyncRequestHandler;
-  findPost: AsyncRequestHandler;
-  deletePost: AsyncRequestHandler;
+interface IPageController {
+  createPage: AsyncRequestHandler;
+  pushPage: AsyncRequestHandler;
+  findPage: AsyncRequestHandler;
+  deletePage: AsyncRequestHandler;
   findPageList: AsyncRequestHandler;
   imageDelete: AsyncRequestHandler;
   imageUpload: AsyncRequestHandler;
 }
 
-export class PostController implements IPostController {
-  findPost: AsyncRequestHandler = async (req, res) => {
+export class PageController implements IPageController {
+  findPage: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const findPost = await postService.findPost(channelId, id);
-    res.json(findPost);
+    const type = req.query.type;
+    if (
+      type === "normal" ||
+      type === "progress-page" ||
+      type === "normal-page"
+    ) {
+      const findPost = await pageService.findPage(channelId, id);
+      res.json(findPost);
+    }
+    if (type === "template-progress" || type === "template-normal") {
+      const findProgress = await templateService.findTemplate(channelId, id);
+      res.json(findProgress);
+    }
   };
 
-  createPost: AsyncRequestHandler = async (req, res) => {
+  createPage: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
     const blockId = req.body.blockId;
-    const createPost = await postService.createPost(channelId, blockId);
-    res.json(createPost);
+    const createPage = await pageService.createPage(channelId, blockId);
+    res.json(createPage);
   };
 
-  pushPost: AsyncRequestHandler = async (req, res) => {
+  pushPage: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
@@ -42,15 +53,15 @@ export class PostController implements IPostController {
       blocks: blocks,
     };
 
-    const pushPost = await postService.pushPost(id, page);
+    const pushPage = await pageService.pushPage(id, page);
 
-    res.json(pushPost);
+    res.json(pushPage);
   };
 
-  deletePost: AsyncRequestHandler = async (req, res) => {
+  deletePage: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const deletePost = await postService.deletePost(id);
-    res.json(deletePost);
+    const deletePage = await pageService.deletePage(id);
+    res.json(deletePage);
   };
 
   imageUpload: AsyncRequestHandler = async (req, res) => {
@@ -61,6 +72,7 @@ export class PostController implements IPostController {
       // _id: id,
       // channelId: channelId,
       filePath: req.file.location,
+      // .location,
     };
 
     res.json(file);
@@ -76,9 +88,9 @@ export class PostController implements IPostController {
   findPageList: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const findPageList = await postService.findPageList(channelId);
+    const findPageList = await pageService.findPageList(channelId);
     res.json(findPageList);
   };
 }
 
-export const postController = new PostController();
+export const pageController = new PageController();

@@ -13,10 +13,11 @@ import {
   indexRouter,
   oauthRouter,
   channelRouter,
-  postRouter,
+  pageRouter,
   socket,
-  progressRouter,
+  templateRouter,
   userRouter,
+  listRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import passport from "passport";
@@ -77,8 +78,9 @@ app.get(endPoint.index, indexRouter);
 app.use(endPoint.oauth, oauthRouter);
 app.use(endPoint.user, loginRequired, userRouter);
 app.use(endPoint.channel, loginRequired, channelRouter);
-app.use(endPoint.page, postRouter);
-app.use(endPoint.progress, progressRouter);
+app.use(endPoint.page, pageRouter);
+app.use(endPoint.template, templateRouter);
+app.use(endPoint.list, listRouter);
 app.use(errorHandler);
 
 io.use(wrap(sessionMiddleware));

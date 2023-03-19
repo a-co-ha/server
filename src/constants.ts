@@ -5,7 +5,8 @@ interface EndPointInterface {
   user: string;
   guest: string;
   page: string;
-  progress: string;
+  template: string;
+  list: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -15,5 +16,6 @@ export const endPoint: EndPointInterface = {
   user: "/api/user",
   guest: "/api/guest",
   page: "/api/page",
-  progress: "/api/progress",
+  template: "/api/template",
+  list: "/api/list",
 };
