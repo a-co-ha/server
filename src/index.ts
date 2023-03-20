@@ -1,6 +1,6 @@
 import { socketMiddleware } from "./middlewares/io";
 import crypto from "crypto";
-import redisCache from "./utils/redisCache";
+// import redisCache from "./utils/redisCache";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -20,7 +20,6 @@ import {
   listRouter,
 } from "./routers";
 import { endPoint } from "./constants";
-import passport from "passport";
 import { decode, errorHandler, loginRequired, wrap } from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
@@ -28,7 +27,7 @@ import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
-import { redisClient, subClient } from "./utils/redisClient";
+// import { redisClient, subClient } from "./utils/redisClient";
 // const WORKERS_COUNT = require("os").cpus().length;
 // const WORKERS_COUNT = 4;
 
@@ -52,9 +51,9 @@ const io = new Server(httpServer, {
   cors: {},
 });
 
-Promise.all([redisClient, subClient]).then(() => {
-  io.adapter(createAdapter(redisClient, subClient));
-});
+// Promise.all([redisClient, subClient]).then(() => {
+//   io.adapter(createAdapter(redisClient, subClient));
+// });
 
 const sessionMiddleware = session(sessionConfig);
 
@@ -83,11 +82,11 @@ app.use(endPoint.template, templateRouter);
 app.use(endPoint.list, listRouter);
 app.use(errorHandler);
 
-io.use(wrap(sessionMiddleware));
+// io.use(wrap(sessionMiddleware));
 
-io.use(socketMiddleware);
+// io.use(socketMiddleware);
 
-socket(io);
+// socket(io);
 
 httpServer.listen(port, async () => {
   try {

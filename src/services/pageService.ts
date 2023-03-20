@@ -1,5 +1,6 @@
 import { pageModel, pageModelType, templateModel } from "../model";
 import { IPageModel, block, page } from "../interface";
+import { listService } from "./listService";
 class PageService implements IPageModel {
   private pageModel: pageModelType;
   constructor(pageModel: pageModelType) {
@@ -29,6 +30,9 @@ class PageService implements IPageModel {
       type,
       progressStatus,
     });
+    if (!type) {
+      const createList = await listService.createListPage(channelId, page);
+    }
 
     return page;
   }

@@ -90,6 +90,10 @@ export interface ITemplateNormalModel {
   ): Promise<template>;
 }
 
+export interface IListModel {
+  createListPage(channelId: number, page: page): Promise<any>;
+}
+
 export interface UserAttributes {
   id?: number;
   name: string;
