@@ -1,3 +1,4 @@
+import { ListInterface } from "../model/schema/listSchema";
 export interface block {
   blockId?: string;
   tag: string;
@@ -12,6 +13,7 @@ export interface page {
   label?: {};
   blocks: {};
   type?: string;
+  categories?: string;
 }
 
 export interface IPageModel {
@@ -23,7 +25,7 @@ export interface IPageModel {
     type?: string
   ): Promise<page>;
   pushPage(id: string, page: page): Promise<page>;
-  deletePage(id: string): Promise<object>;
+  deletePage(id: string, channelId?: number): Promise<object>;
 }
 
 export interface pages {
@@ -41,6 +43,11 @@ export interface template {
 export interface pageStatusUpdate {
   _id: string;
   progressStatus?: string;
+}
+
+export interface list {
+  channelId: number;
+  ListPage: page[];
 }
 
 export interface ITemplateModel {
@@ -64,7 +71,7 @@ export interface ITemplateModel {
     pages: [pageStatusUpdate],
     type: string
   ): Promise<template>;
-  deleteTemplate(id: string): Promise<object>;
+  deleteTemplate(id: string, channelId?: number): Promise<object>;
   percentageProgress(id: string): Promise<object>;
 }
 export interface ITemplateNormalModel {
@@ -91,7 +98,15 @@ export interface ITemplateNormalModel {
 }
 
 export interface IListModel {
-  createListPage(channelId: number, page: page): Promise<any>;
+  createList(channelId: number): Promise<ListInterface>;
+  createListPage(channelId: number, page: page): Promise<ListInterface>;
+  createListTemplate(
+    channelId: number,
+    template: template
+  ): Promise<ListInterface>;
+  findList(channelId: number): Promise<ListInterface>;
+  updateList(channelId: number, listPage: list): Promise<ListInterface>;
+  deleteListPage(channelId: number, id: string): Promise<ListInterface>;
 }
 
 export interface UserAttributes {

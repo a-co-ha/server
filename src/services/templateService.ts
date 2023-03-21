@@ -88,8 +88,10 @@ class TemplateService implements ITemplateModel {
       });
   }
 
-  async deleteTemplate(id: string): Promise<object> {
-    return await templateModel.deleteOne({ _id: id });
+  async deleteTemplate(id: string, channelId?: number): Promise<object> {
+    const deleteTemplate = await templateModel.deleteOne({ _id: id });
+    await listService.deleteListTemplate(channelId, id);
+    return deleteTemplate;
   }
 
   async percentageProgress(id: string): Promise<object> {
@@ -131,10 +133,6 @@ class TemplateService implements ITemplateModel {
     ]);
     return findProgress;
   }
-
-  //todo pageName 변경 api 만들기
-
-  // async updateTemplate
 }
 
 export const templateService = new TemplateService(templateModel);

@@ -5,3 +5,5 @@ export const listRouter = Router();
 
 listRouter.post("/", asyncHandler(listController.createList));
 listRouter.get("/", asyncHandler(listController.findList));
+listRouter.patch("/", asyncHandler(listController.updateList));
+listRouter.delete("/:id", asyncHandler(listController.deleteListOne));

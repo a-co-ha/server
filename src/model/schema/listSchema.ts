@@ -1,13 +1,20 @@
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
+import { template } from "../../interface/index";
 
 const Schema = mongoose.Schema;
 
+// interface listPage {
+//   page: PageInterface;
+//   template: TemplateInterface;
+// }
 export interface ListInterface {
   channelId: number;
-  ListPage: PageInterface[];
-  ListTemplate: TemplateInterface[];
+  ListPage: [
+    { page: PageInterface; _id: string },
+    { template: TemplateInterface; _id: string }
+  ];
 }
 
 export const ListSchema = new Schema<ListInterface>({
@@ -17,9 +24,11 @@ export const ListSchema = new Schema<ListInterface>({
   },
   ListPage: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "page",
+      page: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "page",
+      },
+      template: { type: mongoose.Schema.Types.ObjectId, ref: "template" },
     },
   ],
-  ListTemplate: [{ type: mongoose.Schema.Types.ObjectId, ref: "template" }],
 });

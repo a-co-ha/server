@@ -57,8 +57,11 @@ class PageService implements IPageModel {
     );
   }
 
-  async deletePage(id: string): Promise<object> {
-    return await this.pageModel.deleteOne({ _id: id });
+  async deletePage(id: string, channelId?: number): Promise<object> {
+    const deletePage = await this.pageModel.deleteOne({ _id: id });
+    await listService.deleteListPage(channelId, id);
+
+    return deletePage;
   }
 
   async findPageList(channelId: number): Promise<page[]> {
@@ -73,23 +76,7 @@ class PageService implements IPageModel {
         },
       },
     ]);
-    // const findProgress = await templateModel.aggregate([
-    //   {
-    //     $match: {
-    //       channelId: channelId,
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$_id",
-    //       pageName: { $last: "$pageName" },
-    //       type: { $last: "$type" },
-    //       categories: { $last: "$categories" },
-    //     },
-    //   },
-    // ]);
 
-    // const findList = { List: [...findPage, ...findProgress] };
     return findPage;
   }
 }
