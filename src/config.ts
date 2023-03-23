@@ -28,6 +28,8 @@ export const REDIS_TIME_TO_LIVE = parseInt(
 );
 export const SESSION_SECRET = process.env.SESSION_SECRET;
 export const GITHUBAUTH = process.env.GITHUBAUTH;
+export const GITHUBACCESSURL = process.env.GITHUBACCESSURL;
+export const GITHUBUSERURL = process.env.GITHUBUSERURL;
 export const config = {
   development: {
     username: mysqlUser,

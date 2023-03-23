@@ -5,10 +5,13 @@ import { setUserToken } from "./../utils/jwt";
 import { UserAttributes } from "../interface";
 import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
+import { redisCli } from "../utils/redisClient";
 
 export class UserService {
-  async login(user: any) {
-    return setUserToken(user);
+  async login(user: UserAttributes) {
+    const tokens = setUserToken(user);
+    redisCli.set(user.userId, tokens.refreshToken );
+    return tokens;
   }
 
   async get(id: number): Promise<userHasChannels | boolean> {

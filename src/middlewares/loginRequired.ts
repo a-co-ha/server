@@ -21,6 +21,7 @@ export async function loginRequired(
 
   try {
     const decoded = await decode(userToken);
+
     req.body.userId = decoded.userId;
     req.body.name = decoded.name;
     req.body.githubID = decoded.githubID;
@@ -28,7 +29,10 @@ export async function loginRequired(
     req.body.img = decoded.img;
 
     next();
+
+    
   } catch (error) {
+    
     errorResponse(res, ErrorType.FORBIDDEN, "정상적인 토큰이 아닙니다.");
 
     return;
@@ -37,6 +41,7 @@ export async function loginRequired(
 
 export async function decode(userToken: string): Promise<UserAttributes> {
   const jwtDecoded = jwt.verify(userToken, jwtSecret);
+  
   const userId = (<{ userId: number }>jwtDecoded).userId;
   const name = (<{ name: string }>jwtDecoded).name;
   const githubID = (<{ githubID: string }>jwtDecoded).githubID;
@@ -44,4 +49,12 @@ export async function decode(userToken: string): Promise<UserAttributes> {
   const img = (<{ img: string }>jwtDecoded).img;
 
   return { userId, name, githubID, githubURL, img };
+}
+
+export const isExpire = async (token) => {
+
+}
+export const refreshVerify = async (refreshTocken) => {
+
+
 }

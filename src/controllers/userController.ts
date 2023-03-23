@@ -29,7 +29,7 @@ export class UserController implements IUserController {
 
   get: AsyncRequestHandler = async (req, res) => {
     const { userId } = req.body;
-    res.json(await userService.get(userId));
+    res.status(200).json(await userService.get(userId));
   };
 }
 
