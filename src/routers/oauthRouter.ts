@@ -1,7 +1,6 @@
 import { githubLogin } from "./../middlewares/login";
 import { oauthClient, oauthSecret, oauthRedirect } from "../config";
 import express from "express";
-import passport, { use } from "passport";
 import { userController } from "../controllers";
 import { asyncHandler } from "../utils";
 import axios from "axios";

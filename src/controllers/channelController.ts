@@ -2,6 +2,8 @@ import { channelService } from "./../services";
 import { AsyncRequestHandler } from "../types";
 import { IChannelInfo } from "../interface";
 import { validationResult } from "express-validator";
+import { listService } from "../services/listService";
+import { pageService } from "../services/pageService";
 interface IChannelController {
   create: AsyncRequestHandler;
   join: AsyncRequestHandler;
@@ -16,7 +18,11 @@ export class ChannelController implements IChannelController {
       admin: req.body.name,
       channelName: req.body.channelName,
     };
+    const blockId = req.body.blockId;
     const result = await channelService.invite(channelInfo);
+    const channelId = result.dataValues.id;
+    await listService.createList(channelId);
+    await pageService.createPage(channelId, blockId);
     res.json(result);
   };
   join: AsyncRequestHandler = async (req, res) => {
