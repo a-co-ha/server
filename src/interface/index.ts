@@ -97,8 +97,6 @@ export interface ITemplateNormalModel {
   ): Promise<template>;
 }
 
-<<<<<<< HEAD
-=======
 export interface IListModel {
   createList(channelId: number): Promise<ListInterface>;
   createListPage(channelId: number, page: page): Promise<ListInterface>;
@@ -122,7 +120,7 @@ export interface Channel_UserAttributes {
   userId: string;
   channelId: number;
 }
->>>>>>> 7d9b17da6a55be9487fcfcfd35457bb8eb0430b3
+
 export interface MessageAttributes {
   id?: string;
   name: string;
