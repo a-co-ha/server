@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-// import { redisCli, redisClient } from "./utils/redisClient";
+import { redisCli, redisClient } from "./utils/redisClient";
 import RedisStore from "connect-redis";
 
 const envFound = dotenv.config();
@@ -40,11 +40,11 @@ export const config = {
 };
 
 export const sessionConfig = {
-  // store: new RedisStore({
-  //   client: redisCli,
-  //   ttl: REDIS_TIME_TO_LIVE,
-  //   prefix: "login:",
-  // }),
+  store: new RedisStore({
+    client: redisCli,
+    ttl: REDIS_TIME_TO_LIVE,
+    prefix: "login:",
+  }),
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
