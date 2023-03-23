@@ -4,7 +4,7 @@ import { ChannelUser } from "./channelUser";
 import { sequelize } from "./index";
 
 export class User extends Model<UserAttributes> {
-  public readonly id!: number;
+  public userId!: number;
   public name!: string;
   public githubID!: string;
   public githubURL!: string;
@@ -17,13 +17,13 @@ export class User extends Model<UserAttributes> {
 
 User.init(
   {
-    id: {
+    userId: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
-      get() {
-        return this.getDataValue("id");
-      },
+      field: "user_id",
+      // get() {
+      //   return this.getDataValue("userId");
+      // },
     },
     name: {
       type: DataTypes.STRING(45),

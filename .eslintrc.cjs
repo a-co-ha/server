@@ -19,7 +19,7 @@ module.exports = {
   },
   rules: {
     "@typescript-eslint/await-thenable": "error",
-    "@typescript-eslint/promise-function-async": "error",
+
     //any 관련
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-member-access": "off",

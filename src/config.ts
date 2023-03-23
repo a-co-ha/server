@@ -19,7 +19,6 @@ export const inviteApi = process.env.INVITE_URL;
 export const s3keyId = process.env.S3KEYID;
 export const s3accesskey = process.env.S3ACCESSKEY;
 export const s3region = process.env.REGION;
-
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
@@ -28,6 +27,9 @@ export const REDIS_TIME_TO_LIVE = parseInt(
   process.env.REDIS_TIME_TO_LIVE ?? "300"
 );
 export const SESSION_SECRET = process.env.SESSION_SECRET;
+export const GITHUBAUTH = process.env.GITHUBAUTH;
+export const GITHUBACCESSURL = process.env.GITHUBACCESSURL;
+export const GITHUBUSERURL = process.env.GITHUBUSERURL;
 export const config = {
   development: {
     username: mysqlUser,
@@ -45,7 +47,14 @@ export const sessionConfig = {
     ttl: REDIS_TIME_TO_LIVE,
     prefix: "login:",
   }),
+  cookie: {
+    //세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
+    httpOnly: true, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함
+    Secure: true,
+    sameSite : "Lax"
+  },
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: true, // 세션에 저장할 내역이 없더라도 처음부터 세션을 생성할지 설정
+  secure: true, // https 환경에서만 session 정보를 주고받도록처리
 };

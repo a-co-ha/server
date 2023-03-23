@@ -16,7 +16,7 @@ import { sequelize } from "./index";
 
 export class Channel extends Model<ChannelAttributes> {
   public readonly id!: number;
-  public admin!: string;
+  public userId!: number;
   public channelName!: string;
   public channelImg!: string;
 
@@ -30,13 +30,14 @@ Channel.init(
     id: {
       type: DataTypes.NUMBER,
       primaryKey: true,
-      get() {
-        return this.getDataValue("id");
-      },
+      // get() {
+      //   return this.getDataValue("id");
+      // },
     },
-    admin: {
-      type: DataTypes.STRING(45),
+    userId: {
+      type: DataTypes.NUMBER,
       allowNull: false,
+      field: "admin",
     },
     channelName: {
       type: DataTypes.STRING(45),

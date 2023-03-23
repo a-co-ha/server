@@ -1,19 +1,20 @@
+import { ChannelAttributes, userHasChannels } from "./../interface/index";
 import { DataTypes } from "sequelize";
 import { Channel } from "./../model/channel";
 import { setUserToken } from "./../utils/jwt";
 import { UserAttributes } from "../interface";
 import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
-import { escapeId } from "mysql2";
-import e from "express";
+import {  redisClient } from "../utils/redisClient";
+
 export class UserService {
-  async login(user: any) {
-    return setUserToken(user);
+  async login(user: UserAttributes) {
+    const tokens = setUserToken(user);
+    await redisClient.set(`token:${user.userId}`, tokens.refreshToken );
+    return tokens;
   }
 
-  async get(user: UserAttributes) {
-    const { name, githubID, githubURL, img } = user;
-
+  async get(id: number): Promise<userHasChannels | boolean> {
     const query = await User.findAll({
       include: {
         model: ChannelUser,
@@ -26,43 +27,34 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { name, githubID, githubURL, img },
-      attributes: ["github_id", "github_url", "img", "name"],
+      where: { userId: id },
+      attributes: ["user_id", "githubID", "githubURL", "img", "name"],
     });
-    const userInfo = query.map((el) => el.dataValues);
 
-    for (const channel of userInfo) {
-      channel["userHasChannels"].map((i) => {
-        return i.dataValues.channel.dataValues;
-      });
+    if (query.length <= 0) {
+      return false;
     }
-    return userInfo[0];
-  }
+    const [{ userId, githubID, githubURL, img, name, ...rest }] = query.map(
+      (el) => el.dataValues
+    );
+    const channels: ChannelAttributes[] = rest["userHasChannels"].map(
+      (i) => i.dataValues.channel.dataValues
+    );
 
-  async getChannels(user: UserAttributes) {
-    const { name, githubID, githubURL, img } = user;
-
-    const query = await User.findAll({
-      include: {
-        model: ChannelUser,
-        as: "userHasChannels",
-        required: true,
-        attributes: ["channelId"],
-      },
-
-      where: { name, githubID, githubURL, img },
-    });
-
-    return query
-      .map((el) => {
-        return el.dataValues["userHasChannels"].map(
-          (i) => i.dataValues["channelId"]
-        );
-      })
-      .flat();
+    return {
+      userId,
+      name,
+      githubID,
+      githubURL,
+      img,
+      channels,
+    };
   }
 
   async insert(user: UserAttributes) {
+    if (user.name === null || user.name === undefined) {
+      user.name = user.githubID;
+    }
     await User.create(user);
   }
 }

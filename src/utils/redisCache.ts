@@ -4,6 +4,7 @@ import { config } from "./../config";
 import { redisCli } from "./redisClient";
 import { promisify } from "util";
 const getAsync = promisify(redisClient.get).bind(redisClient);
+export const setAsync = promisify(redisClient.set).bind(redisClient);
 const hmgetAsync = promisify(redisClient.hmget).bind(redisClient);
 const lrangeAsync = promisify(redisClient.lrange).bind(redisClient);
 const hgetallAsync = promisify(redisClient.hgetall).bind(redisClient);

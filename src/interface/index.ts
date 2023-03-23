@@ -90,17 +90,6 @@ export interface ITemplateNormalModel {
   ): Promise<template>;
 }
 
-export interface UserAttributes {
-  id?: number;
-  name: string;
-  githubID: string;
-  githubURL: string;
-  img: string;
-}
-export interface Channel_UserAttributes {
-  userId: string;
-  channelId: number;
-}
 export interface MessageAttributes {
   id?: string;
   name: string;
@@ -111,25 +100,6 @@ export interface MessageAttributes {
   createdAt?: Date;
   updatedAt?: Date;
 }
-export interface ChannelAttributes {
-  id: number;
-  admin: string;
-  channelName: string;
-  channelImg: string;
-}
-export interface IUserModel {
-  save(user: UserAttributes): Promise<any>;
-  get(user: UserAttributes): Promise<any>;
-}
 
-export interface IChannelInfo {
-  admin: string;
-  channelName: string;
-}
-export interface IChannel extends IChannelInfo {
-  members: UserAttributes[];
-}
-export interface IChannelModel {
-  invite(info: IChannelInfo): Promise<void>;
-  join(userId: string, adminCode: string, channelNameCode: any): Promise<any>;
-}
+export * from "./channelInterface";
+export * from "./userInterface";

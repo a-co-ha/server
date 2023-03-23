@@ -1,13 +1,9 @@
 import express from "express";
 import { asyncHandler } from "../utils";
-const { body } = require("express-validator");
 import { channelController } from "../controllers";
+import { DtoValidatorMiddleware } from "../middlewares";
 
 export const channelRouter = express.Router();
 
-channelRouter.post(
-  "/create",
-  body("channelName").not().isEmpty(),
-  asyncHandler(channelController.create)
-);
-channelRouter.post("/:admin", asyncHandler(channelController.join));
+channelRouter.post("/create", asyncHandler(channelController.create));
+channelRouter.post("/:adminCode", asyncHandler(channelController.join));

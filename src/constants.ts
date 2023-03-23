@@ -7,15 +7,17 @@ interface EndPointInterface {
   page: string;
   template: string;
   list: string;
+  github: string;
 }
 
 export const endPoint: EndPointInterface = {
   index: "/",
-  oauth: "/oauth",
+  oauth: "/api/oauth",
   channel: "/api/channel",
   user: "/api/user",
   guest: "/api/guest",
   page: "/api/page",
   template: "/api/template",
   list: "/api/list",
+  github: "/api/github",
 };

@@ -1,33 +1,40 @@
-import { UserAttributes } from "./../interface/index";
+import { errorResponse } from "./../utils/errorResponse";
 import { userService } from "./../services/userService";
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler, ErrorType } from "../types";
 
 interface IUserController {
   login: AsyncRequestHandler;
   get: AsyncRequestHandler;
+  refreshToken : AsyncRequestHandler;
 }
 export class UserController implements IUserController {
   login: AsyncRequestHandler = async (req, res) => {
     const isAuthenticated = !!req.user;
-    if (isAuthenticated) {
-      console.log(`user is authenticated, session is ${req.session.id}`);
-    } else {
-      console.log("unknown user");
+    if (!isAuthenticated) {
+      errorResponse(res, ErrorType.BADREQUEST, " unknown user");
+    }
+
+    req.session.userId = req.user.id;
+    req.session.auth = true;
+
+    if (req.user.name === undefined || req.user.name === null) {
+      req.user.name = req.user.githubID;
     }
     const token = await userService.login(req.user);
 
-    req.session.user = {
-      user: req.user,
-    };
     res.status(200).json({
       token,
       user: req.user,
     });
   };
+
   get: AsyncRequestHandler = async (req, res) => {
-    const { name, githubID, githubURL, img }: UserAttributes = req.body;
-    res.json(await userService.get({ name, githubID, githubURL, img }));
+    const { userId } = req.body;
+    res.status(200).json(await userService.get(userId));
   };
+  refreshToken : AsyncRequestHandler = async (req,res) => {
+
+  }
 }
 
 const userController = new UserController();

@@ -1,6 +1,6 @@
 export * from "./indexRouter";
 export * from "./oauthRouter";
-
+export * from "./githubRouter";
 export * from "./socket";
 export * from "./pageRouter";
 export * from "./templateRouter";

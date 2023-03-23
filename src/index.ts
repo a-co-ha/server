@@ -1,6 +1,4 @@
 import { socketMiddleware } from "./middlewares/io";
-import crypto from "crypto";
-import redisCache from "./utils/redisCache";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -15,13 +13,20 @@ import {
   channelRouter,
   pageRouter,
   socket,
-  templateRouter,
-  userRouter,
   listRouter,
+  userRouter,
+  githubRouter,
+  templateRouter
 } from "./routers";
 import { endPoint } from "./constants";
-import passport from "passport";
-import { decode, errorHandler, loginRequired, wrap } from "./middlewares";
+
+import {
+  decode,
+  DtoValidatorMiddleware,
+  errorHandler,
+  loginRequired,
+  wrap,
+} from "./middlewares";
 import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -29,75 +34,87 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
-// const WORKERS_COUNT = require("os").cpus().length;
-// const WORKERS_COUNT = 4;
+import { ChannelDto } from "./dto/channelDto";
 
-// if (cluster.isPrimary) {
-//   console.log(`Master ${process.pid} is running`);
 
-//   for (let i = 0; i < WORKERS_COUNT; i++) {
-//     cluster.fork();
-//   }
-
-//   cluster.on("exit", (worker) => {
-//     console.log(`Worker ${worker.process.pid} died`);
-//     cluster.fork();
-//   });
-// } else {
-//   console.log(`Worker ${process.pid} started`);
-
-const app = express(); // export const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {},
-});
-
-Promise.all([redisClient, subClient]).then(() => {
-  io.adapter(createAdapter(redisClient, subClient));
-});
-
-const sessionMiddleware = session(sessionConfig);
-
-mongoose.set("strictQuery", true);
-mongoose.connect(mongoDBUri);
-mongoose.connection.on("connected", () => {
-  console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
-});
-
-init();
-
-app.use(cors());
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser(SESSION_SECRET));
-
-app.use(sessionMiddleware);
-
-app.get(endPoint.index, indexRouter);
-app.use(endPoint.oauth, oauthRouter);
-app.use(endPoint.user, loginRequired, userRouter);
-app.use(endPoint.channel, loginRequired, channelRouter);
-app.use(endPoint.page, pageRouter);
-app.use(endPoint.template, templateRouter);
-app.use(endPoint.list, listRouter);
-app.use(errorHandler);
-
-io.use(wrap(sessionMiddleware));
-
-io.use(socketMiddleware);
-
-socket(io);
-
-httpServer.listen(port, async () => {
-  try {
-    await sequelize.authenticate().then(() => {
-      console.log("DB sequelize connection success");
-    });
-    console.log(`server listening at http://localhost:${port}`);
-  } catch (err) {
-    console.error(err);
-    console.log("Server running failed");
+class AppServer {
+  app: express.Application;
+  static PORT = 3000;
+  constructor() {
+    this.app = express();
   }
-});
-// }
+  config() {
+    this.mongo();
+    this.mysql();
+    this.middleWare();
+    this.routes();
+  }
+  static start() {
+    const appServer = new AppServer();
+    appServer.config();
+    const server = createServer(appServer.app);
+    const io = new Server(server, {
+      cors: {},
+    });
+    Promise.all([redisClient, subClient]).then(() => {
+      io.adapter(createAdapter(redisClient, subClient));
+    });
+    io.use(wrap(session(sessionConfig)));
+    io.use(socketMiddleware);
+    socket(io);
+    server.listen(port, async () => {
+      try {
+        await sequelize.authenticate().then(() => {
+          console.log("DB sequelize connection success");
+        });
+        console.log(`server listening at http://localhost:${port}`);
+      } catch (err) {
+        console.error(err);
+        console.log("Server running failed");
+      }
+    });
+  }
+
+  private middleWare() {
+    this.app.use(
+      cors({
+        origin: ["http://localhost:3001", "http://acoah.site"],
+        credentials: true,
+      })
+    );
+    this.app.use(logger("dev"));
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+
+    this.app.use(cookieParser(SESSION_SECRET));
+    this.app.use(session(sessionConfig));
+  }
+  private routes() {
+    this.app.get(endPoint.index, indexRouter);
+    this.app.use(endPoint.oauth, oauthRouter);
+    this.app.use(endPoint.user, loginRequired, userRouter);
+    this.app.use(
+      endPoint.channel,
+      loginRequired,
+      DtoValidatorMiddleware(ChannelDto),
+      channelRouter
+    );
+    this.app.use(endPoint.page, pageRouter);
+    this.app.use(endPoint.template, templateRouter);
+    this.app.use(endPoint.list, listRouter)
+    this.app.use(endPoint.github, githubRouter);
+    this.app.use(errorHandler);
+  }
+  private mongo() {
+    mongoose.set("strictQuery", true);
+    mongoose.connect(mongoDBUri);
+    mongoose.connection.on("connected", () => {
+      console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
+    });
+  }
+
+  private mysql() {
+    init();
+  }
+}
+AppServer.start();
