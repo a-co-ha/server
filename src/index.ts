@@ -75,7 +75,12 @@ class AppServer {
   }
 
   private middleWare() {
-    this.app.use(cors());
+  this.app.use(
+      cors({
+        origin: ["http://localhost:3001", "https://acoha.site"],
+        credentials: true,
+      })
+    );
     this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));

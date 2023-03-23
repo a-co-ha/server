@@ -4,13 +4,15 @@ import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
 import { UserAttributes } from "../interface";
+import { getAccessToken } from "../utils/jwt";
 export async function loginRequired(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const userToken = req.headers.authorization?.split(" ")[1];
-  if (!userToken || userToken === "null") {
+  const accessToken = req.headers.authorization?.split(" ")[1];
+  const refreshToken = req.headers.refresh;
+  if (!accessToken || accessToken === "null") {
     errorResponse(
       res,
       ErrorType.FORBIDDEN,
@@ -20,7 +22,7 @@ export async function loginRequired(
   }
 
   try {
-    const decoded = await decode(userToken);
+    const decoded = await decode(accessToken);
 
     req.body.userId = decoded.userId;
     req.body.name = decoded.name;
@@ -31,16 +33,20 @@ export async function loginRequired(
     next();
 
     
-  } catch (error) {
-    
-    errorResponse(res, ErrorType.FORBIDDEN, "정상적인 토큰이 아닙니다.");
+  } catch (error : any) {
+
+    if (error.name === 'TokenExpiredError'){
+     return await getAccessToken(refreshToken);
+    }
+
+    errorResponse(res, ErrorType.FORBIDDEN, error.name);
 
     return;
   }
 }
 
-export async function decode(userToken: string): Promise<UserAttributes> {
-  const jwtDecoded = jwt.verify(userToken, jwtSecret);
+export async function decode(token: string): Promise<UserAttributes> {
+  const jwtDecoded = jwt.verify(token, jwtSecret);
   
   const userId = (<{ userId: number }>jwtDecoded).userId;
   const name = (<{ name: string }>jwtDecoded).name;
@@ -49,12 +55,4 @@ export async function decode(userToken: string): Promise<UserAttributes> {
   const img = (<{ img: string }>jwtDecoded).img;
 
   return { userId, name, githubID, githubURL, img };
-}
-
-export const isExpire = async (token) => {
-
-}
-export const refreshVerify = async (refreshTocken) => {
-
-
 }

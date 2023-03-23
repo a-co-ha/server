@@ -5,12 +5,12 @@ import { setUserToken } from "./../utils/jwt";
 import { UserAttributes } from "../interface";
 import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
-import { redisCli } from "../utils/redisClient";
+import {  redisClient } from "../utils/redisClient";
 
 export class UserService {
   async login(user: UserAttributes) {
     const tokens = setUserToken(user);
-    redisCli.set(user.userId, tokens.refreshToken );
+    await redisClient.set(`token:${user.userId}`, tokens.refreshToken );
     return tokens;
   }
 

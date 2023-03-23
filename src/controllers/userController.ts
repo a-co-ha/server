@@ -5,6 +5,7 @@ import { AsyncRequestHandler, ErrorType } from "../types";
 interface IUserController {
   login: AsyncRequestHandler;
   get: AsyncRequestHandler;
+  refreshToken : AsyncRequestHandler;
 }
 export class UserController implements IUserController {
   login: AsyncRequestHandler = async (req, res) => {
@@ -31,6 +32,9 @@ export class UserController implements IUserController {
     const { userId } = req.body;
     res.status(200).json(await userService.get(userId));
   };
+  refreshToken : AsyncRequestHandler = async (req,res) => {
+
+  }
 }
 
 const userController = new UserController();
