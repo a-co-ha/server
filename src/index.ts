@@ -19,7 +19,6 @@ import {
   templateRouter
 } from "./routers";
 import { endPoint } from "./constants";
-
 import {
   decode,
   DtoValidatorMiddleware,
@@ -27,6 +26,7 @@ import {
   loginRequired,
   wrap,
 } from "./middlewares";
+
 import { init } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";

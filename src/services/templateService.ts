@@ -1,6 +1,7 @@
 import { pageModel, templateModel, templateModelType } from "../model";
 import { pageService } from "./pageService";
 import { ITemplateModel, template, pageStatusUpdate } from "../interface";
+import { listService } from "./listService";
 
 class TemplateService implements ITemplateModel {
   private templateModel: templateModelType;
@@ -21,7 +22,10 @@ class TemplateService implements ITemplateModel {
       pageType,
       progressStatus
     );
-    return await templateModel.create({ channelId, pages, type });
+    const template = await templateModel.create({ channelId, pages, type });
+    const list = await listService.createListTemplate(channelId, template);
+
+    return template;
   }
 
   async findTemplate(
@@ -84,8 +88,10 @@ class TemplateService implements ITemplateModel {
       });
   }
 
-  async deleteTemplate(id: string): Promise<object> {
-    return await templateModel.deleteOne({ _id: id });
+  async deleteTemplate(id: string, channelId?: number): Promise<object> {
+    const deleteTemplate = await templateModel.deleteOne({ _id: id });
+    await listService.deleteListTemplate(channelId, id);
+    return deleteTemplate;
   }
 
   async percentageProgress(id: string): Promise<object> {
@@ -127,10 +133,6 @@ class TemplateService implements ITemplateModel {
     ]);
     return findProgress;
   }
-
-  //todo pageName 변경 api 만들기
-
-  // async updateTemplate
 }
 
 export const templateService = new TemplateService(templateModel);

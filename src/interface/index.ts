@@ -1,3 +1,4 @@
+import { ListInterface } from "../model/schema/listSchema";
 export interface block {
   blockId?: string;
   tag: string;
@@ -12,6 +13,7 @@ export interface page {
   label?: {};
   blocks: {};
   type?: string;
+  categories?: string;
 }
 
 export interface IPageModel {
@@ -23,7 +25,7 @@ export interface IPageModel {
     type?: string
   ): Promise<page>;
   pushPage(id: string, page: page): Promise<page>;
-  deletePage(id: string): Promise<object>;
+  deletePage(id: string, channelId?: number): Promise<object>;
 }
 
 export interface pages {
@@ -41,6 +43,11 @@ export interface template {
 export interface pageStatusUpdate {
   _id: string;
   progressStatus?: string;
+}
+
+export interface list {
+  channelId: number;
+  ListPage: page[];
 }
 
 export interface ITemplateModel {
@@ -64,7 +71,7 @@ export interface ITemplateModel {
     pages: [pageStatusUpdate],
     type: string
   ): Promise<template>;
-  deleteTemplate(id: string): Promise<object>;
+  deleteTemplate(id: string, channelId?: number): Promise<object>;
   percentageProgress(id: string): Promise<object>;
 }
 export interface ITemplateNormalModel {
@@ -90,6 +97,32 @@ export interface ITemplateNormalModel {
   ): Promise<template>;
 }
 
+<<<<<<< HEAD
+=======
+export interface IListModel {
+  createList(channelId: number): Promise<ListInterface>;
+  createListPage(channelId: number, page: page): Promise<ListInterface>;
+  createListTemplate(
+    channelId: number,
+    template: template
+  ): Promise<ListInterface>;
+  findList(channelId: number): Promise<ListInterface>;
+  updateList(channelId: number, listPage: list): Promise<ListInterface>;
+  deleteListPage(channelId: number, id: string): Promise<ListInterface>;
+}
+
+export interface UserAttributes {
+  id?: number;
+  name: string;
+  githubID: string;
+  githubURL: string;
+  img: string;
+}
+export interface Channel_UserAttributes {
+  userId: string;
+  channelId: number;
+}
+>>>>>>> 7d9b17da6a55be9487fcfcfd35457bb8eb0430b3
 export interface MessageAttributes {
   id?: string;
   name: string;
