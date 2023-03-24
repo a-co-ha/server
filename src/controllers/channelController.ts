@@ -20,10 +20,12 @@ export class ChannelController implements IChannelController {
 
     const blockId = req.body.blockId;
     const result = await channelService.invite(channelInfo);
-    const channelId = result.dataValues.id;
+
+    const channelId = result.id;
+
     await listService.createList(channelId);
     await pageService.createPage(channelId, blockId);
-    res.json(result);
+    res.status(200).json(result);
   };
   join: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
