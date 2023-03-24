@@ -78,7 +78,7 @@ class AppServer {
   private middleWare() {
     this.app.use(
       cors({
-        origin: ["http://localhost:3001", "http://acoah.site"],
+        origin: ["http://localhost:3001", "https://acoha.site", "https://npm.acoha.site"],
         credentials: true,
       })
     );

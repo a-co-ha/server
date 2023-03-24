@@ -11,6 +11,7 @@ export async function loginRequired(
   next: NextFunction
 ) {
   const accessToken = req.headers.authorization?.split(" ")[1];
+  console.log(accessToken);
   const refreshToken = req.headers.refresh;
   if (!accessToken || accessToken === "null") {
     errorResponse(

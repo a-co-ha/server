@@ -23,15 +23,16 @@ RUN apk --no-cache add tzdata && \
 WORKDIR /app
 
 # Only copy the package.json file to work directory
-COPY package.json .
-RUN yarn install --immutable
-
 COPY package* yarn.lock .pnp*     ./
 COPY .yarnrc.yml                  ./
 COPY .yarn                        ./.yarn
+# COPY package.json .
+RUN yarn install --immutable
 
 # Docker Demon Port Mapping
 EXPOSE 3000
 
 # Node ENV
 ENV NODE_ENV=production
+
+CMD ["yarn", "start"]

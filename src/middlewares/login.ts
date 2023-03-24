@@ -50,9 +50,11 @@ export const githubLogin = async (req, res, next) => {
       req.user = user;
       next();
     } catch (e: any) {
+      console.log(requestToken);
       throw new Error(e);
     }
   } catch (e: any) {
+       console.log(requestToken);
     throw new Error(e);
   }
 };

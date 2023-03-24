@@ -50,8 +50,7 @@ export const sessionConfig = {
   cookie: {
     //세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
     httpOnly: true, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함
-    Secure: true,
-    sameSite : "Lax"
+    Secure: true
   },
   secret: SESSION_SECRET,
   resave: false,
