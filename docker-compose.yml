@@ -1,11 +1,36 @@
 version: "3"
 services:
+  npm:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: always
+    ports:
+      - 81:81 #관리포트
+      - 80:80 #http
+      - 443:443 #https
+    volumes:
+      - ./nginx-proxy-manager/data:/data
+      - ./nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    environment:
+      DISABLE_IPV6: 'true'
+    depends_on:
+      - express
+
   redis-server:
     image: redis:latest
+    container_name: "redis"
     command: redis-server --port 6379
     ports:
       - 6379:6379
+
   express-server:
-    build: .
+    container_name: express
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ".:/app"
     ports: 
-      - "5000:8080"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development

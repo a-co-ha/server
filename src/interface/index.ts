@@ -109,18 +109,6 @@ export interface IListModel {
   deleteListPage(channelId: number, id: string): Promise<ListInterface>;
 }
 
-export interface UserAttributes {
-  id?: number;
-  name: string;
-  githubID: string;
-  githubURL: string;
-  img: string;
-}
-export interface Channel_UserAttributes {
-  userId: string;
-  channelId: number;
-}
-
 export interface MessageAttributes {
   id?: string;
   name: string;

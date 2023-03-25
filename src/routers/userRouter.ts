@@ -5,4 +5,4 @@ import { userController } from "../controllers";
 export const userRouter = express.Router();
 
 userRouter.get("/", asyncHandler(userController.get));
-userRouter.get("/refresh", asyncHandler(userController.refreshToken));
+userRouter.get("/refresh", asyncHandler(userController.tokenRefresh));

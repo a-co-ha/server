@@ -1,17 +1,38 @@
 import { ChannelAttributes, userHasChannels } from "./../interface/index";
-import { DataTypes } from "sequelize";
 import { Channel } from "./../model/channel";
-import { setUserToken } from "./../utils/jwt";
 import { UserAttributes } from "../interface";
 import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
-import {  redisClient } from "../utils/redisClient";
+import jwt, { Secret } from "jsonwebtoken";
+import { jwtSecret } from "../config";
 
 export class UserService {
+  private tokenCreate = (
+    isAccess: boolean,
+    payload: UserAttributes
+  ): string => {
+    // true : access token
+    // false : refresh token
+    return jwt.sign(payload, jwtSecret, {
+      // expiresIn: isAccess ? "1m" : "14d",
+      expiresIn: isAccess ? "1m" : "2m",
+    });
+  };
+
   async login(user: UserAttributes) {
-    const tokens = setUserToken(user);
-    await redisClient.set(`token:${user.userId}`, tokens.refreshToken );
-    return tokens;
+    const accessToken = this.tokenCreate(true, user);
+    const refreshToken = this.tokenCreate(false, user);
+    await User.update(
+      {
+        refreshToken: refreshToken,
+      },
+      {
+        where: {
+          userId: user.userId,
+        },
+      }
+    );
+    return { token: { accessToken, refreshToken }, user };
   }
 
   async get(id: number): Promise<userHasChannels | boolean> {
@@ -56,6 +77,20 @@ export class UserService {
       user.name = user.githubID;
     }
     await User.create(user);
+  }
+
+  async expandAccToken(token: string, user: UserAttributes) {
+    const { refreshToken } = await User.findOne({
+      where: { userId: user.userId },
+      attributes: ["refreshToken"],
+      raw: true,
+    });
+
+    if (!refreshToken || refreshToken !== token) {
+      throw new Error("refresh token Error");
+    }
+    const accessToken = this.tokenCreate(true, user);
+    return { accessToken };
   }
 }
 
