@@ -20,7 +20,6 @@ export class ChannelController implements IChannelController {
 
     const blockId = req.body.blockId;
     const result = await channelService.invite(channelInfo);
-
     const channelId = result.id;
 
     await listService.createList(channelId);

@@ -3,6 +3,8 @@ import axios from "axios";
 import { GITHUBACCESSURL, GITHUBUSERURL, oauthClient, oauthSecret } from "../config";
 import { UserAttributes } from "../interface";
 import { userService } from "../services";
+import { ErrorType } from "../types";
+import { errorResponse } from "../utils";
 
 export const githubLogin = async (req, res, next) => {
   const requestToken = req.query.code;
@@ -50,11 +52,11 @@ export const githubLogin = async (req, res, next) => {
       req.user = user;
       next();
     } catch (e: any) {
-      console.log(requestToken);
-      throw new Error(e);
+      errorResponse(res, ErrorType.BADREQUEST, requestToken);
+
     }
   } catch (e: any) {
-       console.log(requestToken);
-    throw new Error(e);
+      errorResponse(res, ErrorType.BADREQUEST, requestToken);
+
   }
 };

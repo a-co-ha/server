@@ -1,29 +1,33 @@
-import { ErrorType } from "./../types/index";
+import { ErrorType, TokenType } from "./../types/index";
 import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
 import { UserAttributes } from "../interface";
-import { getAccessToken } from "../utils/jwt";
 export async function loginRequired(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const accessToken = req.headers.authorization?.split(" ")[1];
-  console.log(accessToken);
-  const refreshToken = req.headers.refresh;
-  if (!accessToken || accessToken === "null") {
+  const tokenType = req.headers.authorization?.split(" ")[0];
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!(tokenType === TokenType.ACCESS || tokenType === TokenType.REFRESH)) {
+    errorResponse(res, ErrorType.FORBIDDEN, "정상적인 토큰이 아닙니다. ");
+    return;
+  }
+
+  if (!token || token === "null") {
     errorResponse(
       res,
       ErrorType.FORBIDDEN,
-      "로그인한 유저만 사용할 수 있는 서비스입니다."
+      "로그인한 유저만 사용할 수 있습니다. "
     );
     return;
   }
 
   try {
-    const decoded = await decode(accessToken);
+    const decoded = await decode(token);
 
     req.body.userId = decoded.userId;
     req.body.name = decoded.name;
@@ -32,23 +36,15 @@ export async function loginRequired(
     req.body.img = decoded.img;
 
     next();
-
-    
-  } catch (error : any) {
-
-    if (error.name === 'TokenExpiredError'){
-     return await getAccessToken(refreshToken);
-    }
-
-    errorResponse(res, ErrorType.FORBIDDEN, error.name);
-
+  } catch (error: any) {
+    errorResponse(res, ErrorType.FORBIDDEN, error);
     return;
   }
 }
 
 export async function decode(token: string): Promise<UserAttributes> {
   const jwtDecoded = jwt.verify(token, jwtSecret);
-  
+
   const userId = (<{ userId: number }>jwtDecoded).userId;
   const name = (<{ name: string }>jwtDecoded).name;
   const githubID = (<{ githubID: string }>jwtDecoded).githubID;

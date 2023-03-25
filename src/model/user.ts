@@ -9,6 +9,7 @@ export class User extends Model<UserAttributes> {
   public githubID!: string;
   public githubURL!: string;
   public img!: string;
+  public refreshToken: string;
 
   public static associations: {
     userHasChannels: Association<User, ChannelUser>;
@@ -42,6 +43,11 @@ User.init(
     img: {
       type: DataTypes.STRING(200),
       allowNull: true,
+    },
+    refreshToken: {
+      type: DataTypes.STRING(450),
+      allowNull: true,
+      field: "refresh_token",
     },
   },
   {

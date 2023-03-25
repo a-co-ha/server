@@ -16,7 +16,7 @@ import {
   listRouter,
   userRouter,
   githubRouter,
-  templateRouter
+  templateRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import {
@@ -35,7 +35,6 @@ import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
 import { ChannelDto } from "./dto/channelDto";
-
 
 class AppServer {
   app: express.Application;
@@ -78,7 +77,11 @@ class AppServer {
   private middleWare() {
     this.app.use(
       cors({
-        origin: ["http://localhost:3001", "https://acoha.site", "https://npm.acoha.site"],
+        origin: [
+          "http://localhost:3001",
+          "https://acoha.site",
+          "https://npm.acoha.site",
+        ],
         credentials: true,
       })
     );
@@ -101,7 +104,7 @@ class AppServer {
     );
     this.app.use(endPoint.page, pageRouter);
     this.app.use(endPoint.template, templateRouter);
-    this.app.use(endPoint.list, listRouter)
+    this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);
     this.app.use(errorHandler);
   }
