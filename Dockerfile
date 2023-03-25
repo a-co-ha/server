@@ -35,4 +35,4 @@ EXPOSE 3000
 # Node ENV
 ENV NODE_ENV=production
 
-CMD ["yarn", "start"]
+CMD ["yarn", "dev"]
