@@ -78,9 +78,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node dist",
+    "start": "cp ./.env.prod ./.env && yarn build && node dist",
     "build": "babel --extensions '.ts' src -d dist",
-    "dev": "nodemon -e js,ts,json --ignore dist/ --exec 'yarn build && node dist'",
+    "dev": "cp ./.env.dev ./.env && nodemon -e js,ts,json --ignore dist/ --exec 'yarn build && node dist'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "lint:fix": "eslint src --ext .ts --parser-options=project:'tsconfig.json' --fix",

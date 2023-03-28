@@ -14,7 +14,7 @@ services:
     environment:
       DISABLE_IPV6: 'true'
     depends_on:
-      - express
+      - express-server
 
   redis-server:
     image: redis:latest
@@ -27,7 +27,7 @@ services:
     container_name: express
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     volumes:
       - ".:/app"
     ports: 

@@ -11,7 +11,7 @@ export const redisClient: any = Promise.promisifyAll(
   redis.createClient({
     socket: {
       // host: "127.0.0.1",
-      host: host,
+      host: "redis-server",
       port: 6379,
     },
     legacyMode: true,

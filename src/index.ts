@@ -38,7 +38,7 @@ import { ChannelDto } from "./dto/channelDto";
 
 class AppServer {
   app: express.Application;
-  static PORT = 3000;
+  static PORT = port;
   constructor() {
     this.app = express();
   }
