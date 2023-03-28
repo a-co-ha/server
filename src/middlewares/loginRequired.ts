@@ -37,7 +37,7 @@ export async function loginRequired(
 
     next();
   } catch (error: any) {
-    errorResponse(res, ErrorType.FORBIDDEN, error);
+    errorResponse(res, ErrorType.FORBIDDEN, `${tokenType} error`);
     return;
   }
 }

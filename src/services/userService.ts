@@ -15,7 +15,7 @@ export class UserService {
     // false : refresh token
     return jwt.sign(payload, jwtSecret, {
       // expiresIn: isAccess ? "1m" : "14d",
-      expiresIn: isAccess ? "1m" : "2m",
+      expiresIn: isAccess ? "1h" : "3h",
     });
   };
 
