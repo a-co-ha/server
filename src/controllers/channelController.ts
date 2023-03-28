@@ -10,7 +10,8 @@ interface IChannelController {
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
-    const { channelName, userId, name } = req.body;
+    const { userId, name } = req.user;
+    const { channelName } = req.body;
     const channelInfo: channelJoinInterface = {
       admin: userId,
       channelName,
@@ -29,7 +30,7 @@ export class ChannelController implements IChannelController {
   join: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
     const channelCode = req.query.channelCode as string;
-    const { userId, name } = req.body;
+    const { userId, name } = req.user;
     const joinInfo: channelJoinInterface = {
       admin: adminCode,
       channelName: channelCode,

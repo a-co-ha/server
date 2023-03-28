@@ -23,7 +23,7 @@ export default {
 
   findSession(id) {
     return redisClient
-      .hmgetAsync(`session:${id}`, "userID", "username", "connected")
+      .hmgetAsync(`session:${id}`, "userId", "name", "connected")
       .then(mapSession);
   },
   findLogin: async (id) => {
@@ -70,11 +70,10 @@ export default {
     keys.forEach((key) => {
       commands.push(key);
     });
-
     var multi = redisClient.multi();
 
     for (var i = 0; i < commands.length; i++) {
-      multi = multi.hmget(`${commands[i]}`, "userID", "username", "connected");
+      multi = multi.hmget(`${commands[i]}`, "userID", "name", "connected");
     }
 
     const result = await new Promise((resolve, reject) => {
@@ -108,15 +107,17 @@ export default {
       .exec();
   },
 
-  saveSession: async (id, { userID, username, connected }) => {
+  saveSession: async (id, { userID, name, img, connected }) => {
     await redisClient
       .multi()
       .hset(
         `session:${id}`,
         "userID",
         userID,
-        "username",
-        username,
+        "name",
+        name,
+        "img",
+        img,
         "connected",
         connected
       )

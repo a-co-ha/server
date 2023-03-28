@@ -92,6 +92,7 @@ class AppServer {
     this.app.use(cookieParser(SESSION_SECRET));
     this.app.use(session(sessionConfig));
   }
+
   private routes() {
     this.app.get(endPoint.index, indexRouter);
     this.app.use(endPoint.oauth, oauthRouter);
@@ -108,6 +109,7 @@ class AppServer {
     this.app.use(endPoint.github, githubRouter);
     this.app.use(errorHandler);
   }
+
   private mongo() {
     mongoose.set("strictQuery", true);
     mongoose.connect(mongoDBUri);

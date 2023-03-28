@@ -14,19 +14,19 @@ export class UserController implements IUserController {
       errorResponse(res, ErrorType.BADREQUEST, " unknown user");
     }
 
-    req.session.userId = req.user.id;
+    req.session.userId = req.user.userId;
     req.session.auth = true;
 
     if (req.user.name === undefined || req.user.name === null) {
       req.user.name = req.user.githubID;
     }
-    const result = await userService.login(req.user);
+    const result = await userService.login(req.session.id, req.user);
 
     res.status(200).json(result);
   };
 
   get: AsyncRequestHandler = async (req, res) => {
-    const { userId } = req.body;
+    const { userId } = req.user;
     res.status(200).json(await userService.get(userId));
   };
   tokenRefresh: AsyncRequestHandler = async (req, res) => {

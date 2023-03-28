@@ -1,4 +1,6 @@
+import { UserAttributes } from "./../interface/userInterface";
 import { Request, Response, NextFunction } from "express";
+import "express-session";
 
 export type AsyncRequestHandler = (
   req: Request,
@@ -16,4 +18,19 @@ export enum ErrorType {
 export enum TokenType {
   ACCESS = "access",
   REFRESH = "refresh",
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserAttributes;
+    }
+  }
+}
+
+declare module "express-session" {
+  interface SessionData {
+    userId: number;
+    auth: boolean;
+  }
 }
