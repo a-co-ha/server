@@ -55,6 +55,9 @@ export class ChannelService implements IChannelModel {
 
     return { userId, channelName };
   }
+  async delete(channelId: number): Promise<any> {
+    return await Channel.destroy({ where: { id: channelId } });
+  }
 }
 
 export const channelService = new ChannelService();

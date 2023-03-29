@@ -34,3 +34,13 @@ declare module "express-session" {
     auth: boolean;
   }
 }
+
+declare global {
+  namespace Express {
+    namespace Multer {
+      interface File {
+        location: string;
+      }
+    }
+  }
+}

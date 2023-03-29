@@ -8,7 +8,6 @@ interface IPageController {
   pushPage: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
-  findPageList: AsyncRequestHandler;
   imageDelete: AsyncRequestHandler;
   imageUpload: AsyncRequestHandler;
 }
@@ -64,7 +63,9 @@ export class PageController implements IPageController {
 
   deletePage: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const deletePage = await pageService.deletePage(id);
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const deletePage = await pageService.deletePage(id, channelId);
     res.json(deletePage);
   };
 
@@ -76,7 +77,6 @@ export class PageController implements IPageController {
       // _id: id,
       // channelId: channelId,
       filePath: req.file.location,
-      // .location,
     };
 
     res.json(file);
@@ -87,13 +87,6 @@ export class PageController implements IPageController {
     const fileKey = deleteImageKey.split("/").pop().split("?")[0];
     const deleteImg = await deleteImage(fileKey);
     res.json(deleteImg);
-  };
-
-  findPageList: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const findPageList = await pageService.findPageList(channelId);
-    res.json(findPageList);
   };
 }
 
