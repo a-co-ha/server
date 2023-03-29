@@ -6,6 +6,8 @@ interface IListController {
   findList: AsyncRequestHandler;
   createList: AsyncRequestHandler;
   updateList: AsyncRequestHandler;
+  deleteListOne: AsyncRequestHandler;
+  deleteList: AsyncRequestHandler;
 }
 
 export class ListController implements IListController {
@@ -51,6 +53,14 @@ export class ListController implements IListController {
     }
     const list = await listService.findList(channelId);
     res.json(list);
+  };
+
+  deleteList: AsyncRequestHandler = async (req, res) => {
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const deleteList = await listService.deleteList(channelId);
+
+    res.json(deleteList);
   };
 }
 export const listController = new ListController();

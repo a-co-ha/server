@@ -85,8 +85,6 @@ class ListService implements IListModel {
       { ListPage: { $elemMatch: { template: id } } }
     );
 
-    console.log(findList);
-
     const listTemplateId = findList.ListPage[0]._id;
     const deleteList = await listModel.findByIdAndUpdate(
       { _id },
@@ -94,6 +92,15 @@ class ListService implements IListModel {
     );
 
     return deleteList;
+  }
+
+  async deleteList(channelId: number): Promise<list> {
+    const list = await listModel.findOne({ channelId });
+    if (!list) {
+      throw new Error("채널이 없습니다.");
+    }
+    const _id = list._id;
+    return listModel.findByIdAndDelete({ _id });
   }
 }
 

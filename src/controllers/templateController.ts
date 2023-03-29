@@ -109,7 +109,9 @@ export class TemplateController implements ITemplateController {
 
   deleteTemplate: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
-    const deleteProgress = await templateService.deleteTemplate(id);
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const deleteProgress = await templateService.deleteTemplate(id, channelId);
     res.json(deleteProgress);
   };
 
