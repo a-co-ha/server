@@ -34,7 +34,6 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
-import { ChannelDto } from "./dto/channelDto";
 
 class AppServer {
   app: express.Application;
@@ -55,7 +54,7 @@ class AppServer {
     const io = new Server(server, {
       cors: {},
     });
-    Promise.all([redisClient, subClient]).then(() => {
+    Promise.all([redisClient.connect(), subClient.connect()]).then(() => {
       io.adapter(createAdapter(redisClient, subClient));
     });
     io.use(wrap(session(sessionConfig)));

@@ -13,18 +13,32 @@ export const redisClient: any = Promise.promisifyAll(
     legacyMode: true,
   })
 );
-
 export const subClient = redisClient.duplicate();
 
 redisClient.on("connect", () => {
-  console.info("supClient Redis connected!");
+  console.info("pubClient Redis connected!");
 });
 redisClient.on("error", (err) => {
   console.error("Redis Client Error", err);
 });
 
+subClient.on("connect", () => {
+  console.info("subClient Redis connected!");
+});
 subClient.on("error", (err) => {
   console.error("Redis Client Error", err);
 });
-redisClient.connect().then().catch(console.error); // redis v4 연결 (비동기)
-export const redisCli = redisClient.v4;
+subClient.on("ready", (err) => {
+  console.error("Redis Client ready", err);
+});
+
+subClient.on("end", (err) => {
+  console.error("Redis Client end", err);
+});
+
+subClient.on("warning", (err) => {
+  console.error("Redis Client warning", err);
+});
+// redisClient.connect().then().catch(console.error); // redis v4 연결 (비동기)
+// export const redisCli = redisClient.v4;
+// export const subCli = subClient.v4;

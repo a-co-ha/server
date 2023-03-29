@@ -25,7 +25,7 @@ export class UserService {
   async login(sessionId: string, user: UserAttributes) {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
-    // await connectSocket(sessionId, user);
+    await connectSocket(sessionId, user);
     await User.update(
       {
         refreshToken: refreshToken,
