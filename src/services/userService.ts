@@ -84,6 +84,7 @@ export class UserService {
   }
 
   async expandAccToken(token: string, user: UserAttributes) {
+    console.log(user);
     const { refreshToken } = await User.findOne({
       where: { userId: user.userId },
       attributes: ["refreshToken"],
