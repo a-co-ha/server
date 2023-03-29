@@ -15,7 +15,8 @@
     "sourceMap": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "typeRoots": ["./src/types"]
   },
   "include": ["src/**/**/*", ".eslintrc.cjs"]
 }

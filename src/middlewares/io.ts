@@ -10,36 +10,37 @@ export const wrap = (middleware) => (socket, next) =>
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
 export const socketMiddleware = async (socket, next) => {
-  // const sessionID = socket.request.handshake.auth.sessionid;
-  const sessionID = socket.handshake.headers.sessionid;
+  const sessionID = socket.handshake.auth.sessionId;
+  const user = socket.handshake.auth.user;
 
-  const { userId, auth } = await redisCache.findLogin(sessionID);
+  // if (!sessionID || !user) {
+  //   return next(new Error("소켓 에러"));
+  // }
 
-  if (!auth || userId === null || userId === undefined) {
-    throw new Error("no authentication");
-  }
-
-  const user = await userService.get(userId);
+  const getChannel = await userService.get(user.userId);
 
   function isUser(user: userHasChannels | boolean): user is userHasChannels {
     return (user as userHasChannels).name !== undefined;
   }
 
-  if (isUser(user)) {
-    const channels = user.channels.map((i) => i.id);
-    socket.username = user.name;
-    socket.img = user.img;
+  if (isUser(getChannel)) {
+    const channels = getChannel.channels.map((i) => i.id);
     socket.channel = channels;
-    socket.sessionID = sessionID;
   }
 
   const sessionInfo = await redisCache.findSession(sessionID);
 
+  socket.sessionID = sessionID;
+
   if (sessionInfo) {
     socket.userID = sessionInfo.userID;
-  } else {
-    socket.userID = randomId();
+    socket.name = sessionInfo.name;
+    socket.img = sessionInfo.img;
+    next();
   }
+  socket.userID = randomId();
+  socket.name = user.name;
+  socket.img = user.img;
 
   next();
 };

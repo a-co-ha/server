@@ -29,15 +29,15 @@ export async function loginRequired(
   try {
     const decoded = await decode(token);
 
-    req.body.userId = decoded.userId;
-    req.body.name = decoded.name;
-    req.body.githubID = decoded.githubID;
-    req.body.githubURL = decoded.githubURL;
-    req.body.img = decoded.img;
+    req.user.userId = decoded.userId;
+    req.user.name = decoded.name;
+    req.user.githubID = decoded.githubID;
+    req.user.githubURL = decoded.githubURL;
+    req.user.img = decoded.img;
 
     next();
   } catch (error: any) {
-    errorResponse(res, ErrorType.FORBIDDEN, error);
+    errorResponse(res, ErrorType.FORBIDDEN, `${tokenType} error`);
     return;
   }
 }

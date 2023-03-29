@@ -7,16 +7,18 @@ import redisCache from "../utils/redisCache";
 export const socket = (io: any) => {
   io.on("connection", async (socket: any) => {
     console.log(
-      `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID} userName : ${socket.username}`
+      `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID}
+       userName : ${socket.name}`
     );
 
-    if (socket.username === null) {
-      socket.username = socket.userID;
+    if (socket.name === null) {
+      socket.name = socket.userID;
     }
     // 세션 저장
     redisCache.saveSession(socket.sessionID, {
       userID: socket.userID,
-      username: socket.username,
+      name: socket.name,
+      img: socket.img,
       connected: "true",
     });
 
@@ -26,7 +28,6 @@ export const socket = (io: any) => {
       userID: socket.userID,
     });
 
-    // 유저, 메세지 가져오기
     const users = [];
     const [messages, sessions] = await Promise.all([
       redisCache.findMessagesForUser(socket.userID),
@@ -80,7 +81,8 @@ export const socket = (io: any) => {
 
           redisCache.saveSession(socket.sessionID, {
             userID: socket.userID,
-            username: socket.username,
+            name: socket.username,
+            img: socket.img,
             connected: "false",
           });
         }

@@ -1,3 +1,4 @@
+import { socket } from "./../routers/socket";
 import { ChannelAttributes, userHasChannels } from "./../interface/index";
 import { Channel } from "./../model/channel";
 import { UserAttributes } from "../interface";
@@ -5,6 +6,8 @@ import { User } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
 import jwt, { Secret } from "jsonwebtoken";
 import { jwtSecret } from "../config";
+import redisCache from "../utils/redisCache";
+import { connectSocket } from "../utils/connectSocket";
 
 export class UserService {
   private tokenCreate = (
@@ -15,13 +18,14 @@ export class UserService {
     // false : refresh token
     return jwt.sign(payload, jwtSecret, {
       // expiresIn: isAccess ? "1m" : "14d",
-      expiresIn: isAccess ? "1m" : "2m",
+      expiresIn: isAccess ? "1h" : "3h",
     });
   };
 
-  async login(user: UserAttributes) {
+  async login(sessionId: string, user: UserAttributes) {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
+    await connectSocket(sessionId, user);
     await User.update(
       {
         refreshToken: refreshToken,
