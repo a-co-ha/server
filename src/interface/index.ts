@@ -25,7 +25,7 @@ export interface IPageModel {
     type?: string
   ): Promise<page>;
   pushPage(id: string, page: page): Promise<page>;
-  deletePage(id: string, channelId?: number): Promise<object>;
+  deletePage(id: string, channelId: number): Promise<object>;
 }
 
 export interface pages {
@@ -71,7 +71,7 @@ export interface ITemplateModel {
     pages: [pageStatusUpdate],
     type: string
   ): Promise<template>;
-  deleteTemplate(id: string, channelId?: number): Promise<object>;
+  deleteTemplate(id: string, channelId: number): Promise<object>;
   percentageProgress(id: string): Promise<object>;
 }
 export interface ITemplateNormalModel {

@@ -40,6 +40,14 @@ export class ChannelController implements IChannelController {
     const result = await channelService.join(joinInfo);
     res.json(result);
   };
+
+  delete: AsyncRequestHandler = async (req, res) => {
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+    const deleteChannel = await channelService.delete(channelId);
+    await listService.deleteList(channelId);
+    res.json(deleteChannel);
+  };
 }
 
 const channelController = new ChannelController();

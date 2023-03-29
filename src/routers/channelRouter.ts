@@ -7,3 +7,4 @@ export const channelRouter = express.Router();
 
 channelRouter.post("/create", asyncHandler(channelController.create));
 channelRouter.post("/:adminCode", asyncHandler(channelController.join));
+channelRouter.delete("/", asyncHandler(channelController.delete));
