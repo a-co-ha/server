@@ -1,6 +1,7 @@
-import { UserAttributes } from "./../interface/userInterface";
+import { UserAttributes } from "../interface/userInterface";
 import { Request, Response, NextFunction } from "express";
 import "express-session";
+import "express";
 
 export type AsyncRequestHandler = (
   req: Request,
@@ -33,5 +34,15 @@ declare module "express-session" {
   interface SessionData {
     userId: number;
     auth: boolean;
+  }
+}
+
+declare global {
+  namespace Express {
+    namespace Multer {
+      interface File {
+        location: string;
+      }
+    }
   }
 }

@@ -23,7 +23,7 @@ class TemplateService implements ITemplateModel {
       progressStatus
     );
     const template = await templateModel.create({ channelId, pages, type });
-    const list = await listService.createListTemplate(channelId, template);
+    await listService.createListTemplate(channelId, template);
 
     return template;
   }
@@ -88,7 +88,7 @@ class TemplateService implements ITemplateModel {
       });
   }
 
-  async deleteTemplate(id: string, channelId?: number): Promise<object> {
+  async deleteTemplate(id: string, channelId: number): Promise<object> {
     const deleteTemplate = await templateModel.deleteOne({ _id: id });
     await listService.deleteListTemplate(channelId, id);
     return deleteTemplate;
@@ -113,25 +113,6 @@ class TemplateService implements ITemplateModel {
       percentage,
     };
     return progressPercentage;
-  }
-
-  async findTemplateList(channelId: number): Promise<template[]> {
-    const findProgress = await templateModel.aggregate([
-      {
-        $match: {
-          channelId: channelId,
-        },
-      },
-      {
-        $group: {
-          _id: "$_id",
-          pageName: { $last: "$pageName" },
-          type: { $last: "$type" },
-          categories: { $last: "$categories" },
-        },
-      },
-    ]);
-    return findProgress;
   }
 }
 
