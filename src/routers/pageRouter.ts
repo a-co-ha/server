@@ -13,5 +13,4 @@ pageRouter.post(
   imageUpload.single("image"),
   asyncHandler(pageController.imageUpload)
 );
-pageRouter.get("/", asyncHandler(pageController.findPageList));
 pageRouter.post("/images/delete", asyncHandler(pageController.imageDelete));
