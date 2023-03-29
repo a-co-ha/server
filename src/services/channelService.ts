@@ -105,9 +105,21 @@ export class ChannelService implements IChannelModel {
         required: true,
         attributes: ["user_id"],
       },
+      raw: true,
       where: { channelId },
     });
-    return result;
+    const { userId } = await Channel.findOne({
+      where: { id: channelId },
+      raw: true,
+      attributes: ["userId"],
+    });
+
+    const a = result.map((i) => {
+      i["admin"] = i.userId === userId;
+      return i;
+    });
+
+    return a;
   }
 }
 
