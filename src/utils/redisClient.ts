@@ -10,8 +10,8 @@ const host = process.env.REDIS_HOST;
 export const redisClient: any = Promise.promisifyAll(
   redis.createClient({
     socket: {
-      // host: "127.0.0.1",
-      host: host,
+      host: "127.0.0.1",
+      // host: host,
       port: 6379,
     },
     legacyMode: true,

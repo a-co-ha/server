@@ -23,7 +23,7 @@ class TemplateService implements ITemplateModel {
       progressStatus
     );
     const template = await templateModel.create({ channelId, pages, type });
-    const list = await listService.createListTemplate(channelId, template);
+    await listService.createListTemplate(channelId, template);
 
     return template;
   }

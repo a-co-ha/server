@@ -84,6 +84,9 @@ class ListService implements IListModel {
       { _id },
       { ListPage: { $elemMatch: { template: id } } }
     );
+
+    console.log(findList);
+
     const listTemplateId = findList.ListPage[0]._id;
     const deleteList = await listModel.findByIdAndUpdate(
       { _id },
