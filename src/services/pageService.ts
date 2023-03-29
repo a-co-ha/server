@@ -40,7 +40,7 @@ class PageService implements IPageModel {
   async pushPage(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
     return await this.pageModel.findOneAndUpdate(
-      { _id: id },
+      { _id: id, channelId },
       {
         pageName: pageName,
         label: label,

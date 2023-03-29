@@ -39,7 +39,7 @@ export class ChannelService implements IChannelModel {
     } = joinInfo;
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
-
+    console.log(channelName);
     const channelInfo = await this.get({ admin, channelName });
 
     if (channelName === channelInfo.channelName) {
@@ -55,8 +55,45 @@ export class ChannelService implements IChannelModel {
 
     return { userId, channelName };
   }
-  async delete(channelId: number): Promise<any> {
-    return await Channel.destroy({ where: { id: channelId } });
+  async delete(channelId: number, userId: number): Promise<object> {
+    const channel = await Channel.findOne({
+      where: { id: channelId },
+      raw: true,
+    });
+    if (channel.userId !== userId) {
+      throw new Error("채널 주인이 아닙니다.");
+    }
+
+    await ChannelUser.destroy({ where: { channelId } });
+    const deleteChannel = await Channel.destroy({
+      where: { id: channelId },
+    }).then(() => {
+      const deleteInfo = {
+        channelId,
+        status: "삭제 되었습니다.",
+      };
+
+      return deleteInfo;
+    });
+    return deleteChannel;
+  }
+
+  async channelExit(userId: number, channelId: number): Promise<any> {
+    const channelExit = await ChannelUser.destroy({
+      where: { userId, channelId },
+    }).then((result) => {
+      if (result === 1) {
+        const channelInfo = {
+          channelId,
+          status: "채널을 나갔습니다.",
+        };
+        return channelInfo;
+      } else {
+        throw new Error("속하지 않은 채널입니다.");
+      }
+    });
+
+    return channelExit;
   }
 }
 

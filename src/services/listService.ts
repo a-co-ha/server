@@ -1,6 +1,7 @@
-import { listModel, listModelType } from "../model";
+import { listModel, listModelType, pageModel } from "../model";
 import { IListModel, list, page, template } from "../interface";
 import { ListInterface } from "../model/schema/listSchema";
+import { templateModel } from "../model/index";
 
 class ListService implements IListModel {
   private listModel: listModelType;
@@ -100,6 +101,8 @@ class ListService implements IListModel {
       throw new Error("채널이 없습니다.");
     }
     const _id = list._id;
+    await pageModel.deleteMany({ channelId });
+    await templateModel.deleteMany({ channelId });
     return listModel.findByIdAndDelete({ _id });
   }
 }

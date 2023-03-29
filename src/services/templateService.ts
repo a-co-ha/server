@@ -82,7 +82,7 @@ class TemplateService implements ITemplateModel {
       }
     });
     return await this.templateModel
-      .findByIdAndUpdate({ _id: id }, { pageName, pages })
+      .findByIdAndUpdate({ _id: id, channelId }, { pageName, pages })
       .then(() => {
         return this.findTemplate(channelId, id, type);
       });
