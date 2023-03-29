@@ -7,6 +7,7 @@ import { pageService } from "../services/pageService";
 interface IChannelController {
   create: AsyncRequestHandler;
   join: AsyncRequestHandler;
+  getUser: AsyncRequestHandler;
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
@@ -47,6 +48,13 @@ export class ChannelController implements IChannelController {
     const deleteChannel = await channelService.delete(channelId);
     await listService.deleteList(channelId);
     res.json(deleteChannel);
+  };
+
+  getUsers: AsyncRequestHandler = async (req, res) => {
+    const { channelId } = req.body;
+    const result = await channelService.getUsers(channelId);
+
+    res.json(result);
   };
 }
 

@@ -52,7 +52,7 @@ ChannelUser.init(
 );
 
 ChannelUser.belongsTo(Channel);
-ChannelUser.belongsTo(User);
+ChannelUser.belongsTo(User, { foreignKey: "userId" });
 
 Channel.hasMany(ChannelUser, {
   sourceKey: "id",
