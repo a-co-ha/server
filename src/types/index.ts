@@ -23,10 +23,11 @@ export enum TokenType {
 declare global {
   namespace Express {
     interface Request {
-      user: UserAttributes;
+      user?: UserAttributes;
     }
   }
 }
+
 
 declare module "express-session" {
   interface SessionData {

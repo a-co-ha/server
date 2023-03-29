@@ -29,11 +29,7 @@ export async function loginRequired(
   try {
     const decoded = await decode(token);
 
-    req.user.userId = decoded.userId;
-    req.user.name = decoded.name;
-    req.user.githubID = decoded.githubID;
-    req.user.githubURL = decoded.githubURL;
-    req.user.img = decoded.img;
+    req.user = decoded;
 
     next();
   } catch (error: any) {
