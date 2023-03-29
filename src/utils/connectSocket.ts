@@ -6,7 +6,7 @@ export const connectSocket = (
   user: UserAttributes
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const socket = io("http://localhost:3001", {
+    const socket = io("http://localhost:3000", {
       auth: { sessionId, user },
     });
 

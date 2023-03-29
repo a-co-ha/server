@@ -28,7 +28,6 @@ COPY .yarnrc.yml                  ./
 COPY .yarn                        ./.yarn
 # COPY package.json .
 RUN yarn install --immutable
-RUN yarn build
 # Docker Demon Port Mapping
 EXPOSE 3000
 

@@ -1,9 +1,11 @@
+import { cascade } from "./../middlewares/cascade";
 import { channelJoinInterface, UserAttributes } from "./../interface/index";
 import { IChannelModel } from "../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
 import { Channel } from "../model/channel";
 import { ChannelUser } from "../model/channelUser";
+import { User } from "../model/user";
 
 export class ChannelService implements IChannelModel {
   async invite(info: channelJoinInterface): Promise<any> {
@@ -94,6 +96,18 @@ export class ChannelService implements IChannelModel {
     });
 
     return channelExit;
+  }
+
+  async getUsers(channelId: number): Promise<any> {
+    const result = await ChannelUser.findAll({
+      include: {
+        model: User,
+        required: true,
+        attributes: ["user_id"],
+      },
+      where: { channelId },
+    });
+    return result;
   }
 }
 

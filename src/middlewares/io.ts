@@ -1,6 +1,5 @@
-import { UserAttributes } from "./../interface/userInterface";
+
 import crypto from "crypto";
-import { SocketClosedUnexpectedlyError } from "redis";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 import { userHasChannels } from "../interface";
@@ -13,9 +12,9 @@ export const socketMiddleware = async (socket, next) => {
   const sessionID = socket.handshake.auth.sessionId;
   const user = socket.handshake.auth.user;
 
-  // if (!sessionID || !user) {
-  //   return next(new Error("소켓 에러"));
-  // }
+  if (!sessionID || !user) {
+    return next(new Error("소켓 에러"));
+  }
 
   const getChannel = await userService.get(user.userId);
 

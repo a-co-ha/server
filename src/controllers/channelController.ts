@@ -9,6 +9,7 @@ interface IChannelController {
   join: AsyncRequestHandler;
   delete: AsyncRequestHandler;
   channelExit: AsyncRequestHandler;
+  getUsers: AsyncRequestHandler;
 }
 export class ChannelController implements IChannelController {
   create: AsyncRequestHandler = async (req, res) => {
@@ -60,6 +61,13 @@ export class ChannelController implements IChannelController {
 
     const channelExit = await channelService.channelExit(userId, channelId);
     res.json(channelExit);
+  };
+
+  getUsers: AsyncRequestHandler = async (req, res) => {
+    const { channelId } = req.body;
+    const result = await channelService.getUsers(channelId);
+
+    res.json(result);
   };
 }
 
