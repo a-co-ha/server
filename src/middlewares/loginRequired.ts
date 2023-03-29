@@ -4,6 +4,7 @@ import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
 import { UserAttributes } from "../interface";
+
 export async function loginRequired(
   req: Request,
   res: Response,
@@ -28,16 +29,12 @@ export async function loginRequired(
 
   try {
     const decoded = await decode(token);
-
-    req.user.userId = decoded.userId;
-    req.user.name = decoded.name;
-    req.user.githubID = decoded.githubID;
-    req.user.githubURL = decoded.githubURL;
-    req.user.img = decoded.img;
+    req.user = decoded;
 
     next();
   } catch (error: any) {
-    errorResponse(res, ErrorType.FORBIDDEN, `${tokenType} error`);
+    console.log(error);
+    errorResponse(res, ErrorType.FORBIDDEN, error);
     return;
   }
 }

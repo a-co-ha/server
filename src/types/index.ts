@@ -1,6 +1,7 @@
-import { UserAttributes } from "./../interface/userInterface";
+import { UserAttributes } from "../interface/userInterface";
 import { Request, Response, NextFunction } from "express";
 import "express-session";
+import "express";
 
 export type AsyncRequestHandler = (
   req: Request,
@@ -23,7 +24,7 @@ export enum TokenType {
 declare global {
   namespace Express {
     interface Request {
-      user: UserAttributes;
+      user?: UserAttributes;
     }
   }
 }

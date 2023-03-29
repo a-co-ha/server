@@ -23,8 +23,8 @@ redisClient.on("error", (err) => {
   console.error("Redis Client Error", err);
 });
 
-// subClient.on("error", (err) => {
-//   console.error("Redis Client Error", err);
-// });
+subClient.on("error", (err) => {
+  console.error("Redis Client Error", err);
+});
 redisClient.connect().then().catch(console.error); // redis v4 연결 (비동기)
 export const redisCli = redisClient.v4;
