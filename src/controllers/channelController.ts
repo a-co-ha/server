@@ -64,7 +64,8 @@ export class ChannelController implements IChannelController {
   };
 
   getUsers: AsyncRequestHandler = async (req, res) => {
-    const { channelId } = req.body;
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
     const result = await channelService.getUsers(channelId);
 
     res.json(result);

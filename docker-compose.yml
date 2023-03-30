@@ -16,13 +16,6 @@ services:
     depends_on:
       - express-server
 
-  redis-server:
-    image: redis:latest
-    container_name: "redis"
-    command: redis-server --port 6379
-    ports:
-      - 6379:6379
-
   express-server:
     container_name: express
     build:

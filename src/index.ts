@@ -54,9 +54,14 @@ class AppServer {
     const io = new Server(server, {
       cors: {},
     });
-    Promise.all([redisClient.connect(), subClient.connect()]).then(() => {
-      io.adapter(createAdapter(redisClient, subClient));
-    });
+    Promise.all([redisClient.connect(), subClient.connect()])
+      .then(() => {
+        io.adapter(createAdapter(redisClient, subClient));
+      })
+      .catch((err) => {
+        console.error("Failed to connect to Redis", err);
+      });
+
     io.use(wrap(session(sessionConfig)));
     io.use(socketMiddleware);
     socket(io);

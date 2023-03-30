@@ -53,7 +53,7 @@ export class UserService {
         attributes: ["channel_id"],
       },
       where: { userId: id },
-      attributes: ["user_id", "githubID", "githubURL", "img", "name"],
+      attributes: ["userId", "githubID", "githubURL", "img", "name"],
     });
 
     if (query.length <= 0) {
