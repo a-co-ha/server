@@ -1,6 +1,4 @@
-import { config } from "./../config";
 /* eslint-disable no-var */
-
 import { redisCli } from "./redisClient";
 import { promisify } from "util";
 const getAsync = promisify(redisClient.get).bind(redisClient);
