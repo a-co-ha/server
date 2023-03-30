@@ -3,11 +3,11 @@ import Promise from "bluebird";
 
 import dotenv from "dotenv";
 dotenv.config();
-
+const host =  process.env.REDIS_HOST;
 export const redisClient: any = Promise.promisifyAll(
   redis.createClient({
     socket: {
-      host: "redis-server",
+      host: host,
       port: 6379,
     },
     legacyMode: true,
