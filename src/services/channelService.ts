@@ -10,6 +10,10 @@ import { User } from "../model/user";
 export class ChannelService implements IChannelModel {
   async invite(info: channelJoinInterface): Promise<any> {
     const { admin, channelName, userId, name } = info;
+    const channelNameCheck = await this.get(info);
+    if (channelNameCheck) {
+      throw new Error("같은 이름의 채널이 이미 있습니다.");
+    }
 
     await Channel.create({ userId: admin as number, channelName });
 
