@@ -21,6 +21,11 @@ export enum TokenType {
   REFRESH = "refresh",
 }
 
+export enum LogColor {
+  INFO = "\x1b[35m%s\x1b[0m", // magenta
+  ERROR = "\x1b[33m%s\x1b[0m", // yellow
+}
+
 declare global {
   namespace Express {
     interface Request {
@@ -28,7 +33,6 @@ declare global {
     }
   }
 }
-
 
 declare module "express-session" {
   interface SessionData {

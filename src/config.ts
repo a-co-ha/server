@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { redisCli, redisClient } from "./utils/redisClient";
 import RedisStore from "connect-redis";
+import { SessionOptions } from "express-session";
 
 const envFound = dotenv.config();
 
@@ -56,4 +57,4 @@ export const sessionConfig = {
   resave: false,
   saveUninitialized: true, // 세션에 저장할 내역이 없더라도 처음부터 세션을 생성할지 설정
   // secure: true, // https 환경에서만 session 정보를 주고받도록처리
-};
+} as SessionOptions;

@@ -21,3 +21,4 @@ export const endPoint: EndPointInterface = {
   list: "/api/list",
   github: "/api/github",
 };
+

@@ -1,7 +1,9 @@
+import { LogColor } from "./../types/index";
 import { ErrorRequestHandler } from "express";
+import { ErrorType } from "../types";
 import { errorResponse } from "../utils";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log("\x1b[33m%s\x1b[0m", err.stack);
-  errorResponse(res, "BADREQUEST", err.message);
+  console.log(LogColor.ERROR, err.stack);
+  errorResponse(res, ErrorType.BADREQUEST, err.message);
 };

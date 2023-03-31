@@ -1,3 +1,4 @@
+import { LogColor } from "./types/index";
 import { socketMiddleware } from "./middlewares/io";
 import express from "express";
 import cors from "cors";
@@ -5,7 +6,8 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import logger from "morgan";
 import session from "express-session";
-import cluster from "cluster";
+import util from "util";
+
 import { port, mongoDBUri, sessionConfig, SESSION_SECRET } from "./config";
 import {
   indexRouter,
@@ -20,7 +22,6 @@ import {
 } from "./routers";
 import { endPoint } from "./constants";
 import {
-  decode,
   DtoValidatorMiddleware,
   errorHandler,
   loginRequired,
@@ -34,7 +35,6 @@ import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
 
 import { redisClient, subClient } from "./utils/redisClient";
-
 class AppServer {
   app: express.Application;
   static PORT = port;
@@ -54,13 +54,27 @@ class AppServer {
     const io = new Server(server, {
       cors: {},
     });
-    Promise.all([redisClient.connect(), subClient.connect()])
-      .then(() => {
+    redisClient.on("connect", () => {
+      console.info(LogColor.INFO, "pubClient Redis connected!");
+      subClient.on("connect", () => {
+        console.info(LogColor.INFO, "subClient Redis connected!");
         io.adapter(createAdapter(redisClient, subClient));
-      })
-      .catch((err) => {
-        console.error("Failed to connect to Redis", err);
+        console.log("ho");
       });
+      subClient.on("error", (err) => {
+        console.error("subClient Redis error", err);
+      });
+    });
+
+    redisClient.on("error", (err) => {
+      console.error("Redis Client Error", err);
+    });
+
+    subClient.on("error", (err) => {
+      console.error("subClient Redis error", err);
+    });
+
+    redisClient.connect();
 
     io.use(wrap(session(sessionConfig)));
     io.use(socketMiddleware);
@@ -68,12 +82,14 @@ class AppServer {
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
-          console.log("DB sequelize connection success");
+          console.info(LogColor.INFO, "sequelize connection success");
         });
-        console.log(`server listening at http://localhost:${port}`);
+        console.info(
+          LogColor.INFO,
+          `server listening at http://localhost:${port}`
+        );
       } catch (err) {
         console.error(err);
-        console.log("Server running failed");
       }
     });
   }
@@ -82,6 +98,7 @@ class AppServer {
     this.app.use(
       cors({
         origin: [
+          "http://ec2-54-180-147-65.ap-northeast-2.compute.amazonaws.com",
           "http://localhost:3001",
           "https://acoha.site",
           "https://npm.acoha.site",
@@ -118,7 +135,7 @@ class AppServer {
     mongoose.set("strictQuery", true);
     mongoose.connect(mongoDBUri);
     mongoose.connection.on("connected", () => {
-      console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
+      console.info(LogColor.INFO, `connected to MongoDB`);
     });
   }
 

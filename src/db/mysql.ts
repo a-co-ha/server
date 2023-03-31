@@ -1,3 +1,4 @@
+import { LogColor } from './../types/index';
 import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
@@ -22,9 +23,9 @@ export const init = () => {
       connectionLimit: 10000,
     });
 
-    console.debug("MySql Adapter Pool generated successfully");
+    console.debug(LogColor.INFO, "MySql Adapter Pool generated successfully");
   } catch (error) {
-    console.error("[mysql.connector][init][Error]: ", error);
+    console.error(LogColor.ERROR, "[mysql.connector][init][Error]: ", error);
     throw new Error("failed to initialized pool");
   }
 };
@@ -55,7 +56,7 @@ export const execute = async <T>(
       });
     });
   } catch (error) {
-    console.error("[mysql.connector][execute][Error]: ", error);
+    console.error(LogColor.ERROR, "[mysql.connector][execute][Error]: ", error);
     throw new Error("failed to execute MySQL query");
   }
 };
