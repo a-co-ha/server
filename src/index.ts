@@ -117,6 +117,7 @@ class AppServer {
   private routes() {
     this.app.get(endPoint.index, indexRouter);
     this.app.use(endPoint.oauth, oauthRouter);
+    this.app.use(endPoint.invite, loginRequired, channelRouter);
     this.app.use(endPoint.user, loginRequired, userRouter);
     this.app.use(
       endPoint.channel,

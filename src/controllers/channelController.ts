@@ -33,6 +33,7 @@ export class ChannelController implements IChannelController {
   join: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
     const channelCode = req.query.channelCode as string;
+
     const { userId, name } = req.user;
     const joinInfo: channelJoinInterface = {
       admin: adminCode,

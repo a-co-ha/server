@@ -1,5 +1,6 @@
 interface EndPointInterface {
   index: string;
+  invite: string;
   oauth: string;
   channel: string;
   user: string;
@@ -12,6 +13,7 @@ interface EndPointInterface {
 
 export const endPoint: EndPointInterface = {
   index: "/",
+  invite: "/invite",
   oauth: "/api/oauth",
   channel: "/api/channel",
   user: "/api/user",
@@ -21,4 +23,3 @@ export const endPoint: EndPointInterface = {
   list: "/api/list",
   github: "/api/github",
 };
-
