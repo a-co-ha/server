@@ -45,7 +45,9 @@ export class ChannelService implements IChannelModel {
     } = joinInfo;
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
-    console.log(channelName);
+    if (await this.isInvited({ channelName, name })) {
+      throw new Error("이미 참여함");
+    }
     const channelInfo = await this.get({ admin, channelName });
 
     if (channelName === channelInfo.channelName) {
@@ -59,7 +61,18 @@ export class ChannelService implements IChannelModel {
       throw new Error("channel Not matching");
     }
 
-    return { userId, channelName };
+    return { channelId: channelInfo.id, userId, channelName };
+  }
+
+  async isInvited({ channelName, name }): Promise<boolean> {
+    const result = await ChannelUser.findAll({
+      where: {
+        channelName,
+        name,
+      },
+    });
+
+    return result.length !== 0;
   }
   async delete(channelId: number, userId: number): Promise<object> {
     const channel = await Channel.findOne({
