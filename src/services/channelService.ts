@@ -18,13 +18,23 @@ export class ChannelService implements IChannelModel {
     await Channel.create({ userId: admin as number, channelName });
 
     const channel = await this.get(info);
-    await ChannelUser.create({
+    await this.userJoin({
       userId,
       name,
-      channelId: channel.id,
       channelName,
+      id: channel.id,
     });
     return channel;
+  }
+
+  private async userJoin(info: channelJoinInterface): Promise<void> {
+    const { userId, id, name, channelName } = info;
+    await ChannelUser.create({
+      userId,
+      channelId: id,
+      name,
+      channelName,
+    });
   }
 
   // 채널 주인과, 채널 이름으로 찾음
@@ -51,11 +61,11 @@ export class ChannelService implements IChannelModel {
     const channelInfo = await this.get({ admin, channelName });
 
     if (channelName === channelInfo.channelName) {
-      await ChannelUser.create({
+      await this.userJoin({
         userId,
         name,
-        channelId: channelInfo.id,
         channelName,
+        id: channelInfo.id,
       });
     } else {
       throw new Error("channel Not matching");

@@ -12,7 +12,8 @@ export interface Channel_UserAttributes extends ChannelAttributes {
 }
 
 export interface IChannelInfo {
-  admin: string | number; // userId
+  id?: number;
+  admin?: string | number; // userId
   channelName: string;
 }
 export interface IChannel extends IChannelInfo {
