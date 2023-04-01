@@ -1,6 +1,6 @@
-import { ChannelService } from "../services/channelService";
-import { ListService } from "../services/listService";
-import { PageService } from "../services/pageService";
+import { channelService, ChannelService } from "../services/channelService";
+import { listService, ListService } from "../services/listService";
+import { pageService, PageService } from "../services/pageService";
 import { channelJoinInterface } from "../interface";
 import { AsyncRequestHandler } from "../constants";
 
@@ -27,6 +27,7 @@ export class ChannelController {
 
     await this.listService.createList(channelId);
     await this.pageService.createPage(channelId, blockId);
+    console.log("er");
     res.status(200).json(result);
   };
 
@@ -75,3 +76,8 @@ export class ChannelController {
     res.json(result);
   };
 }
+export const channelController = new ChannelController(
+  channelService,
+  listService,
+  pageService
+);

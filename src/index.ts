@@ -28,7 +28,7 @@ import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
-import { sequelize } from "./db/sequelize";
+import { sequelize } from "./model";
 
 export class AppServer {
   app: express.Application;
