@@ -1,7 +1,7 @@
 import { DataTypes, Model, Association } from "sequelize";
+import { sequelize } from "../db/sequelize";
 import { UserAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
-import { sequelize } from "./index";
 
 export class User extends Model<UserAttributes> {
   public userId!: number;
@@ -22,9 +22,6 @@ User.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       field: "user_id",
-      // get() {
-      //   return this.getDataValue("userId");
-      // },
     },
     name: {
       type: DataTypes.STRING(45),
@@ -53,7 +50,7 @@ User.init(
   {
     modelName: "user",
     tableName: "user",
-    sequelize,
+    sequelize: sequelize,
     freezeTableName: true,
     timestamps: false,
     updatedAt: "updateTimestamp",

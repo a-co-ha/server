@@ -1,7 +1,6 @@
 import { errorResponse } from "./../utils/errorResponse";
 import { userService } from "./../services/userService";
-import { AsyncRequestHandler, ErrorType } from "../types";
-import { connectSocket } from "../utils/connectSocket";
+import { AsyncRequestHandler, ErrorType } from "../constants";
 
 interface IUserController {
   login: AsyncRequestHandler;

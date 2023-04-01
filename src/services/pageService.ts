@@ -1,7 +1,7 @@
 import { pageModel, pageModelType, templateModel } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
-class PageService implements IPageModel {
+export class PageService implements IPageModel {
   private pageModel: pageModelType;
   constructor(pageModel: pageModelType) {
     this.pageModel = pageModel;

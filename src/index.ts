@@ -1,55 +1,51 @@
-import { LogColor } from "./types/index";
-import { socketMiddleware } from "./middlewares/io";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import mongoose from "mongoose";
-import logger from "morgan";
 import session from "express-session";
-import util from "util";
-
-import { port, mongoDBUri, sessionConfig, SESSION_SECRET } from "./config";
+import { corsOrigin, port, sessionConfig, SESSION_SECRET } from "./config";
 import {
-  indexRouter,
-  oauthRouter,
   channelRouter,
+  githubRouter,
+  indexRouter,
+  listRouter,
+  oauthRouter,
   pageRouter,
   socket,
-  listRouter,
-  userRouter,
-  githubRouter,
   templateRouter,
+  userRouter,
 } from "./routers";
-import { endPoint } from "./constants";
+import { LogColor, endPoint } from "./constants";
 import {
-  DtoValidatorMiddleware,
-  errorHandler,
-  loginRequired,
   wrap,
+  socketMiddleware,
+  loginRequired,
+  errorHandler,
 } from "./middlewares";
-
-import { init } from "./db/mysql";
+import { redisClient, subClient } from "./utils/redisClient";
+import { MongoAdapter } from "./db/mongo";
+import logger from "morgan";
+import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { sequelize } from "./model";
 import { createAdapter } from "@socket.io/redis-adapter";
+import { sequelize } from "./db/sequelize";
 
-import { redisClient, subClient } from "./utils/redisClient";
-class AppServer {
+export class AppServer {
   app: express.Application;
   static PORT = port;
+
   constructor() {
     this.app = express();
   }
-  config() {
-    this.mongo();
-    this.mysql();
+  async config() {
+    new MySqlAdapter();
+    new MongoAdapter();
     this.middleWare();
     this.routes();
   }
-  static start() {
+
+  static async start() {
     const appServer = new AppServer();
-    appServer.config();
     const server = createServer(appServer.app);
     const io = new Server(server, {
       cors: {},
@@ -79,6 +75,8 @@ class AppServer {
     io.use(wrap(session(sessionConfig)));
     io.use(socketMiddleware);
     socket(io);
+
+    await appServer.config();
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
@@ -95,21 +93,10 @@ class AppServer {
   }
 
   private middleWare() {
-    this.app.use(
-      cors({
-        origin: [
-          "http://ec2-54-180-147-65.ap-northeast-2.compute.amazonaws.com",
-          "http://localhost:3001",
-          "https://acoha.site",
-          "https://npm.acoha.site",
-        ],
-        credentials: true,
-      })
-    );
+    this.app.use(cors({ origin: corsOrigin, credentials: true }));
     this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-
     this.app.use(cookieParser(SESSION_SECRET));
     this.app.use(session(sessionConfig));
   }
@@ -130,18 +117,6 @@ class AppServer {
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);
     this.app.use(errorHandler);
-  }
-
-  private mongo() {
-    mongoose.set("strictQuery", true);
-    mongoose.connect(mongoDBUri);
-    mongoose.connection.on("connected", () => {
-      console.info(LogColor.INFO, `connected to MongoDB`);
-    });
-  }
-
-  private mysql() {
-    init();
   }
 }
 AppServer.start();

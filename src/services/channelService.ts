@@ -1,5 +1,4 @@
-import { cascade } from "./../middlewares/cascade";
-import { channelJoinInterface, UserAttributes } from "./../interface/index";
+import { channelJoinInterface } from "./../interface/index";
 import { IChannelModel } from "../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";

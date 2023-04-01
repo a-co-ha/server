@@ -1,4 +1,4 @@
-import { ErrorType, TokenType } from "./../types/index";
+import { ErrorType, TokenType } from "../constants";
 import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
@@ -33,7 +33,6 @@ export async function loginRequired(
 
     next();
   } catch (error: any) {
-    console.log(error);
     errorResponse(res, ErrorType.FORBIDDEN, error);
     return;
   }

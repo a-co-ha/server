@@ -1,6 +1,5 @@
-import { LogColor } from "./../types/index";
+import { LogColor, ErrorType } from "../constants";
 import { ErrorRequestHandler } from "express";
-import { ErrorType } from "../types";
 import { errorResponse } from "../utils";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

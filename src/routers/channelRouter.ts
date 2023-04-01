@@ -1,12 +1,17 @@
 import express from "express";
+import { ChannelController } from "../controllers/channelController";
 import { asyncHandler } from "../utils";
-import { channelController } from "../controllers";
-import { DtoValidatorMiddleware } from "../middlewares";
 
-export const channelRouter = express.Router();
+export function channelRouter(
+  channelController: ChannelController
+): express.Router {
+  const router = express.Router();
 
-channelRouter.post("/create", asyncHandler(channelController.create));
-channelRouter.post("/:adminCode", asyncHandler(channelController.join));
-channelRouter.delete("/admin", asyncHandler(channelController.delete));
-channelRouter.delete("/exit", asyncHandler(channelController.channelExit));
-channelRouter.get("/users", asyncHandler(channelController.getUsers));
+  router.post("/create", asyncHandler(channelController.create));
+  router.post("/:adminCode", asyncHandler(channelController.join));
+  router.delete("/admin", asyncHandler(channelController.delete));
+  router.delete("/exit", asyncHandler(channelController.channelExit));
+  router.get("/users", asyncHandler(channelController.getUsers));
+
+  return router;
+}

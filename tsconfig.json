@@ -4,7 +4,7 @@
     "target": "es6",
     "jsx": "react",
     "module": "commonjs",
-    "rootDir": "./",
+    "rootDir": "./src",
     "moduleResolution": "node",
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -16,7 +16,6 @@
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
     "noImplicitAny": false,
-    "typeRoots": ["./src/types"]
   },
-  "include": ["src/**/**/*", ".eslintrc.cjs"]
+    "include": ["src/**/*", ".eslintrc.cjs"],
 }

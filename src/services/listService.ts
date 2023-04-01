@@ -3,7 +3,7 @@ import { IListModel, list, page, template } from "../interface";
 import { ListInterface } from "../model/schema/listSchema";
 import { templateModel } from "../model/index";
 
-class ListService implements IListModel {
+export class ListService implements IListModel {
   private listModel: listModelType;
   constructor(listModel: listModelType) {
     this.listModel = listModel;

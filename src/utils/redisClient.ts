@@ -1,4 +1,4 @@
-import { LogColor } from "./../types/index";
+import { LogColor } from "../constants";
 import * as redis from "redis";
 import Promise from "bluebird";
 

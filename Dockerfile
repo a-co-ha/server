@@ -22,12 +22,15 @@ RUN apk --no-cache add tzdata && \
 # Create Directory for the Container
 WORKDIR /app
 
-# Only copy the package.json file to work directory
 COPY package* yarn.lock .pnp*     ./
 COPY .yarnrc.yml                  ./
 COPY .yarn                        ./.yarn
-# COPY package.json .
+
 RUN yarn install --immutable
+
+# Build TypeScript code
+RUN yarn build
+
 # Docker Demon Port Mapping
 EXPOSE 3000
 

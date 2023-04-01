@@ -1,5 +1,3 @@
-import { Channel } from "./../model/channel";
-import { redisClient, subClient } from "./../utils/redisClient";
 /* eslint-disable prefer-const */
 import { messageController } from "../controllers";
 import redisCache from "../utils/redisCache";

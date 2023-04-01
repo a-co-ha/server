@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ErrorType } from "../types";
+import { ErrorType } from "../constants";
 
 export const errorResponse = (
   res: Response,

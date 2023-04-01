@@ -1,7 +1,10 @@
 {
-    "ignore": [
-        "dist/"
+    "watch": [
+        "src"
     ],
-    "exec": "yarn build && node dist",
-    "ext": "js,json,ts"
+    "ext": ".js,.ts",
+    "ignore": [
+        "dist"
+    ],
+    "exec": "node --experimental-specifier-resolution=node src/index.cjs"
 }
