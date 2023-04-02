@@ -17,6 +17,9 @@ import {
   userRouter,
   githubRouter,
   templateRouter,
+  bookmarkRouter,
+  imageRouter,
+  bookmarkListRouter,
 } from "./routers";
 import { endPoint } from "./constants";
 import {
@@ -112,6 +115,9 @@ class AppServer {
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);
     this.app.use(errorHandler);
+    this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
+    this.app.use(endPoint.image, imageRouter);
+    this.app.use(endPoint.bookmarkList, bookmarkListRouter);
   }
 
   private mongo() {

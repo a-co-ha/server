@@ -8,6 +8,9 @@ interface EndPointInterface {
   template: string;
   list: string;
   github: string;
+  bookmark: string;
+  image: string;
+  bookmarkList: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -20,4 +23,7 @@ export const endPoint: EndPointInterface = {
   template: "/api/template",
   list: "/api/list",
   github: "/api/github",
+  bookmark: "/api/bookmark",
+  image: "/api/image",
+  bookmarkList: "/api/bookmarkList",
 };

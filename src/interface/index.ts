@@ -108,6 +108,21 @@ export interface IListModel {
   updateList(channelId: number, listPage: list): Promise<ListInterface>;
   deleteListPage(channelId: number, id: string): Promise<ListInterface>;
 }
+export interface bookmarkInfo {
+  channelId: number;
+  bookmarkName: string;
+  content: string;
+  userId: number;
+  userName: string;
+}
+export interface IChatBookmarkModel {
+  createBookmark(bookmarkInfo: bookmarkInfo): Promise<bookmarkInfo>;
+  findBookmark(id: string, channelId: number): Promise<bookmarkInfo>;
+  updateBookmark(id: string, bookmarkInfo: bookmarkInfo): Promise<bookmarkInfo>;
+  deleteBookmark(id: string, channelId: number): Promise<any>;
+}
+
+export interface IBookmarkListModel {}
 
 export interface MessageAttributes {
   id?: string;

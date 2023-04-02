@@ -10,18 +10,20 @@ class ListService implements IListModel {
   }
 
   async createList(channelId: number): Promise<ListInterface> {
+    const findList = await listModel.findOne({ channelId });
+    if (findList) {
+      throw new Error("중복 에러");
+    }
     const list = await listModel.create({ channelId });
     return list;
   }
   async createListPage(channelId: number, page: page): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-    const listId = list._id;
-    const pushTemplateList = await listModel.findByIdAndUpdate(
-      { _id: listId },
+    const pushPageList = await listModel.findOneAndUpdate(
+      { channelId },
       { $push: { ListPage: { page } } }
     );
 
-    return pushTemplateList;
+    return pushPageList;
   }
 
   async createListTemplate(
