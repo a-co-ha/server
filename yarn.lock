@@ -3300,7 +3300,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@redis/client@npm:1.5.6":
+"@redis/client@npm:1.5.6, @redis/client@npm:^1.5.6":
   version: 1.5.6
   resolution: "@redis/client@npm:1.5.6"
   dependencies:
@@ -3361,6 +3361,13 @@ __metadata:
     debug: ~4.3.1
     socket.io-adapter: ~2.4.0
   checksum: 5e0e9322e0df6bff9226133f09a73ea01aa487a25e15327b7712e642d80382e3750d99f71cd3c8d94f910d77097e792bb18c9214006e9590a39647398865802c
+  languageName: node
+  linkType: hard
+
+"@socket.io/component-emitter@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "@socket.io/component-emitter@npm:3.0.0"
+  checksum: b5e909dbb16bcf27958d1bfb8319f3255f3a50f62fde78ecf9a584f39f916b928fdc5661519892eea912da082c6413d671c1e67bde70725c75ee62956aa67c26
   languageName: node
   linkType: hard
 
@@ -3844,6 +3851,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/redis@npm:^4.0.11":
+  version: 4.0.11
+  resolution: "@types/redis@npm:4.0.11"
+  dependencies:
+    redis: "*"
+  checksum: 4b2d252368a7dc78738a98a8bcc817f92ca097511a901427628566f24f53998a2b1b524a85dea6a19307d4a95b55bd7d5a6ad7cc944ae8f39e54ca2f28ddf893
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -3889,6 +3905,15 @@ __metadata:
     "@types/express": "*"
     "@types/express-session": "*"
   checksum: 363c7add3f9f472a4271a56d7de113ac82fb33ab6ca6d4edce0b6eaf75ff46dbf7adb072cf557fbcbd298bff44ab88f473858ef7f445ac757c673e057bf19673
+  languageName: node
+  linkType: hard
+
+"@types/socket.io-redis@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@types/socket.io-redis@npm:3.0.0"
+  dependencies:
+    socket.io-redis: "*"
+  checksum: 7f4100d465cc393808e66e91cbe29fc6c30b0ce96614f0ddfbf459a2225ac52036c35542a32782f0fe96a3d445cda8cd075f90592c56fbe609473ac22baa5b05
   languageName: node
   linkType: hard
 
@@ -4255,6 +4280,7 @@ __metadata:
     "@octokit/request-error": ^3.0.3
     "@octokit/rest": ^19.0.7
     "@octokit/types": ^9.0.0
+    "@redis/client": ^1.5.6
     "@socket.io/cluster-adapter": ^0.2.1
     "@socket.io/redis-adapter": ^8.1.0
     "@socket.io/sticky": ^1.0.3
@@ -4283,9 +4309,11 @@ __metadata:
     "@types/nodemon": ^1.19.2
     "@types/pg": ^8.6.5
     "@types/prettier": ^2
+    "@types/redis": ^4.0.11
     "@types/sequelize": ^4.28.14
     "@types/session-file-store": ^1.2.2
     "@types/socket.io": ^3.0.2
+    "@types/socket.io-redis": ^3.0.0
     "@types/uuid": ^9.0.1
     "@types/uuidv4": ^5.0.0
     "@types/winston": ^2.4.4
@@ -4316,7 +4344,7 @@ __metadata:
     global: ^4.4.0
     http-errors: ^2.0.0
     husky: ^8.0.3
-    ioredis: ^5.3.1
+    ioredis: latest
     jsonwebtoken: ^8.5.1
     koa-session2: babel
     lint-staged: ^13.1.0
@@ -4333,14 +4361,14 @@ __metadata:
     prettier: ^2.8.3
     promise-mysql: ^5.2.0
     pug: ^3.0.2
-    redis: ^4.6.5
+    redis: latest
     sequelize: latest
     sequelize-cli: ^6.6.0
     sequelize-typescript: ^2.1.5
-    socket.io: ^4.6.0
+    socket.io: 4.6.0
     socket.io-adapter: ^2.5.2
-    socket.io-client: ^4.6.1
-    socket.io-redis: ^6.1.1
+    socket.io-client: 4.3.1
+    socket.io-redis: 6.0.1
     socket.io-sessions: ^0.6.1
     sqlite3: ^5.1.4
     supports-color: ^9.3.1
@@ -4756,6 +4784,13 @@ __metadata:
   dependencies:
     "@babel/types": ^7.9.6
   checksum: 6fe7ee3889343a6602f665c28ea135956a0767d7f7ca5fc1d72c5243e2f6e9d8a64f51254bf2fd0cce47b79fceeccf7a357f37cfa755a509dfb930a21151837c
+  languageName: node
+  linkType: hard
+
+"backo2@npm:~1.0.2":
+  version: 1.0.2
+  resolution: "backo2@npm:1.0.2"
+  checksum: fda8d0a0f4810068d23715f2f45153146d6ee8f62dd827ce1e0b6cc3c8328e84ad61e11399a83931705cef702fe7cbb457856bf99b9bd10c4ed57b0786252385
   languageName: node
   linkType: hard
 
@@ -5709,6 +5744,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"debug@npm:~4.1.0":
+  version: 4.1.1
+  resolution: "debug@npm:4.1.1"
+  dependencies:
+    ms: ^2.1.1
+  checksum: 1e681f5cce94ba10f8dde74b20b42e4d8cf0d2a6700f4c165bb3bb6885565ef5ca5885bf07e704974a835f2415ff095a63164f539988a1f07e8a69fe8b1d65ad
+  languageName: node
+  linkType: hard
+
 "decompress-response@npm:^6.0.0":
   version: 6.0.0
   resolution: "decompress-response@npm:6.0.0"
@@ -5967,27 +6011,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"engine.io-client@npm:~6.4.0":
-  version: 6.4.0
-  resolution: "engine.io-client@npm:6.4.0"
+"engine.io-client@npm:~6.0.1":
+  version: 6.0.3
+  resolution: "engine.io-client@npm:6.0.3"
   dependencies:
-    "@socket.io/component-emitter": ~3.1.0
+    "@socket.io/component-emitter": ~3.0.0
     debug: ~4.3.1
-    engine.io-parser: ~5.0.3
-    ws: ~8.11.0
+    engine.io-parser: ~5.0.0
+    has-cors: 1.1.0
+    parseqs: 0.0.6
+    parseuri: 0.0.6
+    ws: ~8.2.3
     xmlhttprequest-ssl: ~2.0.0
-  checksum: f412a5d490d073bc6b1240002ea9d46c4813bfb7ad98edd54db3760d75cac1d7f73c2f802a7ce04827c1e304fa26f4d464785efdb003d6231cadedca649a7146
+    yeast: 0.1.2
+  checksum: 11a70dba629e47981966f4b43e839327adc2444ce77d3476dcb93281712e92f972e3fdf97f2c298b3887f17d38ee609f022a470b6d2d255beccd471fa366603d
   languageName: node
   linkType: hard
 
-"engine.io-parser@npm:~5.0.3":
+"engine.io-parser@npm:~5.0.0, engine.io-parser@npm:~5.0.3":
   version: 5.0.6
   resolution: "engine.io-parser@npm:5.0.6"
   checksum: e92255b5463593cafe6cdc90577f107b39056c9c9337a8ee3477cb274337da1fe4ff53e9b3ad59d0478878e1d55ab15e973e2a91d0334d25ea99d8d6f8032f26
   languageName: node
   linkType: hard
 
-"engine.io@npm:~6.4.1":
+"engine.io@npm:~6.4.0, engine.io@npm:~6.4.1":
   version: 6.4.1
   resolution: "engine.io@npm:6.4.1"
   dependencies:
@@ -7040,6 +7088,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"has-cors@npm:1.1.0":
+  version: 1.1.0
+  resolution: "has-cors@npm:1.1.0"
+  checksum: 549ce94113fd23895b22d71ade9809918577b8558cd4d701fe79045d8b1d58d87eba870260b28f6a3229be933a691c55653afd496d0fc52e98fd2ff577f01197
+  languageName: node
+  linkType: hard
+
 "has-flag@npm:^3.0.0":
   version: 3.0.0
   resolution: "has-flag@npm:3.0.0"
@@ -7331,7 +7386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:^5.3.1":
+"ioredis@npm:latest":
   version: 5.3.1
   resolution: "ioredis@npm:5.3.1"
   dependencies:
@@ -9281,6 +9336,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"parseqs@npm:0.0.6":
+  version: 0.0.6
+  resolution: "parseqs@npm:0.0.6"
+  checksum: 7fc4ff4ba59764060bb8529875f6d4313056ea6939ff579b22dd7bd6f6033035e1fd2d6a559ab48ef0a7fa29a9d7731c982bfd1594e9115141fe1c328485ce9e
+  languageName: node
+  linkType: hard
+
+"parseuri@npm:0.0.6":
+  version: 0.0.6
+  resolution: "parseuri@npm:0.0.6"
+  checksum: fa430e40f0c75293a28e5f1023da5f51a5038d5e34c48c517b0d5187143f6bcc67d3091a062b68765db4a22757e488c7d15854f9d1921f2c2b9afa5ca0629a84
+  languageName: node
+  linkType: hard
+
 "parseurl@npm:~1.3.3":
   version: 1.3.3
   resolution: "parseurl@npm:1.3.3"
@@ -9905,19 +9974,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis@npm:^3.0.0":
-  version: 3.1.2
-  resolution: "redis@npm:3.1.2"
-  dependencies:
-    denque: ^1.5.0
-    redis-commands: ^1.7.0
-    redis-errors: ^1.2.0
-    redis-parser: ^3.0.0
-  checksum: baec42198626b22d2dfc063b6a6f30394daee994c21f380e58ecf91c3edee333c4e32907c30f082fe66d2177695f7b2567902eef399ecb22da3e199ea6363a30
-  languageName: node
-  linkType: hard
-
-"redis@npm:^4.6.5":
+"redis@npm:*, redis@npm:latest":
   version: 4.6.5
   resolution: "redis@npm:4.6.5"
   dependencies:
@@ -9928,6 +9985,18 @@ __metadata:
     "@redis/search": 1.1.2
     "@redis/time-series": 1.0.4
   checksum: 81696673a4c3acefcde310289ac83f40fe974af76f6d2f2a682befd6486128f8870f48b9e6fee1213cecfba9ac705649d27b750e853809d734cccce05868f1b7
+  languageName: node
+  linkType: hard
+
+"redis@npm:^3.0.0":
+  version: 3.1.2
+  resolution: "redis@npm:3.1.2"
+  dependencies:
+    denque: ^1.5.0
+    redis-commands: ^1.7.0
+    redis-errors: ^1.2.0
+    redis-parser: ^3.0.0
+  checksum: baec42198626b22d2dfc063b6a6f30394daee994c21f380e58ecf91c3edee333c4e32907c30f082fe66d2177695f7b2567902eef399ecb22da3e199ea6363a30
   languageName: node
   linkType: hard
 
@@ -10540,10 +10609,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-adapter@npm:~2.2.0":
-  version: 2.2.0
-  resolution: "socket.io-adapter@npm:2.2.0"
-  checksum: 751d161f973ec8d8112ebce5715daf06f79c5ed1d9388f4856c62094cf9eecfbd917142add339517eb1c6f84ee8b04377a799888a1e3207567d28d516088e656
+"socket.io-adapter@npm:~1.1.0":
+  version: 1.1.2
+  resolution: "socket.io-adapter@npm:1.1.2"
+  checksum: 8e18df7f8c471001b65e43542c5c743b63f041781bca097b4a407dd199dd757c14c0d470992f84923f48e75729a2ac0ae634fec820f20881cadae8a495bf68e9
+  languageName: node
+  linkType: hard
+
+"socket.io-adapter@npm:~2.0.0":
+  version: 2.0.3
+  resolution: "socket.io-adapter@npm:2.0.3"
+  checksum: f51430b4e08a8bb582f7c3913f5b29e1e415f3b7b53c28fdf6c77984b4880056951c90ab55b3c35547b812234f337b09830199892f99f4ca7d7352acf4a69108
   languageName: node
   linkType: hard
 
@@ -10554,15 +10630,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:^4.6.1":
-  version: 4.6.1
-  resolution: "socket.io-client@npm:4.6.1"
+"socket.io-client@npm:4.3.1":
+  version: 4.3.1
+  resolution: "socket.io-client@npm:4.3.1"
   dependencies:
-    "@socket.io/component-emitter": ~3.1.0
+    "@socket.io/component-emitter": ~3.0.0
+    backo2: ~1.0.2
     debug: ~4.3.2
-    engine.io-client: ~6.4.0
-    socket.io-parser: ~4.2.1
-  checksum: cc6abd3f9db41379d1aa115cee5743c97f450c47cf416885660a62d1250696c38c40d0b6d1e6a6b7c6f7ffa02c504e9c04ceffe1459ae0208c8697dc8f69aae8
+    engine.io-client: ~6.0.1
+    parseuri: 0.0.6
+    socket.io-parser: ~4.1.1
+  checksum: 8aab686f66c252a4e6566d2f20011e3e92523d655e198e4848b06e9543c52e3e7c51ab5c25e925fc2b3c705f86ea495e112870cdf531d7bbde8bc9eea1e807e3
+  languageName: node
+  linkType: hard
+
+"socket.io-parser@npm:~4.1.1":
+  version: 4.1.2
+  resolution: "socket.io-parser@npm:4.1.2"
+  dependencies:
+    "@socket.io/component-emitter": ~3.0.0
+    debug: ~4.3.1
+  checksum: cd13cdbda929cce610b39fbf7f2c6aa59e55cfc58f13b38c592d7eb45b19d5110bcb81150607a88f8644959f5d0a384467a2083d29c12e224c010a406377649b
   languageName: node
   linkType: hard
 
@@ -10576,16 +10664,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-redis@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "socket.io-redis@npm:6.1.1"
+"socket.io-redis@npm:*":
+  version: 5.4.0
+  resolution: "socket.io-redis@npm:5.4.0"
   dependencies:
-    debug: ~4.3.1
+    debug: ~4.1.0
     notepack.io: ~2.2.0
     redis: ^3.0.0
-    socket.io-adapter: ~2.2.0
+    socket.io-adapter: ~1.1.0
     uid2: 0.0.3
-  checksum: 3add75bc82101747175425477b961d69421f10ce92616bea1a4991f08c41456ea737d0ccf660730eaeb88b674a370c82e5a360418c5d391d19ee66461b957b38
+  checksum: 9292ad6987c29a5c2ad0736e65509a43a616b382796b9404c3a39a033074d2845769c1205b006c02ac8b4b85aad6facafa320de340c9d7130998a7c3de20a721
+  languageName: node
+  linkType: hard
+
+"socket.io-redis@npm:6.0.1":
+  version: 6.0.1
+  resolution: "socket.io-redis@npm:6.0.1"
+  dependencies:
+    debug: ~4.1.0
+    notepack.io: ~2.2.0
+    redis: ^3.0.0
+    socket.io-adapter: ~2.0.0
+    uid2: 0.0.3
+  checksum: 491befeeeaee8ff58ecd77072ca164867f53cc5db7f030ee5568812a8a4d93fa3275eae9b349e16d96e668b31bbf149e7e9e8a6733539c6223b4f79425258c02
   languageName: node
   linkType: hard
 
@@ -10596,7 +10697,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io@npm:*, socket.io@npm:^4.6.0":
+"socket.io@npm:*":
   version: 4.6.1
   resolution: "socket.io@npm:4.6.1"
   dependencies:
@@ -10607,6 +10708,20 @@ __metadata:
     socket.io-adapter: ~2.5.2
     socket.io-parser: ~4.2.1
   checksum: 447941727142669b3709c3ae59ed790a2c3ad312d935400e2e25fdf59a95cdc92ebcf6b000ab2042a2a77ae51bb87598b40845a8d3b1f6ea6a0dd1df9c8f8459
+  languageName: node
+  linkType: hard
+
+"socket.io@npm:4.6.0":
+  version: 4.6.0
+  resolution: "socket.io@npm:4.6.0"
+  dependencies:
+    accepts: ~1.3.4
+    base64id: ~2.0.0
+    debug: ~4.3.2
+    engine.io: ~6.4.0
+    socket.io-adapter: ~2.5.2
+    socket.io-parser: ~4.2.1
+  checksum: 4fbd850537f52da301111d809e631afec0352b8001a1121851441c3baca3a5351b3aabdd9538da8b9cf491fb35b1137197dda57a58fea61e8046aa80008616d0
   languageName: node
   linkType: hard
 
@@ -11844,6 +11959,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:~8.2.3":
+  version: 8.2.3
+  resolution: "ws@npm:8.2.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: c869296ccb45f218ac6d32f8f614cd85b50a21fd434caf11646008eef92173be53490810c5c23aea31bc527902261fbfd7b062197eea341b26128d4be56a85e4
+  languageName: node
+  linkType: hard
+
 "xml2js@npm:0.4.19":
   version: 0.4.19
   resolution: "xml2js@npm:0.4.19"
@@ -11968,6 +12098,13 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
   checksum: 3d8a43c336a4942bc68080768664aca85c7bd406f018bad362fd255c41c8f4e650277f42fd65d543fce99e084124ddafee7bbfc1a5c6a8fda4cec78609dcf8d4
+  languageName: node
+  linkType: hard
+
+"yeast@npm:0.1.2":
+  version: 0.1.2
+  resolution: "yeast@npm:0.1.2"
+  checksum: 81a250b69f601fed541e9518eb2972e75631dd81231689503d7f288612d4eec793b29c208d6807fd6bfc4c2a43614d0c6db233739a4ae6223e244aaed6a885c0
   languageName: node
   linkType: hard
 

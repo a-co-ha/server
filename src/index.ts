@@ -21,13 +21,18 @@ import {
   loginRequired,
   errorHandler,
 } from "./middlewares";
-import { redisClient, subClient } from "./utils/redisClient";
+import {
+  createSocketAdapter,
+  redisClient,
+  subClient,
+} from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
 import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { createAdapter } from "@socket.io/redis-adapter";
+import { createAdapter, RedisAdapter } from "@socket.io/redis-adapter";
+
 import { sequelize } from "./model";
 
 export class AppServer {
@@ -47,36 +52,17 @@ export class AppServer {
   static async start() {
     const appServer = new AppServer();
     const server = createServer(appServer.app);
+    await appServer.config();
     const io = new Server(server, {
       cors: {},
     });
-    redisClient.on("connect", () => {
-      console.info(LogColor.INFO, "pubClient Redis connected!");
-      subClient.on("connect", () => {
-        console.info(LogColor.INFO, "subClient Redis connected!");
-        io.adapter(createAdapter(redisClient, subClient));
-        console.log("ho");
-      });
-      subClient.on("error", (err) => {
-        console.error("subClient Redis error", err);
-      });
-    });
-
-    redisClient.on("error", (err) => {
-      console.error("Redis Client Error", err);
-    });
-
-    subClient.on("error", (err) => {
-      console.error("subClient Redis error", err);
-    });
-
-    redisClient.connect();
+    const adapter = await createSocketAdapter();
+    io.adapter(adapter);
 
     io.use(wrap(session(sessionConfig)));
     io.use(socketMiddleware);
     socket(io);
 
-    await appServer.config();
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {

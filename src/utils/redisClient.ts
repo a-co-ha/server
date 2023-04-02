@@ -1,22 +1,34 @@
-import { LogColor } from "../constants";
-import * as redis from "redis";
-import Promise from "bluebird";
-
+// import { RedisAdapter, createAdapter } from "socket.io-redis";
 import dotenv from "dotenv";
+import { createClient, RedisClientOptions } from "@redis/client";
+import { createAdapter, RedisAdapter } from "@socket.io/redis-adapter";
+
 dotenv.config();
 const host = process.env.REDIS_HOST;
+const redisOptions: RedisClientOptions = {
+  socket: {
+    host: "127.0.0.1",
+    port: 6379,
+  },
+};
 
-export const redisClient = Promise.promisifyAll(
-  redis.createClient({
-    socket: {
-      host: host,
-      port: 6379,
-    },
-    legacyMode: true,
-  })
-);
+export const redisClient = createClient(redisOptions);
 
-export const subClient = Promise.promisifyAll(redisClient.duplicate());
+export const subClient = createClient(redisOptions).duplicate();
 
-// redisClient.connect().then().catch(console.error); // redis v4 연결 (비동기)
-export const redisCli = redisClient.v4;
+export const createSocketAdapter = async (): Promise<
+  (nsp: any) => RedisAdapter
+> => {
+  await Promise.all([redisClient.connect(), subClient.connect()]);
+  console.log("Redis clients are all connected!");
+
+  const adapter = createAdapter(redisClient, subClient);
+  return adapter;
+};
+
+redisClient.on("error", (err) => {
+  console.error("PUB Failed to connect Redis clients:", err);
+});
+subClient.on("error", (err) => {
+  console.error("SUB Failed to connect Redis clients:", err);
+});
