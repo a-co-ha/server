@@ -15,7 +15,7 @@ export const socketMiddleware = async (socket, next) => {
     return next(new Error("소켓 에러"));
   }
 
-  const getChannel = await userService.get(user.userId);
+  const getChannel = await userService.getUserWithChannels(user.userId);
 
   function isUser(user: userHasChannels | boolean): user is userHasChannels {
     return (user as userHasChannels).name !== undefined;

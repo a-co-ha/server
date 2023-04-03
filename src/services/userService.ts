@@ -1,14 +1,19 @@
-import { ChannelAttributes, userHasChannels } from "./../interface/index";
+import {
+  ChannelAttributes,
+  userHasChannels,
+  userToken,
+} from "./../interface/index";
 import { Channel } from "./../model/channel";
 import { UserAttributes } from "../interface";
-import { User } from "../model/user";
+import { User, userModel } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
 
 import { connectSocket } from "../utils/connectSocket";
 
 export class UserService {
+  constructor(private user: User) {}
   private tokenCreate = (
     isAccess: boolean,
     payload: UserAttributes
@@ -18,13 +23,16 @@ export class UserService {
     });
   };
 
-  async login(sessionId: string, user: UserAttributes) {
+  public async login(
+    sessionId: string,
+    user: UserAttributes
+  ): Promise<userToken> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
     await connectSocket(sessionId, user);
     await User.update(
       {
-        refreshToken: refreshToken,
+        refreshToken,
       },
       {
         where: {
@@ -35,8 +43,10 @@ export class UserService {
     return { token: { accessToken, refreshToken }, user };
   }
 
-  async get(id: number): Promise<userHasChannels | boolean> {
-    const query = await User.findAll({
+  public async getUserWithChannels(
+    id: number
+  ): Promise<userHasChannels | null> {
+    const user = await User.findByPk(id, {
       include: {
         model: ChannelUser,
         as: "userHasChannels",
@@ -48,23 +58,23 @@ export class UserService {
         ],
         attributes: ["channel_id"],
       },
-      where: { userId: id },
       attributes: ["userId", "githubID", "githubURL", "img", "name"],
     });
 
-    if (query.length <= 0) {
-      return false;
+    if (!user) {
+      return null;
     }
-    const [{ userId, githubID, githubURL, img, name, ...rest }] = query.map(
-      (el) => el.dataValues
-    );
-    const channels: ChannelAttributes[] = rest["userHasChannels"].map(
-      (i) => i.dataValues.channel.dataValues
-    );
+
+    const { userId, githubID, githubURL, img, name, ...rest } = user.dataValues;
+
+    const channels: ChannelAttributes[] =
+      rest["userHasChannels"]?.map(
+        (i: any) => i?.dataValues?.channel?.dataValues
+      ) || [];
 
     return {
       userId,
-      name,
+      name: name || githubID,
       githubID,
       githubURL,
       img,
@@ -72,14 +82,14 @@ export class UserService {
     };
   }
 
-  async insert(user: UserAttributes) {
-    if (user.name === null || user.name === undefined) {
-      user.name = user.githubID;
-    }
+  public async insert(user: UserAttributes): Promise<void> {
     await User.create(user);
   }
 
-  async expandAccToken(token: string, user: UserAttributes) {
+  public async expandAccToken(
+    token: string,
+    user: UserAttributes
+  ): Promise<{ accessToken: string }> {
     const { refreshToken } = await User.findOne({
       where: { userId: user.userId },
       attributes: ["refreshToken"],
@@ -94,6 +104,4 @@ export class UserService {
   }
 }
 
-const userService = new UserService();
-
-export { userService };
+export const userService = new UserService(userModel);

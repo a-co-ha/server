@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { query } from "express-validator";
 import { channelController } from "../controllers/channelController";
 import { asyncHandler } from "../utils";
 

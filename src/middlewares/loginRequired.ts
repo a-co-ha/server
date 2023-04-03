@@ -29,6 +29,7 @@ export async function loginRequired(
 
   try {
     const decoded = await decode(token);
+
     req.user = decoded;
 
     next();
@@ -42,8 +43,8 @@ export async function decode(token: string): Promise<User> {
   const jwtDecoded = jwt.verify(token, jwtSecret);
 
   const userId = (<{ userId: number }>jwtDecoded).userId;
-  const name = (<{ name: string }>jwtDecoded).name;
   const githubID = (<{ githubID: string }>jwtDecoded).githubID;
+  const name = (<{ name: string }>jwtDecoded).name ?? githubID;
   const githubURL = (<{ githubURL: string }>jwtDecoded).githubURL;
   const img = (<{ img: string }>jwtDecoded).img;
 

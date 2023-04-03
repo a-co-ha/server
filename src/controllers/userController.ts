@@ -1,6 +1,5 @@
-import { errorResponse } from "./../utils/errorResponse";
-import { userService } from "./../services/userService";
-import { AsyncRequestHandler, ErrorType } from "../constants";
+import { UserService, userService } from "./../services/userService";
+import { AsyncRequestHandler } from "../constants";
 
 interface IUserController {
   login: AsyncRequestHandler;
@@ -8,33 +7,22 @@ interface IUserController {
   tokenRefresh: AsyncRequestHandler;
 }
 export class UserController implements IUserController {
-  login: AsyncRequestHandler = async (req, res) => {
-    const isAuthenticated = !!req.user;
-    if (!isAuthenticated) {
-      errorResponse(res, ErrorType.BADREQUEST, " unknown user");
-    }
-
-    req.session.userId = req.user.userId;
-    req.session.auth = true;
-
-    if (req.user.name === undefined || req.user.name === null) {
-      req.user.name = req.user.githubID;
-    }
-    const result = await userService.login(req.session.id, req.user);
-
+  constructor(private userService: UserService) {}
+  public login: AsyncRequestHandler = async (req, res) => {
+    const result = await this.userService.login(req.session.id, req.user);
     res.status(200).json(result);
   };
 
-  get: AsyncRequestHandler = async (req, res) => {
+  public get: AsyncRequestHandler = async (req, res) => {
     const { userId } = req.user;
-    res.status(200).json(await userService.get(userId));
+    res.status(200).json(await this.userService.getUserWithChannels(userId));
   };
-  tokenRefresh: AsyncRequestHandler = async (req, res) => {
+
+  public tokenRefresh: AsyncRequestHandler = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
-    const accessToken = await userService.expandAccToken(token, req.user);
+    const accessToken = await this.userService.expandAccToken(token, req.user);
     res.status(200).json(accessToken);
   };
 }
 
-const userController = new UserController();
-export { userController };
+export const userController = new UserController(userService);

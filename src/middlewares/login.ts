@@ -5,7 +5,7 @@ import {
   oauthClient,
   oauthSecret,
 } from "../config";
-import { UserAttributes } from "../interface";
+import { User, UserAttributes } from "../interface";
 import { userService } from "../services";
 import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
@@ -44,15 +44,17 @@ export const githubLogin = async (req, res, next) => {
         avatar_url: img,
       } = data;
 
-      const user: UserAttributes = {
+      const displayName = name ?? githubID;
+
+      const user: User = {
         userId: id,
-        name,
+        name: displayName,
         githubID,
         githubURL,
         img,
       };
 
-      const isGuest = await userService.get(id);
+      const isGuest = await userService.getUserWithChannels(id);
 
       if (!isGuest) {
         await userService.insert(user);

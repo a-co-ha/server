@@ -12,6 +12,7 @@ export class Channel extends Model<ChannelAttributes> {
   public static associations: {
     channelHasManyUsers: Association<Channel, ChannelUser>;
   };
+
   public static initialize(sequelize: Sequelize): void {
     this.init(
       {
@@ -32,7 +33,7 @@ export class Channel extends Model<ChannelAttributes> {
         },
         channelImg: {
           type: DataTypes.STRING(200),
-          allowNull: true,
+          defaultValue: "",
           field: "c_img",
         },
       },

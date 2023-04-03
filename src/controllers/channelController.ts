@@ -3,7 +3,14 @@ import { channelService, ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
 import { channelJoinInterface } from "../interface";
 
-export class ChannelController {
+interface IChannelController {
+  create: AsyncRequestHandler;
+  join: AsyncRequestHandler;
+  delete: AsyncRequestHandler;
+  channelExit: AsyncRequestHandler;
+  getUsers: AsyncRequestHandler;
+}
+export class ChannelController implements IChannelController {
   constructor(
     private channelService: ChannelService,
     private listService: ListService
@@ -25,7 +32,7 @@ export class ChannelController {
     res.json({ id: channelId, channelName, admin: userId });
   };
 
-  join: AsyncRequestHandler = async (req, res) => {
+  public join: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
     const { channelCode } = req.body;
     const { userId, name } = req.user;
@@ -39,7 +46,7 @@ export class ChannelController {
     res.json(result);
   };
 
-  delete: AsyncRequestHandler = async (req, res) => {
+  public delete: AsyncRequestHandler = async (req, res) => {
     const channelId = req.body.channel;
     const { userId } = req.user;
 
@@ -48,7 +55,7 @@ export class ChannelController {
     res.json(deleteChannel);
   };
 
-  channelExit: AsyncRequestHandler = async (req, res) => {
+  public channelExit: AsyncRequestHandler = async (req, res) => {
     const { channel: channelId } = req.body;
     const { userId } = req.user;
 
@@ -59,7 +66,7 @@ export class ChannelController {
     res.json(channelExit);
   };
 
-  getUsers: AsyncRequestHandler = async (req, res) => {
+  public getUsers: AsyncRequestHandler = async (req, res) => {
     const { channel: channelId } = req.body;
     const result = await this.channelService.getUsersWithAdminInfo(channelId);
 

@@ -13,3 +13,8 @@ export interface IUserModel {
   save(user: UserAttributes): Promise<any>;
   get(user: UserAttributes): Promise<any>;
 }
+
+export interface userToken {
+  token: { accessToken?: string; refreshToken?: string };
+  user: User;
+}
