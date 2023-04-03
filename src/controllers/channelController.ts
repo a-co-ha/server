@@ -1,7 +1,6 @@
 import { AsyncRequestHandler } from "./../constants";
 import { channelService, ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
-import { pageService, PageService } from "../services/pageService";
 import { channelJoinInterface } from "../interface";
 
 export class ChannelController {
@@ -50,18 +49,18 @@ export class ChannelController {
   };
 
   channelExit: AsyncRequestHandler = async (req, res) => {
-    const channelId = req.body.channel;
+    const { channel: channelId } = req.body;
     const { userId } = req.user;
 
-    const channelExit = await this.channelService.channelExit(
-      userId,
-      channelId
+    const channelExit = await this.channelService.deleteChannelUser(
+      channelId,
+      userId
     );
     res.json(channelExit);
   };
 
   getUsers: AsyncRequestHandler = async (req, res) => {
-    const channelId = req.body.channel;
+    const { channel: channelId } = req.body;
     const result = await this.channelService.getUsersWithAdminInfo(channelId);
 
     res.json(result);
