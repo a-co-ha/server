@@ -1,19 +1,18 @@
+import { AsyncRequestHandler } from "./../constants";
 import { channelService, ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
 import { pageService, PageService } from "../services/pageService";
 import { channelJoinInterface } from "../interface";
-import { AsyncRequestHandler } from "../constants";
 
 export class ChannelController {
   constructor(
     private channelService: ChannelService,
-    private listService: ListService,
-    private pageService: PageService
+    private listService: ListService
   ) {}
 
-  create: AsyncRequestHandler = async (req, res) => {
+  public create: AsyncRequestHandler = async (req, res) => {
     const { userId, name } = req.user;
-    const { channelName } = req.body;
+    const { channelName, blockId } = req.body;
     const channelInfo: channelJoinInterface = {
       admin: userId,
       channelName,
@@ -21,20 +20,15 @@ export class ChannelController {
       name,
     };
 
-    const blockId = req.body.blockId;
-    const result = await this.channelService.invite(channelInfo);
-    const channelId = result.id;
+    const newChannel = await this.channelService.create(channelInfo, blockId);
+    const { id: channelId } = newChannel;
 
-    await this.listService.createList(channelId);
-    await this.pageService.createPage(channelId, blockId);
-    console.log("er");
-    res.status(200).json(result);
+    res.json({ id: channelId, channelName, admin: userId });
   };
 
   join: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
-    const channelCode = req.query.channelCode as string;
-
+    const { channelCode } = req.body;
     const { userId, name } = req.user;
     const joinInfo: channelJoinInterface = {
       admin: adminCode,
@@ -47,9 +41,8 @@ export class ChannelController {
   };
 
   delete: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const userId = req.user.userId;
+    const channelId = req.body.channel;
+    const { userId } = req.user;
 
     const deleteChannel = await this.channelService.delete(channelId, userId);
     await this.listService.deleteList(channelId);
@@ -57,9 +50,8 @@ export class ChannelController {
   };
 
   channelExit: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const userId = req.user.userId;
+    const channelId = req.body.channel;
+    const { userId } = req.user;
 
     const channelExit = await this.channelService.channelExit(
       userId,
@@ -69,15 +61,13 @@ export class ChannelController {
   };
 
   getUsers: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const result = await this.channelService.getUsers(channelId);
+    const channelId = req.body.channel;
+    const result = await this.channelService.getUsersWithAdminInfo(channelId);
 
     res.json(result);
   };
 }
 export const channelController = new ChannelController(
   channelService,
-  listService,
-  pageService
+  listService
 );

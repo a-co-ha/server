@@ -1,29 +1,46 @@
+import { listModel } from "./../model/index";
 import { channelJoinInterface } from "./../interface/index";
-import { IChannelModel } from "../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
-import { Channel } from "../model/channel";
-import { ChannelUser } from "../model/channelUser";
-import { User } from "../model/user";
+import { Channel, channelModel } from "../model/channel";
+import { ChannelUser, channelUserModel } from "../model/channelUser";
+import { User, userModel } from "../model/user";
+import { listModelType } from "../model";
+import { PageService, pageService } from "./pageService";
 
-export class ChannelService implements IChannelModel {
-  async invite(info: channelJoinInterface): Promise<any> {
+export class ChannelService {
+  constructor(
+    private channelUserModel: ChannelUser,
+    private channelModel: Channel,
+    private userModel: User,
+    private listModel: listModelType,
+    private pageService: PageService
+  ) {}
+  async create(info: channelJoinInterface, blockId: string): Promise<any> {
     const { admin, channelName, userId, name } = info;
     const channelNameCheck = await this.get(info);
     if (channelNameCheck) {
       throw new Error("같은 이름의 채널이 이미 있습니다.");
     }
 
-    await Channel.create({ userId: admin as number, channelName });
+    const newChannel = await Channel.create({
+      userId: admin as number,
+      channelName,
+    });
 
-    const channel = await this.get(info);
+    await this.createSpace(newChannel.id, blockId);
     await this.userJoin({
       userId,
       name,
       channelName,
-      id: channel.id,
+      id: newChannel.id,
     });
-    return channel;
+    return newChannel;
+  }
+
+  private async createSpace(channelId: number, blockId: string): Promise<void> {
+    await this.listModel.create({ channelId });
+    await this.pageService.createPage(channelId, blockId);
   }
 
   private async userJoin(info: channelJoinInterface): Promise<void> {
@@ -57,6 +74,7 @@ export class ChannelService implements IChannelModel {
     if (await this.isInvited({ channelName, name })) {
       throw new Error("이미 참여함");
     }
+
     const channelInfo = await this.get({ admin, channelName });
 
     if (channelName === channelInfo.channelName) {
@@ -124,29 +142,36 @@ export class ChannelService implements IChannelModel {
     return channelExit;
   }
 
-  async getUsers(channelId: number): Promise<any> {
-    const result = await ChannelUser.findAll({
-      include: {
-        model: User,
-        required: true,
-        attributes: ["user_id"],
-      },
-      raw: true,
-      where: { channelId },
-    });
+  async getUsersWithAdminInfo(channelId: number): Promise<any> {
     const { userId } = await Channel.findOne({
       where: { id: channelId },
       raw: true,
       attributes: ["userId"],
     });
 
-    const a = result.map((i) => {
-      i["admin"] = i.userId === userId;
-      return i;
+    const { count, rows: users } = await ChannelUser.findAndCountAll({
+      where: { channelId },
+      include: {
+        model: User,
+        required: true,
+        attributes: ["user_id"],
+      },
+      raw: true,
     });
 
-    return a;
+    const usersWithAdminInfo = users.map((user) => {
+      const isAdmin = user["user.user_id"] === userId;
+      return { ...user, admin: isAdmin };
+    });
+
+    return { count, users: usersWithAdminInfo };
   }
 }
 
-export const channelService = new ChannelService();
+export const channelService = new ChannelService(
+  channelUserModel,
+  channelModel,
+  userModel,
+  listModel,
+  pageService
+);

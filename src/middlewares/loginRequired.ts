@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
-import { UserAttributes } from "../interface";
+import { User, UserAttributes } from "../interface";
 
 export async function loginRequired(
   req: Request,
@@ -38,7 +38,7 @@ export async function loginRequired(
   }
 }
 
-export async function decode(token: string): Promise<UserAttributes> {
+export async function decode(token: string): Promise<User> {
   const jwtDecoded = jwt.verify(token, jwtSecret);
 
   const userId = (<{ userId: number }>jwtDecoded).userId;

@@ -1,12 +1,21 @@
-import { pageModel, templateModel, templateModelType } from "../model";
+import {
+  listModel,
+  listModelType,
+  pageModel,
+  templateModel,
+  templateModelType,
+} from "../model";
 import { pageService } from "./pageService";
 import { ITemplateModel, template, pageStatusUpdate } from "../interface";
 import { listService } from "./listService";
+import { ListInterface } from "../model/schema/listSchema";
 
 class TemplateService implements ITemplateModel {
   private templateModel: templateModelType;
-  constructor(templateModel: templateModelType) {
+  private listModel: listModelType;
+  constructor(templateModel: templateModelType, listModel: listModelType) {
     this.templateModel = templateModel;
+    this.listModel = listModel;
   }
 
   async createTemplate(
@@ -23,11 +32,23 @@ class TemplateService implements ITemplateModel {
       progressStatus
     );
     const template = await templateModel.create({ channelId, pages, type });
-    await listService.createListTemplate(channelId, template);
+    await this.createListTemplate(channelId, template);
 
     return template;
   }
+  async createListTemplate(
+    channelId: number,
+    template: template
+  ): Promise<ListInterface> {
+    const list = await this.listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel.findByIdAndUpdate(
+      { _id: listId },
+      { $push: { ListPage: { template } } }
+    );
 
+    return pushTemplateList;
+  }
   async findTemplate(
     channelId: number,
     id: string,
@@ -116,4 +137,4 @@ class TemplateService implements ITemplateModel {
   }
 }
 
-export const templateService = new TemplateService(templateModel);
+export const templateService = new TemplateService(templateModel, listModel);

@@ -13,10 +13,7 @@ export class UserService {
     isAccess: boolean,
     payload: UserAttributes
   ): string => {
-    // true : access token
-    // false : refresh token
     return jwt.sign(payload, jwtSecret, {
-      // expiresIn: isAccess ? "1m" : "14d",
       expiresIn: isAccess ? "1h" : "3h",
     });
   };

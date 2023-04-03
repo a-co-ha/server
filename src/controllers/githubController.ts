@@ -1,12 +1,8 @@
 import axios from "axios";
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler, githubHeader } from "../constants";
 import { Octokit } from "octokit";
 import { GITHUBAUTH } from "../config";
 
-const headers = {
-  Accept: "application/vnd.github.v3+json",
-  "X-GitHub-Api-Version": "2022-11-28",
-};
 interface IGithubController {
   getOrg: AsyncRequestHandler;
   getIssue: AsyncRequestHandler;
@@ -20,7 +16,7 @@ export class GithubController implements IGithubController {
     const { org } = req.body;
     const result = await octokit.request("GET /orgs/{org}", {
       org,
-      headers,
+      headers: githubHeader,
     });
     const { data } = result;
     const orgImg = data.avatar_url;
@@ -47,7 +43,7 @@ export class GithubController implements IGithubController {
     const { org } = req.body;
     const { data } = await octokit.request("GET /orgs/{org}/events", {
       org,
-      headers,
+      headers: githubHeader,
     });
     res.json(data);
   };
@@ -79,7 +75,7 @@ export class GithubController implements IGithubController {
       {
         org,
         repo,
-        headers,
+        headers: githubHeader,
       }
     );
 
@@ -116,7 +112,7 @@ export class GithubController implements IGithubController {
         org,
         repo,
         number,
-        headers,
+        headers: githubHeader,
       }
     );
 
@@ -145,7 +141,7 @@ export class GithubController implements IGithubController {
       assignees,
       milestone,
       labels,
-      headers,
+      headers: githubHeader,
     });
     res.json(data);
   };

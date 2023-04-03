@@ -1,10 +1,13 @@
-import { pageModel, pageModelType, templateModel } from "../model";
+import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
+import { ListInterface } from "../model/schema/listSchema";
 export class PageService implements IPageModel {
   private pageModel: pageModelType;
-  constructor(pageModel: pageModelType) {
+  private listModel: listModelType;
+  constructor(pageModel: pageModelType, listModel: listModelType) {
     this.pageModel = pageModel;
+    this.listModel = listModel;
   }
 
   async findPage(channelId: number, id: string, type?: string): Promise<page> {
@@ -12,7 +15,7 @@ export class PageService implements IPageModel {
     return await page.findOne({ channelId });
   }
 
-  async createPage(
+  public async createPage(
     channelId: number,
     blockId: string,
     type?: string,
@@ -31,10 +34,20 @@ export class PageService implements IPageModel {
       progressStatus,
     });
     if (!type) {
-      await listService.createListPage(channelId, page);
+      await this.createListPage(channelId, page);
     }
 
     return page;
+  }
+  async createListPage(channelId: number, page: page): Promise<ListInterface> {
+    const list = await listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel.findByIdAndUpdate(
+      { _id: listId },
+      { $push: { ListPage: { page } } }
+    );
+
+    return pushTemplateList;
   }
 
   async pushPage(id: string, page: page): Promise<page> {
@@ -65,4 +78,4 @@ export class PageService implements IPageModel {
   }
 }
 
-export const pageService = new PageService(pageModel);
+export const pageService = new PageService(pageModel, listModel);

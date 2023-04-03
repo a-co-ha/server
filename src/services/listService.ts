@@ -1,42 +1,14 @@
 import { listModel, listModelType, pageModel } from "../model";
-import { IListModel, list, page, template } from "../interface";
+import { list, template } from "../interface";
 import { ListInterface } from "../model/schema/listSchema";
 import { templateModel } from "../model/index";
 
-export class ListService implements IListModel {
+export class ListService {
   private listModel: listModelType;
   constructor(listModel: listModelType) {
     this.listModel = listModel;
   }
 
-  async createList(channelId: number): Promise<ListInterface> {
-    const list = await listModel.create({ channelId });
-    return list;
-  }
-  async createListPage(channelId: number, page: page): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-    const listId = list._id;
-    const pushTemplateList = await listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { ListPage: { page } } }
-    );
-
-    return pushTemplateList;
-  }
-
-  async createListTemplate(
-    channelId: number,
-    template: template
-  ): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-    const listId = list._id;
-    const pushTemplateList = await listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { ListPage: { template } } }
-    );
-
-    return pushTemplateList;
-  }
   async findList(channelId: number): Promise<ListInterface> {
     const list = await listModel.findOne({ channelId });
     const listId = list._id;

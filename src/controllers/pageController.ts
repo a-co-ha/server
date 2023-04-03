@@ -1,6 +1,6 @@
 import { pageService, templateService } from "../services";
 import { block, page } from "../interface";
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler } from "../constants";
 import { deleteImage } from "../middlewares";
 
 interface IPageController {

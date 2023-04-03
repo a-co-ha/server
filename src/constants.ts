@@ -48,3 +48,8 @@ export enum LogColor {
   INFO = "\x1b[35m%s\x1b[0m", // magenta
   ERROR = "\x1b[33m%s\x1b[0m", // yellow
 }
+
+export const githubHeader = {
+  Accept: "application/vnd.github.v3+json",
+  "X-GitHub-Api-Version": "2022-11-28",
+};

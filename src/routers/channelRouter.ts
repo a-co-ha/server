@@ -1,10 +1,6 @@
 import { Router } from "express";
-import { AsyncRequestHandler } from "../constants";
-import { DtoValidatorMiddleware } from "../middlewares";
-import {
-  channelController,
-  ChannelController,
-} from "../controllers/channelController";
+import { query } from "express-validator";
+import { channelController } from "../controllers/channelController";
 import { asyncHandler } from "../utils";
 
 export const channelRouter = Router();

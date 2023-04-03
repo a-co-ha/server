@@ -25,6 +25,7 @@ WORKDIR /app
 COPY package* yarn.lock .pnp*     ./
 COPY .yarnrc.yml                  ./
 COPY .yarn                        ./.yarn
+COPY . .
 
 RUN yarn install --immutable
 

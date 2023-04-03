@@ -20,6 +20,7 @@ import {
   socketMiddleware,
   loginRequired,
   errorHandler,
+  DtoValidatorMiddleware,
 } from "./middlewares";
 import {
   createSocketAdapter,
@@ -31,9 +32,9 @@ import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { createAdapter, RedisAdapter } from "@socket.io/redis-adapter";
 
 import { sequelize } from "./model";
+import { ChannelDto, InviteDto } from "./dto/channelDto";
 
 export class AppServer {
   app: express.Application;
@@ -68,6 +69,8 @@ export class AppServer {
         await sequelize.authenticate().then(() => {
           console.info(LogColor.INFO, "sequelize connection success");
         });
+        await sequelize.sync();
+        console.log("All models were synchronized successfully.");
         console.info(
           LogColor.INFO,
           `server listening at http://localhost:${port}`
@@ -90,12 +93,17 @@ export class AppServer {
   private routes() {
     this.app.get(endPoint.index, indexRouter);
     this.app.use(endPoint.oauth, oauthRouter);
-    this.app.use(endPoint.invite, loginRequired, channelRouter);
     this.app.use(endPoint.user, loginRequired, userRouter);
+    this.app.use(
+      endPoint.invite,
+      loginRequired,
+      DtoValidatorMiddleware(InviteDto),
+      channelRouter
+    );
     this.app.use(
       endPoint.channel,
       loginRequired,
-      // DtoValidatorMiddleware(ChannelDto),
+      DtoValidatorMiddleware(ChannelDto),
       channelRouter
     );
     this.app.use(endPoint.page, pageRouter);

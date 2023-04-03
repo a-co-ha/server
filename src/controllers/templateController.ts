@@ -1,5 +1,5 @@
 import { templateService, templateNormalService } from "../services";
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler } from "../constants";
 
 interface ITemplateController {
   createTemplate: AsyncRequestHandler;

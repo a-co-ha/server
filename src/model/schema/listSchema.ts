@@ -1,14 +1,8 @@
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
-import { template } from "../../interface/index";
 
 const Schema = mongoose.Schema;
-
-// interface listPage {
-//   page: PageInterface;
-//   template: TemplateInterface;
-// }
 export interface ListInterface {
   channelId: number;
   ListPage: [

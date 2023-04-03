@@ -7,7 +7,7 @@ dotenv.config();
 const host = process.env.REDIS_HOST;
 const redisOptions: RedisClientOptions = {
   socket: {
-    host: "127.0.0.1",
+    host: host,
     port: 6379,
   },
 };

@@ -97,18 +97,6 @@ export interface ITemplateNormalModel {
   ): Promise<template>;
 }
 
-export interface IListModel {
-  createList(channelId: number): Promise<ListInterface>;
-  createListPage(channelId: number, page: page): Promise<ListInterface>;
-  createListTemplate(
-    channelId: number,
-    template: template
-  ): Promise<ListInterface>;
-  findList(channelId: number): Promise<ListInterface>;
-  updateList(channelId: number, listPage: list): Promise<ListInterface>;
-  deleteListPage(channelId: number, id: string): Promise<ListInterface>;
-}
-
 export interface MessageAttributes {
   id?: string;
   name: string;
