@@ -50,7 +50,8 @@ export const sessionConfig = {
   },
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: true, // 세션에 저장할 내역이 없더라도 처음부터 세션을 생성할지 설정
+  saveUninitialized: false,
+  // 세션에 저장할 내역이 없더라도 처음부터 세션을 생성할지 설정
 } as SessionOptions;
 
 export const corsOrigin = [

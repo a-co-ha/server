@@ -38,6 +38,7 @@ export const socketMiddleware = async (socket, next) => {
 
     socket.channel = rooms;
   }
+  console.log(socket.channel);
   const sessionInfo = await redisCache.findSession(sessionID);
 
   socket.sessionID = sessionID;
