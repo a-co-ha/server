@@ -1,5 +1,5 @@
 import { pageService, templateService } from "../services";
-import { block, page } from "../interface";
+import { page } from "../interface";
 import { AsyncRequestHandler } from "../constants";
 import { deleteImage } from "../middlewares";
 
@@ -90,6 +90,11 @@ export class PageController implements IPageController {
     const fileKey = deleteImageKey.split("/").pop().split("?")[0];
     const deleteImg = await deleteImage(fileKey);
     res.json(deleteImg);
+  };
+
+  //todo
+  getChat: AsyncRequestHandler = async (req, res) => {
+    res.json("메세지 보여야야함");
   };
 }
 

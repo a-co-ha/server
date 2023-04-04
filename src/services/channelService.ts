@@ -1,4 +1,4 @@
-import { listModel } from "./../model/index";
+import { listModel, socketModel, socketModelType } from "./../model/index";
 import { channelJoinInterface } from "./../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
@@ -14,7 +14,8 @@ export class ChannelService {
     private channelModel: Channel,
     private userModel: User,
     private listModel: listModelType,
-    private pageService: PageService
+    private pageService: PageService,
+    private socketModel: socketModelType
   ) {}
   public async create(
     info: channelJoinInterface,
@@ -41,8 +42,13 @@ export class ChannelService {
     return newChannel;
   }
 
+  public async getRooms(channelId: number): Promise<any> {
+    return await this.socketModel.find({ channelId }, { _id: 1 });
+  }
+
   private async createSpace(channelId: number, blockId: string): Promise<void> {
     await this.listModel.create({ channelId });
+    await this.pageService.createRoom(channelId);
     await this.pageService.createPage(channelId, blockId);
   }
 
@@ -179,5 +185,6 @@ export const channelService = new ChannelService(
   channelModel,
   userModel,
   listModel,
-  pageService
+  pageService,
+  socketModel
 );

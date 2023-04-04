@@ -12,7 +12,8 @@ export interface SocketInterface {
 export const socketSchema = new Schema<SocketInterface>(
   {
     channelId: { type: Number, required: true },
-    roomName: { type: String, default: "DefaultRoom" },
+
+    roomName: { type: String, default: "제목 없음" },
     type: { type: String, default: "socket" },
     categories: {
       type: String,

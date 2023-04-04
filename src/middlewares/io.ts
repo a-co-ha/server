@@ -1,7 +1,10 @@
+import { channelController } from "./../controllers/channelController";
+import { channelService } from "./../services/channelService";
 import crypto from "crypto";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 import { userHasChannels } from "../interface";
+import { GetBucketOwnershipControlsCommand } from "@aws-sdk/client-s3";
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
@@ -22,12 +25,17 @@ export const socketMiddleware = async (socket, next) => {
   }
 
   if (isUser(getChannel)) {
-    const channels = getChannel.channels.map((i) => i.id);
+    const channels = getChannel.channels.map(async (i) => {
+      const { id } = i;
+      console.log(id);
+      return channelService.getRooms(id);
+    });
 
-    
-    socket.channel = channels;
+    const rooms = await Promise.all(channels).then((results) => results);
+
+    socket.channel = rooms;
   }
-
+  console.log(socket.channel);
   const sessionInfo = await redisCache.findSession(sessionID);
 
   socket.sessionID = sessionID;

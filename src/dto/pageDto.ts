@@ -1,5 +1,7 @@
 import { IsArray, IsMongoId, IsOptional, IsString } from "class-validator";
 import { block } from "../interface";
+
+// 제목 2-10글자
 export class PageDto {
   @IsMongoId()
   @IsOptional()
