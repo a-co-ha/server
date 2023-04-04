@@ -31,6 +31,26 @@ class BookmarkListService implements IBookmarkListModel {
     );
     return pushBookmark;
   }
+
+  async findBookmarkList(channelId: number): Promise<BookmarkListInterface> {
+    return await (
+      await bookmarkListModel.findOne({ channelId })
+    ).populate({
+      path: "bookmarkList",
+      select: "bookmarkName content userName ",
+    });
+  }
+  async updateBookmarkList(
+    channelId: number,
+    bookmark: bookmarkInfo[]
+  ): Promise<BookmarkListInterface> {
+    return await this.bookmarkListModel
+      .findOneAndUpdate({ channelId }, { bookmarkList: bookmark })
+      .then(() => this.findBookmarkList(channelId));
+  }
+  async deleteBookmarkList(channelId: number): Promise<BookmarkListInterface> {
+    return await bookmarkListModel.findOneAndDelete({ channelId });
+  }
 }
 
 export const bookmarkListService = new BookmarkListService(bookmarkListModel);

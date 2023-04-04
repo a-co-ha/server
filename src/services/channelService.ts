@@ -5,7 +5,8 @@ import { decode, ENCTYPE } from "../utils/decode";
 import { Channel } from "../model/channel";
 import { ChannelUser } from "../model/channelUser";
 import { User } from "../model/user";
-
+import { listService } from "./listService";
+import { bookmarkListService } from "./bookmarkListService";
 export class ChannelService implements IChannelModel {
   async invite(info: channelJoinInterface): Promise<any> {
     const { admin, channelName, userId, name } = info;
@@ -23,6 +24,7 @@ export class ChannelService implements IChannelModel {
       channelId: channel.id,
       channelName,
     });
+
     return channel;
   }
 
@@ -80,6 +82,8 @@ export class ChannelService implements IChannelModel {
 
       return deleteInfo;
     });
+    await listService.deleteList(channelId);
+    await bookmarkListService.deleteBookmarkList(channelId);
     return deleteChannel;
   }
 

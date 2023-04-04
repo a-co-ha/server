@@ -1,4 +1,5 @@
 import { ListInterface } from "../model/schema/listSchema";
+import { BookmarkListInterface } from "../model/schema/bookmarkListSchema";
 export interface block {
   blockId?: string;
   tag: string;
@@ -122,7 +123,18 @@ export interface IChatBookmarkModel {
   deleteBookmark(id: string, channelId: number): Promise<any>;
 }
 
-export interface IBookmarkListModel {}
+export interface IBookmarkListModel {
+  createList(channelId: number): Promise<BookmarkListInterface>;
+  createBookmark(
+    channelId: number,
+    bookmark: bookmarkInfo
+  ): Promise<BookmarkListInterface>;
+  findBookmarkList(channelId: number): Promise<BookmarkListInterface>;
+  updateBookmarkList(
+    channelId: number,
+    bookmark: bookmarkInfo[]
+  ): Promise<BookmarkListInterface>;
+}
 
 export interface MessageAttributes {
   id?: string;

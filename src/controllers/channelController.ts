@@ -50,7 +50,7 @@ export class ChannelController implements IChannelController {
     const userId = req.user.userId;
 
     const deleteChannel = await channelService.delete(channelId, userId);
-    await listService.deleteList(channelId);
+
     res.json(deleteChannel);
   };
 
