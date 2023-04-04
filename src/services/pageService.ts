@@ -18,8 +18,7 @@ export class PageService implements IPageModel {
   }
 
   async findPage(channelId: number, id: string, type?: string): Promise<page> {
-    const page = this.pageModel.findOne({ _id: id, type });
-    return await page.findOne({ channelId });
+    return await pageModel.findOne({ _id: id, channelId, type });
   }
 
   public async createPage(

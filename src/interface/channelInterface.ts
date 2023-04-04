@@ -18,6 +18,9 @@ export interface IChannelInfo {
 export interface IChannelModel {
   invite(info: IChannelInfo): Promise<void>;
   join(channelJoinInfo: channelJoinInterface): Promise<any>;
+  delete(channelId: number, userId: number): Promise<object>;
+  channelExit(userId: number, channelId: number): Promise<any>;
+  getUsers(channelId: number): Promise<any>;
 }
 export interface userHasChannels extends UserAttributes {
   channels: ChannelAttributes[];

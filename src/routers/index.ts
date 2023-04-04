@@ -8,3 +8,6 @@ export * from "./channelRouter";
 export * from "./socket";
 export * from "./userRouter";
 export * from "./listRouter";
+export * from "./chatBookmarkRouter";
+export * from "./imageRouter";
+export * from "./bookmarkListRouter";
