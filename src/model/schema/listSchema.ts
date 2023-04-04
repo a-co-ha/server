@@ -3,9 +3,22 @@ import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-export interface SocketInterface {}
+export interface SocketInterface {
+  channelId: number;
+  roomName: string;
+  type: string;
+  categories: string;
+}
 export const socketSchema = new Schema<SocketInterface>(
-  {},
+  {
+    channelId: { type: Number, required: true },
+    roomName: { type: String, default: "DefaultRoom" },
+    type: { type: String, default: "socket" },
+    categories: {
+      type: String,
+      default: "socket",
+    },
+  },
   {
     timestamps: true,
   }
@@ -37,6 +50,7 @@ export const ListSchema = new Schema<ListInterface>({
     {
       room: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "socket",
       },
     },
   ],

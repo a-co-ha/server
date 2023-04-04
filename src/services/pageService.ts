@@ -1,5 +1,4 @@
 import { socketModel, socketModelType } from "./../model/index";
-import { socket } from "./../routers/socket";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
@@ -47,18 +46,19 @@ export class PageService implements IPageModel {
 
     return page;
   }
-  async createRoom() {
-    return await this.socketModel.create({});
+  async createRoom(channelId: number) {
+    return await this.socketModel.create({ channelId });
   }
 
   async createListPage(channelId: number, page: page): Promise<ListInterface> {
     const list = await listModel.findOne({ channelId });
 
     const listId = list._id;
-    const room = await this.createRoom();
+    const room = await this.createRoom(channelId);
+    console.log(room);
     const pushTemplateList = await this.listModel.findByIdAndUpdate(
       { _id: listId },
-      { $push: { ListPage: { page }, SocketPage: { room } } }
+      { $push: { ListPage: { page }, SocketPage: { room: room } } }
     );
 
     return pushTemplateList;

@@ -14,11 +14,13 @@ interface ModelIdentifierInterface {
   page: string;
   template: string;
   list: string;
+  socket: string;
 }
 export const modelIdentifier: ModelIdentifierInterface = {
   page: "page",
   template: "template",
   list: "list",
+  socket: "socket",
 };
 
 export const pageModel = model<PageInterface>(modelIdentifier.page, PageSchema);
@@ -27,7 +29,10 @@ export const templateModel = model<TemplateInterface>(
   TemplateSchema
 );
 export const listModel = model<ListInterface>(modelIdentifier.list, ListSchema);
-export const socketModel = model<SocketInterface>("room", socketSchema);
+export const socketModel = model<SocketInterface>(
+  modelIdentifier.socket,
+  socketSchema
+);
 
 export type pageModelType = Model<PageInterface>;
 export type templateModelType = Model<TemplateInterface>;
