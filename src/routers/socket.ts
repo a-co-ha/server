@@ -53,7 +53,9 @@ export const socket = (io: any) => {
     });
 
     socket.emit("users", users);
-
+    socket.on("users", (data) => {
+      console.log(data);
+    });
     // 채널 연결
     for (const channel of socket.channel) {
       socket.join(channel);

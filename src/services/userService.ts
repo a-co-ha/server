@@ -10,8 +10,6 @@ import { ChannelUser } from "../model/channelUser";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
 
-import { connectSocket } from "../utils/connectSocket";
-
 export class UserService {
   constructor(private user: User) {}
   private tokenCreate = (
@@ -29,7 +27,8 @@ export class UserService {
   ): Promise<userToken> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
-    await connectSocket(sessionId, user);
+
+    // await connectSocket(sessionId, user);
     await User.update(
       {
         refreshToken,
