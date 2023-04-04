@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { errorResponse } from "../utils";
 import { jwtSecret } from "../config";
 import jwt from "jsonwebtoken";
-import { User, UserAttributes } from "../interface";
+import { User } from "../interface";
 
 export async function loginRequired(
   req: Request,

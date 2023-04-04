@@ -1,4 +1,3 @@
-import { ListInterface } from "../model/schema/listSchema";
 export interface block {
   blockId?: string;
   tag: string;

@@ -22,11 +22,7 @@ import {
   errorHandler,
   DtoValidatorMiddleware,
 } from "./middlewares";
-import {
-  createSocketAdapter,
-  redisClient,
-  subClient,
-} from "./utils/redisClient";
+import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
 import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";

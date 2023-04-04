@@ -155,7 +155,7 @@ export class ChannelService {
       attributes: ["userId"],
     });
 
-    const { count, rows: users } = await ChannelUser.findAndCountAll({
+    const users = await ChannelUser.findAll({
       where: { channelId },
       include: {
         model: User,
@@ -170,7 +170,7 @@ export class ChannelService {
       return { ...user, admin: isAdmin };
     });
 
-    return { count, users: usersWithAdminInfo };
+    return usersWithAdminInfo;
   }
 }
 
