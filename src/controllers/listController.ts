@@ -20,7 +20,7 @@ export class ListController implements IListController {
   updateList: AsyncRequestHandler = async (req, res) => {
     const channel = req.query.channel as string;
     const channelId = parseInt(channel);
-    const listPage = req.body.ListPage;
+    const listPage = req.body.EditablePage;
     const list = await listService.updateList(channelId, listPage);
     res.json(list);
   };

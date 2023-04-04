@@ -1,4 +1,3 @@
-import { socket } from "./../routers/socket";
 import { Model, model } from "mongoose";
 import { Sequelize } from "sequelize";
 import { config } from "../config";

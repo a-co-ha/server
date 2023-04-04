@@ -46,7 +46,7 @@ export interface pageStatusUpdate {
 
 export interface list {
   channelId: number;
-  ListPage: page[];
+  EditablePage: page[];
 }
 
 export interface ITemplateModel {

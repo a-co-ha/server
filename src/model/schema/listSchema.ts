@@ -25,7 +25,7 @@ export const socketSchema = new Schema<SocketInterface>(
 );
 export interface ListInterface {
   channelId: number;
-  ListPage: [
+  EditablePage: [
     { page: PageInterface; _id: string },
     { template: TemplateInterface; _id: string }
   ];
@@ -37,7 +37,7 @@ export const ListSchema = new Schema<ListInterface>({
     type: Number,
     required: true,
   },
-  ListPage: [
+  EditablePage: [
     {
       page: {
         type: mongoose.Schema.Types.ObjectId,

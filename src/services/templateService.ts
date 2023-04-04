@@ -44,7 +44,7 @@ class TemplateService implements ITemplateModel {
     const listId = list._id;
     const pushTemplateList = await this.listModel.findByIdAndUpdate(
       { _id: listId },
-      { $push: { ListPage: { template } } }
+      { $push: { EditablePage: { template } } }
     );
 
     return pushTemplateList;

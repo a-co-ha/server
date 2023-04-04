@@ -23,6 +23,8 @@ export const socketMiddleware = async (socket, next) => {
 
   if (isUser(getChannel)) {
     const channels = getChannel.channels.map((i) => i.id);
+
+    
     socket.channel = channels;
   }
 

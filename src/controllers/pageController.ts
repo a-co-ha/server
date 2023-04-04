@@ -44,6 +44,14 @@ export class PageController implements IPageController {
     res.json(createPage);
   };
 
+  createRoom: AsyncRequestHandler = async (req, res) => {
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
+
+    const createPage = await pageService.createRoom(channelId);
+    res.json(createPage);
+  };
+
   pushPage: AsyncRequestHandler = async (req, res) => {
     const id = req.params.id;
     const channel = req.query.channel as string;

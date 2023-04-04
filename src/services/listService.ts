@@ -13,7 +13,7 @@ export class ListService {
     const list = await listModel.findOne({ channelId });
     const listId = list._id;
     const listPage = await listModel.findOne({ _id: listId }).populate({
-      path: "ListPage.page ListPage.template SocketPage.room",
+      path: "EditablePage.page EditablePage.template SocketPage.room",
       select: "pageName type categories roomName",
     });
 
@@ -25,7 +25,7 @@ export class ListService {
 
     const listId = list._id;
     return await listModel
-      .findByIdAndUpdate({ _id: listId }, { ListPage: listPage })
+      .findByIdAndUpdate({ _id: listId }, { EditablePage: listPage })
       .then(() => this.findList(channelId));
   }
 
@@ -35,12 +35,12 @@ export class ListService {
 
     const findList = await listModel.findById(
       { _id },
-      { ListPage: { $elemMatch: { page: id } } }
+      { EditablePage: { $elemMatch: { page: id } } }
     );
-    const listPageId = findList.ListPage[0]._id;
+    const listPageId = findList.EditablePage[0]._id;
     const deleteList = await listModel.findByIdAndUpdate(
       { _id },
-      { $pull: { ListPage: { _id: listPageId } } }
+      { $pull: { EditablePage: { _id: listPageId } } }
     );
 
     return deleteList;
@@ -55,13 +55,13 @@ export class ListService {
 
     const findList = await listModel.findById(
       { _id },
-      { ListPage: { $elemMatch: { template: id } } }
+      { EditablePage: { $elemMatch: { template: id } } }
     );
 
-    const listTemplateId = findList.ListPage[0]._id;
+    const listTemplateId = findList.EditablePage[0]._id;
     const deleteList = await listModel.findByIdAndUpdate(
       { _id },
-      { $pull: { ListPage: { _id: listTemplateId } } }
+      { $pull: { EditablePage: { _id: listTemplateId } } }
     );
 
     return deleteList;
