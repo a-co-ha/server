@@ -10,9 +10,3 @@ pageRouter.post("/room", asyncHandler(pageController.createRoom));
 pageRouter.get("/room/:id", asyncHandler(pageController.getChat));
 pageRouter.put("/:id", asyncHandler(pageController.pushPage));
 pageRouter.delete("/:id", asyncHandler(pageController.deletePage));
-pageRouter.post(
-  "/images",
-  imageUpload.single("image"),
-  asyncHandler(pageController.imageUpload)
-);
-pageRouter.post("/images/delete", asyncHandler(pageController.imageDelete));
