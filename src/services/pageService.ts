@@ -1,3 +1,5 @@
+import { socketModel, socketModelType } from "./../model/index";
+import { socket } from "./../routers/socket";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
@@ -5,9 +7,15 @@ import { ListInterface } from "../model/schema/listSchema";
 export class PageService implements IPageModel {
   private pageModel: pageModelType;
   private listModel: listModelType;
-  constructor(pageModel: pageModelType, listModel: listModelType) {
+  private socketModel: socketModelType;
+  constructor(
+    pageModel: pageModelType,
+    listModel: listModelType,
+    socketModel: socketModelType
+  ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
+    this.socketModel = socketModel;
   }
 
   async findPage(channelId: number, id: string, type?: string): Promise<page> {
@@ -39,12 +47,18 @@ export class PageService implements IPageModel {
 
     return page;
   }
+  async createRoom() {
+    return await this.socketModel.create({});
+  }
+
   async createListPage(channelId: number, page: page): Promise<ListInterface> {
     const list = await listModel.findOne({ channelId });
+
     const listId = list._id;
+    const room = await this.createRoom();
     const pushTemplateList = await this.listModel.findByIdAndUpdate(
       { _id: listId },
-      { $push: { ListPage: { page } } }
+      { $push: { ListPage: { page }, SocketPage: { room } } }
     );
 
     return pushTemplateList;
@@ -78,4 +92,4 @@ export class PageService implements IPageModel {
   }
 }
 
-export const pageService = new PageService(pageModel, listModel);
+export const pageService = new PageService(pageModel, listModel, socketModel);

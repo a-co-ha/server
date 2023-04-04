@@ -70,12 +70,7 @@ export class PageController implements IPageController {
   };
 
   imageUpload: AsyncRequestHandler = async (req, res) => {
-    // const id = req.params.id;
-    // const channel = req.query.channel as string;
-    // const channelId = parseInt(channel);
     const file = {
-      // _id: id,
-      // channelId: channelId,
       filePath: req.file.location,
     };
 

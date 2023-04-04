@@ -1,5 +1,5 @@
-import { block } from "./../interface/index";
-import { IsMongoId, IsOptional, IsString } from "class-validator";
+import { IsArray, IsMongoId, IsOptional, IsString } from "class-validator";
+import { block } from "../interface";
 export class PageDto {
   @IsMongoId()
   @IsOptional()
@@ -17,9 +17,9 @@ export class PageDto {
   @IsOptional()
   public label: string;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  public blocks: string;
+  public blocks: block[];
 
   @IsString()
   @IsOptional()

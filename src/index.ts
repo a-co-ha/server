@@ -30,7 +30,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import { sequelize } from "./model";
-import { ChannelDto, InviteDto } from "./dto/channelDto";
+import { ChannelDto, InviteDto, PageDto } from "./dto";
 
 export class AppServer {
   app: express.Application;
@@ -102,7 +102,12 @@ export class AppServer {
       DtoValidatorMiddleware(ChannelDto),
       channelRouter
     );
-    this.app.use(endPoint.page, pageRouter);
+    this.app.use(
+      endPoint.page,
+      // loginRequired,
+      // DtoValidatorMiddleware(PageDto),
+      pageRouter
+    );
     this.app.use(endPoint.template, templateRouter);
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);

@@ -1,9 +1,15 @@
+import { socket } from "./../routers/socket";
 import { Model, model } from "mongoose";
 import { Sequelize } from "sequelize";
 import { config } from "../config";
 import { PageInterface, PageSchema } from "./schema/pageSchema";
 import { TemplateInterface, TemplateSchema } from "./schema/templateSchema";
-import { ListSchema, ListInterface } from "./schema/listSchema";
+import {
+  ListSchema,
+  ListInterface,
+  SocketInterface,
+  socketSchema,
+} from "./schema/listSchema";
 interface ModelIdentifierInterface {
   page: string;
   template: string;
@@ -21,11 +27,12 @@ export const templateModel = model<TemplateInterface>(
   TemplateSchema
 );
 export const listModel = model<ListInterface>(modelIdentifier.list, ListSchema);
+export const socketModel = model<SocketInterface>("room", socketSchema);
 
 export type pageModelType = Model<PageInterface>;
 export type templateModelType = Model<TemplateInterface>;
 export type listModelType = Model<ListInterface>;
-
+export type socketModelType = Model<SocketInterface>;
 export const sequelize = new Sequelize(
   config.development.database,
   config.development.username,
