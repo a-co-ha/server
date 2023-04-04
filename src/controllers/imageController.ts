@@ -1,4 +1,4 @@
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler } from "../constants";
 import { deleteImage } from "../middlewares";
 
 interface IImageController {

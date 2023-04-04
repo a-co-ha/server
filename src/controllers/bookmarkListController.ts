@@ -1,9 +1,11 @@
 import { json } from "sequelize";
 import { bookmarkListService } from "../services";
-import { AsyncRequestHandler } from "../types";
-
+import { AsyncRequestHandler } from "../constants";
 interface IBookmarkListController {
   createList: AsyncRequestHandler;
+  findBookmarkLsit: AsyncRequestHandler;
+  updateBookmarkList: AsyncRequestHandler;
+  deleteBookmarkList: AsyncRequestHandler;
 }
 
 export class BookmarkListController implements IBookmarkListController {
