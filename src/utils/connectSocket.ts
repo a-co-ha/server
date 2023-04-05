@@ -9,6 +9,7 @@ export const connectSocket = (
   return new Promise((resolve, reject) => {
     const socket = io(`http://localhost:${port}`, {
       auth: { sessionId, user },
+      withCredentials: true,
     });
 
     socket.on("connect", () => {

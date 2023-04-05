@@ -65,14 +65,7 @@ export class AppServer {
     io.use(socketMiddleware);
     io.use(wrap(session(sessionConfig)));
     socket(io);
-    io.engine.on("initial_headers", (headers, req) => {
-      console.log(req.session);
-      if (req.session) {
-        headers["set-cookie"] = serialize("sid", req.session.id, {
-          sameSite: "lax",
-        });
-      }
-    });
+
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
