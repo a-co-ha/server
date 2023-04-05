@@ -60,9 +60,10 @@ export class AppServer {
     });
 
     io.engine.on("initial_headers", (headers, req) => {
+      console.log(req.session);
       if (req.session) {
         headers["set-cookie"] = serialize("sid", req.session.id, {
-          sameSite: "strict",
+          sameSite: "lax",
         });
       }
     });
