@@ -47,7 +47,6 @@ export const sessionConfig = {
     //세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
     httpOnly: false, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함 localhost, ip일때는 쓰면 안된다. 저장안됨
     sameSite: "lax",
-    secure: true,
   },
   secret: SESSION_SECRET,
   resave: false,
