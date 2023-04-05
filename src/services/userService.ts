@@ -1,3 +1,4 @@
+import { sequelize } from "./../model/index";
 import {
   ChannelAttributes,
   userHasChannels,
@@ -22,14 +23,11 @@ export class UserService {
     });
   };
 
-  public async login(
-    sessionId: string,
-    user: UserAttributes
-  ): Promise<userToken> {
+  public async login(sessionId: string, user: UserAttributes): Promise<any> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
 
-    await connectSocket(sessionId, user);
+    // await connectSocket(sessionId, user);
     await User.update(
       {
         refreshToken,
@@ -40,7 +38,7 @@ export class UserService {
         },
       }
     );
-    return { token: { accessToken, refreshToken }, user };
+    return { token: { accessToken, refreshToken }, user, sessionId };
   }
 
   public async getUserWithChannels(
