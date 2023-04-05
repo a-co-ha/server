@@ -59,6 +59,12 @@ export class AppServer {
       cors: { origin: corsOrigin, credentials: true },
     });
 
+    const adapter = await createSocketAdapter();
+    io.adapter(adapter);
+
+    io.use(socketMiddleware);
+    io.use(wrap(session(sessionConfig)));
+    socket(io);
     io.engine.on("initial_headers", (headers, req) => {
       console.log(req.session);
       if (req.session) {
@@ -67,13 +73,6 @@ export class AppServer {
         });
       }
     });
-    const adapter = await createSocketAdapter();
-    io.adapter(adapter);
-
-    io.use(wrap(session(sessionConfig)));
-    io.use(socketMiddleware);
-    socket(io);
-
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
