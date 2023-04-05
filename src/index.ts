@@ -54,7 +54,7 @@ export class AppServer {
     const server = createServer(appServer.app);
     await appServer.config();
     const io = new Server(server, {
-      cors: {},
+      cors: { origin: corsOrigin, credentials: true },
     });
     const adapter = await createSocketAdapter();
     io.adapter(adapter);
