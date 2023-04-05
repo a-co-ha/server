@@ -43,9 +43,9 @@ export class AppServer {
     this.app = express();
   }
   async config() {
+    this.middleWare();
     new MySqlAdapter();
     new MongoAdapter();
-    this.middleWare();
     this.routes();
   }
 
