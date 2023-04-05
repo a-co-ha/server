@@ -2,20 +2,17 @@ import { channelService } from "./../services/channelService";
 import crypto from "crypto";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
-import { userHasChannels } from "../interface";
+import { User, userHasChannels } from "../interface";
+import { TokenType } from "../constants";
+import { decode } from "./loginRequired";
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
 export const socketMiddleware = async (socket, next) => {
-  const sessionID = socket.handshake.auth.sessionId;
-  const user = socket.handshake.auth.user;
-
-  if (!sessionID || !user) {
-    return next(new Error("소켓 에러"));
-  }
-
+  const sessionID = socket.handshake.headers.sessionid;
+  const { user } = socket;
   const getChannel = await userService.getUserWithChannels(user.userId);
 
   function isUser(user: userHasChannels | boolean): user is userHasChannels {
@@ -38,7 +35,7 @@ export const socketMiddleware = async (socket, next) => {
 
     socket.channel = rooms;
   }
-  console.log(socket.channel);
+
   const sessionInfo = await redisCache.findSession(sessionID);
 
   socket.sessionID = sessionID;

@@ -17,13 +17,14 @@ import {
   imageRouter,
   bookmarkListRouter,
 } from "./routers";
-import { LogColor, endPoint } from "./constants";
+import { LogColor, endPoint, TokenType } from "./constants";
 import {
   wrap,
   socketMiddleware,
   loginRequired,
   errorHandler,
   DtoValidatorMiddleware,
+  decode,
 } from "./middlewares";
 import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
@@ -34,7 +35,6 @@ import { Server } from "socket.io";
 
 import { sequelize } from "./model";
 import { ChannelDto, InviteDto, PageDto } from "./dto";
-import { serialize } from "cookie";
 
 export class AppServer {
   app: express.Application;
@@ -62,8 +62,28 @@ export class AppServer {
     const adapter = await createSocketAdapter();
     io.adapter(adapter);
 
-    io.use(socketMiddleware);
     io.use(wrap(session(sessionConfig)));
+    io.use(async (socket, next) => {
+      const user = socket.handshake.headers.token;
+
+      try {
+        const tokenType = user.split(" ")[0];
+        const token = user.split(" ")[1];
+        if (
+          !(tokenType === TokenType.ACCESS || tokenType === TokenType.REFRESH)
+        ) {
+          return next(new Error("토큰 타입 에러"));
+        }
+
+        const decoded = await decode(token);
+        socket.user = decoded;
+
+        next();
+      } catch (err) {
+        return next(new Error("유효하지 않은 토큰"));
+      }
+    });
+    io.use(socketMiddleware);
     socket(io);
 
     server.listen(port, async () => {

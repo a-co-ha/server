@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { messageController } from "../controllers";
-import redisCache from "../utils/redisCache";
+import redisCache, { mapSession } from "../utils/redisCache";
 
 export const socket = (io: any) => {
   io.on("connection", async (socket: any) => {
@@ -29,7 +29,10 @@ export const socket = (io: any) => {
     const users = [];
     const [messages, sessions] = await Promise.all([
       redisCache.findMessagesForUser(socket.userID),
-      redisCache.findAllSessions(),
+      redisCache.findAllSessions().then((res) => {
+        console.log(res);
+        return res.map((session) => mapSession(session));
+      }),
     ]);
 
     const messagesPerUser = new Map();
@@ -44,13 +47,16 @@ export const socket = (io: any) => {
     });
 
     sessions.forEach((session) => {
+      console.log(session.userID);
       users.push({
         userID: session.userID,
-        username: session.username,
+        username: session.name,
         connected: session.connected,
+        img: session.img,
         messages: messagesPerUser.get(session.userID) || [],
       });
     });
+    // console.log(sessions);
 
     socket.emit("users", users);
 

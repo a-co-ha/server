@@ -1,7 +1,8 @@
 /* eslint-disable no-var */
+import { RedisCommandRawReply } from "@redis/client/dist/lib/commands";
 import { redisClient } from "./redisClient";
 
-const mapSession = ([userID, name, connected, img]) =>
+export const mapSession = ([userID, name, connected, img]) =>
   userID ? { userID, name, connected: connected === "true", img } : undefined;
 
 export default {
@@ -60,31 +61,14 @@ export default {
     });
     var multi = redisClient.multi();
 
-    for (var i = 0; i < commands.length; i++) {
-      multi = multi.hmGet(`session:${i}`, [
-        "userID",
-        "name",
-        "connected",
-        "img",
-      ]);
-    }
-
-    const result = await new Promise((resolve, reject) => {
-      multi.exec((err, replies) => {
-        if (err) {
-          console.error(err);
-          reject(err);
-        } else {
-          const sessions = replies.map((el) => {
-            console.log(el);
-            return mapSession(el);
-          });
-
-          resolve(sessions);
-        }
-      });
+    commands.forEach(async (command) => {
+      const a = multi.hmGet(command, ["userID", "name", "connected", "img"]);
+      return a;
     });
 
+    const result = await new Promise((resolve, reject) => {
+      resolve(multi.EXEC());
+    });
     return result;
   },
 
