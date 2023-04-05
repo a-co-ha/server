@@ -3594,6 +3594,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^0":
+  version: 0.5.1
+  resolution: "@types/cookie@npm:0.5.1"
+  checksum: 9a8d60fc84797122bc399d6bd330fe5780dc7aab032321de705049ea925339f74658bfa418de483a625d51858770efef58df633ff2e20f1bdf7fbd74a52847e2
+  languageName: node
+  linkType: hard
+
 "@types/cookie@npm:^0.4.1":
   version: 0.4.1
   resolution: "@types/cookie@npm:0.4.1"
@@ -4284,6 +4291,7 @@ __metadata:
     "@types/babel__preset-env": ^7
     "@types/bluebird": ^3.5.38
     "@types/compression": ^1.7.2
+    "@types/cookie": ^0
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.12
     "@types/dotenv": ^8.2.0
@@ -4324,6 +4332,7 @@ __metadata:
     cluster: ^0.7.7
     compression: ^1.7.4
     connect-redis: ^7.0.0
+    cookie: ^0.5.0
     cookie-parser: ^1.4.6
     cors: ^2.8.5
     dotenv: ^16.0.3
@@ -5619,7 +5628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.5.0":
+"cookie@npm:0.5.0, cookie@npm:^0.5.0":
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180

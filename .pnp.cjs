@@ -1176,7 +1176,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "@types/cookie",\
-        "npm:0.4.1"\
+        "npm:0.5.1"\
       ],\
       [\
         "@types/cookie-parser",\
@@ -1868,7 +1868,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "cookie",\
-        "npm:0.4.2"\
+        "npm:0.5.0"\
       ],\
       [\
         "cookie-parser",\
@@ -4161,6 +4161,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__preset-env", "npm:7.9.2"],\
             ["@types/bluebird", "npm:3.5.38"],\
             ["@types/compression", "npm:1.7.2"],\
+            ["@types/cookie", "npm:0.5.1"],\
             ["@types/cookie-parser", "npm:1.4.3"],\
             ["@types/cors", "npm:2.8.13"],\
             ["@types/dotenv", "npm:8.2.0"],\
@@ -4201,6 +4202,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cluster", "npm:0.7.7"],\
             ["compression", "npm:1.7.4"],\
             ["connect-redis", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.0.1"],\
+            ["cookie", "npm:0.5.0"],\
             ["cookie-parser", "npm:1.4.6"],\
             ["cors", "npm:2.8.5"],\
             ["dotenv", "npm:16.0.3"],\
@@ -9250,6 +9252,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/cookie", "npm:0.4.1"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:0.5.1", {\
+          "packageLocation": "./.yarn/cache/@types-cookie-npm-0.5.1-4b655a0ac0-9a8d60fc84.zip/node_modules/@types/cookie/",\
+          "packageDependencies": [\
+            ["@types/cookie", "npm:0.5.1"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/cookie-parser", [\
@@ -10117,6 +10126,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__preset-env", "npm:7.9.2"],\
             ["@types/bluebird", "npm:3.5.38"],\
             ["@types/compression", "npm:1.7.2"],\
+            ["@types/cookie", "npm:0.5.1"],\
             ["@types/cookie-parser", "npm:1.4.3"],\
             ["@types/cors", "npm:2.8.13"],\
             ["@types/dotenv", "npm:8.2.0"],\
@@ -10157,6 +10167,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cluster", "npm:0.7.7"],\
             ["compression", "npm:1.7.4"],\
             ["connect-redis", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.0.1"],\
+            ["cookie", "npm:0.5.0"],\
             ["cookie-parser", "npm:1.4.6"],\
             ["cors", "npm:2.8.5"],\
             ["dotenv", "npm:16.0.3"],\

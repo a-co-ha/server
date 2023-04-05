@@ -34,6 +34,7 @@ import { Server } from "socket.io";
 
 import { sequelize } from "./model";
 import { ChannelDto, InviteDto, PageDto } from "./dto";
+import { serialize } from "cookie";
 
 export class AppServer {
   app: express.Application;
@@ -56,6 +57,14 @@ export class AppServer {
     const io = new Server(server, {
       cookie: true,
       cors: { origin: corsOrigin, credentials: true },
+    });
+
+    io.engine.on("initial_headers", (headers, req) => {
+      if (req.session) {
+        headers["set-cookie"] = serialize("sid", req.session.id, {
+          sameSite: "strict",
+        });
+      }
     });
     const adapter = await createSocketAdapter();
     io.adapter(adapter);
