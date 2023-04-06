@@ -8,10 +8,9 @@ import { User } from "./user";
 export class Message extends Model<MessageAttributes> {
   public readonly id!: number;
   public name!: string;
-  public githubID!: string;
   public img!: string;
   public text!: string;
-  public channelId!: string;
+  public roomId!: string;
   public readonly createdAt!: Date;
 
   public static associations: {
@@ -30,11 +29,7 @@ Message.init(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-    githubID: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-      field: "github_id",
-    },
+
     img: {
       type: DataTypes.STRING(200),
       allowNull: true,
@@ -43,10 +38,10 @@ Message.init(
       type: DataTypes.STRING(2000),
       allowNull: true,
     },
-    channelId: {
+    roomId: {
       type: DataTypes.NUMBER,
       primaryKey: true,
-      field: "channel_id",
+      field: "room_id",
     },
     createdAt: {
       type: DataTypes.DATE,

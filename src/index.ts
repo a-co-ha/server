@@ -17,14 +17,14 @@ import {
   imageRouter,
   bookmarkListRouter,
 } from "./routers";
-import { LogColor, endPoint, TokenType } from "./constants";
+import { LogColor, endPoint } from "./constants";
 import {
   wrap,
   socketMiddleware,
   loginRequired,
   errorHandler,
   DtoValidatorMiddleware,
-  decode,
+  socketValidation,
 } from "./middlewares";
 import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
@@ -63,26 +63,8 @@ export class AppServer {
     io.adapter(adapter);
 
     io.use(wrap(session(sessionConfig)));
-    io.use(async (socket, next) => {
-      const user = socket.handshake.headers.token;
 
-      try {
-        const tokenType = user.split(" ")[0];
-        const token = user.split(" ")[1];
-        if (
-          !(tokenType === TokenType.ACCESS || tokenType === TokenType.REFRESH)
-        ) {
-          return next(new Error("토큰 타입 에러"));
-        }
-
-        const decoded = await decode(token);
-        socket.user = decoded;
-
-        next();
-      } catch (err) {
-        return next(new Error("유효하지 않은 토큰"));
-      }
-    });
+    io.use(socketValidation);
     io.use(socketMiddleware);
     socket(io);
 
@@ -92,7 +74,6 @@ export class AppServer {
           console.info(LogColor.INFO, "sequelize connection success");
         });
         await sequelize.sync();
-        console.log("All models were synchronized successfully.");
         console.info(
           LogColor.INFO,
           `server listening at http://localhost:${port}`

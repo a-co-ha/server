@@ -108,6 +108,3 @@ export default {
     await redisClient.DEL(key);
   },
 };
-function getSessions(keys: Set<unknown>) {
-  throw new Error("Function not implemented.");
-}

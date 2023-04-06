@@ -139,10 +139,9 @@ export interface IBookmarkListModel {
 export interface MessageAttributes {
   id?: string;
   name: string;
-  githubID: string;
   img?: string;
   text?: string;
-  channelId?: string;
+  roomId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -30,7 +30,6 @@ export const socket = (io: any) => {
     const [messages, sessions] = await Promise.all([
       redisCache.findMessagesForUser(socket.userID),
       redisCache.findAllSessions().then((res) => {
-        console.log(res);
         return res.map((session) => mapSession(session));
       }),
     ]);
@@ -47,7 +46,6 @@ export const socket = (io: any) => {
     });
 
     sessions.forEach((session) => {
-      console.log(session.userID);
       users.push({
         userID: session.userID,
         username: session.name,
@@ -56,16 +54,16 @@ export const socket = (io: any) => {
         messages: messagesPerUser.get(session.userID) || [],
       });
     });
-    // console.log(sessions);
 
     socket.emit("users", users);
 
     // 채널 연결
-    for (const channel of socket.channel) {
-      socket.join(channel);
+    for (const room of socket.roomIds) {
+      console.log(room);
+      socket.join(room);
 
       // 커넥션했다고 알림
-      socket.broadcast.to(channel).emit("user connected", {
+      socket.broadcast.to(room).emit("user connected", {
         userID: socket.userID,
         username: socket.username,
         connected: "true",
@@ -77,15 +75,15 @@ export const socket = (io: any) => {
 
         const isDisconnected = matchingSockets.size === 0;
         if (isDisconnected) {
-          socket.broadcast.to(channel).emit("user disconnected", {
+          socket.broadcast.to(room).emit("user disconnected", {
             userID: socket.userID,
-            username: socket.username,
+            username: socket.name,
             connected: "false",
           });
 
           redisCache.saveSession(socket.sessionID, {
             userID: socket.userID,
-            name: socket.username,
+            name: socket.name,
             img: socket.img,
             connected: "false",
           });
@@ -100,16 +98,16 @@ export const socket = (io: any) => {
     socket.on("private message", async (data: any) => {
       const { to } = data;
       data.from = socket.userID;
-      const response = await messageController.createMessage(data);
+      const response = await messageController.createMessage(socket);
       socket.to(to).to(socket.userID).emit("private message", response);
     });
 
     // 특정 채널에 전체 메세지
     socket.on("message-send", async (data: any) => {
-      const { channelId } = data;
+      const { roomId } = data;
       data.from = socket.userID;
-      const response = await messageController.createMessage(data);
-      socket.to(channelId).to(socket.userID).emit("message-receive", response);
+      const response = await messageController.createMessage(socket);
+      socket.to(roomId).to(socket.userID).emit("message-receive", response);
     });
   });
 };

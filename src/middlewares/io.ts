@@ -2,13 +2,32 @@ import { channelService } from "./../services/channelService";
 import crypto from "crypto";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
-import { User, userHasChannels } from "../interface";
+import { userHasChannels } from "../interface";
 import { TokenType } from "../constants";
 import { decode } from "./loginRequired";
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, {}, next);
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
+
+export const socketValidation = async (socket, next) => {
+  // const user = socket.handshake.auth.token;
+  const user = socket.handshake.headers.token;
+  try {
+    const tokenType = user.split(" ")[0];
+    const token = user.split(" ")[1];
+    if (!(tokenType === TokenType.ACCESS || tokenType === TokenType.REFRESH)) {
+      return next(new Error("토큰 타입 에러"));
+    }
+
+    const decoded = await decode(token);
+    socket.user = decoded;
+
+    next();
+  } catch (err) {
+    return next(new Error("유효하지 않은 토큰"));
+  }
+};
 
 export const socketMiddleware = async (socket, next) => {
   const sessionID = socket.handshake.headers.sessionid;
@@ -33,7 +52,7 @@ export const socketMiddleware = async (socket, next) => {
       });
     });
 
-    socket.channel = rooms;
+    socket.roomIds = rooms;
   }
 
   const sessionInfo = await redisCache.findSession(sessionID);
