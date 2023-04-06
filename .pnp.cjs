@@ -1199,6 +1199,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:1.39.6"\
       ],\
       [\
+        "@types/engine.io",\
+        "npm:3.1.7"\
+      ],\
+      [\
         "@types/express",\
         "npm:4.17.17"\
       ],\
@@ -1209,6 +1213,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       [\
         "@types/express-session",\
         "npm:1.17.6"\
+      ],\
+      [\
+        "@types/express-socket.io-session",\
+        "npm:1.3.6"\
       ],\
       [\
         "@types/express-validator",\
@@ -1325,6 +1333,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       [\
         "@types/socket.io",\
         "npm:3.0.2"\
+      ],\
+      [\
+        "@types/socket.io-parser",\
+        "npm:2.2.1"\
       ],\
       [\
         "@types/socket.io-redis",\
@@ -1656,7 +1668,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "buffer",\
-        "npm:5.6.0"\
+        "npm:5.7.1"\
       ],\
       [\
         "buffer-equal-constant-time",\
@@ -1893,6 +1905,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       [\
         "cors",\
         "npm:2.8.5"\
+      ],\
+      [\
+        "crc",\
+        "npm:3.8.0"\
       ],\
       [\
         "create-require",\
@@ -2169,6 +2185,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       [\
         "express-session",\
         "npm:1.17.3"\
+      ],\
+      [\
+        "express-socket.io-session",\
+        "npm:1.3.5"\
       ],\
       [\
         "express-validator",\
@@ -4168,6 +4188,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.17"],\
             ["@types/express-serve-static-core", "npm:4.17.33"],\
             ["@types/express-session", "npm:1.17.6"],\
+            ["@types/express-socket.io-session", "npm:1.3.6"],\
             ["@types/express-validator", "npm:3.0.0"],\
             ["@types/http-errors", "npm:2.0.1"],\
             ["@types/jsonwebtoken", "npm:9.0.1"],\
@@ -4213,6 +4234,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-react", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.32.2"],\
             ["express", "npm:4.18.2"],\
             ["express-session", "npm:1.17.3"],\
+            ["express-socket.io-session", "npm:1.3.5"],\
             ["express-validator", "npm:6.15.0"],\
             ["global", "npm:4.4.0"],\
             ["http-errors", "npm:2.0.0"],\
@@ -9310,6 +9332,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/engine.io", [\
+        ["npm:3.1.7", {\
+          "packageLocation": "./.yarn/cache/@types-engine.io-npm-3.1.7-90ea7aeffa-62b129eac3.zip/node_modules/@types/engine.io/",\
+          "packageDependencies": [\
+            ["@types/engine.io", "npm:3.1.7"],\
+            ["@types/node", "npm:18.15.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/express", [\
         ["npm:4.17.17", {\
           "packageLocation": "./.yarn/cache/@types-express-npm-4.17.17-46fe8173db-0196dacc27.zip/node_modules/@types/express/",\
@@ -9341,6 +9373,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/express-session", "npm:1.17.6"],\
             ["@types/express", "npm:4.17.17"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/express-socket.io-session", [\
+        ["npm:1.3.6", {\
+          "packageLocation": "./.yarn/cache/@types-express-socket.io-session-npm-1.3.6-ac12d69dff-6f73f5a456.zip/node_modules/@types/express-socket.io-session/",\
+          "packageDependencies": [\
+            ["@types/express-socket.io-session", "npm:1.3.6"],\
+            ["@types/express", "npm:4.17.17"],\
+            ["@types/express-session", "npm:1.17.6"],\
+            ["@types/socket.io", "npm:2.1.13"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -9621,11 +9665,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/socket.io", [\
+        ["npm:2.1.13", {\
+          "packageLocation": "./.yarn/cache/@types-socket.io-npm-2.1.13-e5a687a566-7c4748d306.zip/node_modules/@types/socket.io/",\
+          "packageDependencies": [\
+            ["@types/socket.io", "npm:2.1.13"],\
+            ["@types/engine.io", "npm:3.1.7"],\
+            ["@types/node", "npm:18.15.3"],\
+            ["@types/socket.io-parser", "npm:2.2.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:3.0.2", {\
           "packageLocation": "./.yarn/cache/@types-socket.io-npm-3.0.2-745ac428ad-168cf77e48.zip/node_modules/@types/socket.io/",\
           "packageDependencies": [\
             ["@types/socket.io", "npm:3.0.2"],\
             ["socket.io", "npm:4.6.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/socket.io-parser", [\
+        ["npm:2.2.1", {\
+          "packageLocation": "./.yarn/cache/@types-socket.io-parser-npm-2.2.1-baa0bbe7d5-4ebe488172.zip/node_modules/@types/socket.io-parser/",\
+          "packageDependencies": [\
+            ["@types/socket.io-parser", "npm:2.2.1"],\
+            ["@types/node", "npm:18.15.3"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -10133,6 +10197,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express", "npm:4.17.17"],\
             ["@types/express-serve-static-core", "npm:4.17.33"],\
             ["@types/express-session", "npm:1.17.6"],\
+            ["@types/express-socket.io-session", "npm:1.3.6"],\
             ["@types/express-validator", "npm:3.0.0"],\
             ["@types/http-errors", "npm:2.0.1"],\
             ["@types/jsonwebtoken", "npm:9.0.1"],\
@@ -10178,6 +10243,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-react", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.32.2"],\
             ["express", "npm:4.18.2"],\
             ["express-session", "npm:1.17.3"],\
+            ["express-socket.io-session", "npm:1.3.5"],\
             ["express-validator", "npm:6.15.0"],\
             ["global", "npm:4.4.0"],\
             ["http-errors", "npm:2.0.0"],\
@@ -11646,6 +11712,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["cookie", [\
+        ["npm:0.1.3", {\
+          "packageLocation": "./.yarn/cache/cookie-npm-0.1.3-4de50cf8c3-2f620e61fa.zip/node_modules/cookie/",\
+          "packageDependencies": [\
+            ["cookie", "npm:0.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:0.4.1", {\
           "packageLocation": "./.yarn/cache/cookie-npm-0.4.1-cc5e2ebb42-bd7c47f5d9.zip/node_modules/cookie/",\
           "packageDependencies": [\
@@ -11669,6 +11742,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["cookie-parser", [\
+        ["npm:1.3.5", {\
+          "packageLocation": "./.yarn/cache/cookie-parser-npm-1.3.5-554c36cfb8-0a633b4534.zip/node_modules/cookie-parser/",\
+          "packageDependencies": [\
+            ["cookie-parser", "npm:1.3.5"],\
+            ["cookie", "npm:0.1.3"],\
+            ["cookie-signature", "npm:1.0.6"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:1.4.6", {\
           "packageLocation": "./.yarn/cache/cookie-parser-npm-1.4.6-a68f84d02a-1e5a63aa82.zip/node_modules/cookie-parser/",\
           "packageDependencies": [\
@@ -11730,6 +11812,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cors", "npm:2.8.5"],\
             ["object-assign", "npm:4.1.1"],\
             ["vary", "npm:1.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["crc", [\
+        ["npm:3.8.0", {\
+          "packageLocation": "./.yarn/cache/crc-npm-3.8.0-ff6ff34fbe-dabbc4eba2.zip/node_modules/crc/",\
+          "packageDependencies": [\
+            ["crc", "npm:3.8.0"],\
+            ["buffer", "npm:5.7.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -12734,6 +12826,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["parseurl", "npm:1.3.3"],\
             ["safe-buffer", "npm:5.2.1"],\
             ["uid-safe", "npm:2.1.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["express-socket.io-session", [\
+        ["npm:1.3.5", {\
+          "packageLocation": "./.yarn/cache/express-socket.io-session-npm-1.3.5-8e1f2d5d40-0a2636ba30.zip/node_modules/express-socket.io-session/",\
+          "packageDependencies": [\
+            ["express-socket.io-session", "npm:1.3.5"],\
+            ["cookie-parser", "npm:1.3.5"],\
+            ["crc", "npm:3.8.0"],\
+            ["debug", "virtual:e0cd6afa69db469de21c754be1546e018ea723a8653bf7c1fdbb52b3d67b9c4065461f2d7632852c8644c3b36b5304269483ba2eb51ad39f9eae03847036d7a9#npm:2.6.9"]\
           ],\
           "linkType": "HARD"\
         }]\

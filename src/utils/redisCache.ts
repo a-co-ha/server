@@ -14,7 +14,7 @@ export default {
           ? { userID, name, connected: connected === "true", img }
           : undefined
       );
-    console.log(a);
+    console.log("findsession", a);
     return a;
   },
   findLogin: async (id) => {

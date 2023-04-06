@@ -3642,6 +3642,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/engine.io@npm:*":
+  version: 3.1.7
+  resolution: "@types/engine.io@npm:3.1.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: 62b129eac3fca625cfae4591d4fab56872c44c1f7bb625af2f9e6c1bb28f8210276026e1007dc2da433ee5943972534078402515168135cc155a18c41dfec6a2
+  languageName: node
+  linkType: hard
+
 "@types/express-serve-static-core@npm:^4.17.31, @types/express-serve-static-core@npm:^4.17.33":
   version: 4.17.33
   resolution: "@types/express-serve-static-core@npm:4.17.33"
@@ -3659,6 +3668,17 @@ __metadata:
   dependencies:
     "@types/express": "*"
   checksum: f5f2201d6b9568d8b9319735a4f6806b5ca144cee450274965aec54bc0a0331ba8bfffc1ad5addadf2e625769e13813a48cb5aea5b166fa05f474a12302dbb38
+  languageName: node
+  linkType: hard
+
+"@types/express-socket.io-session@npm:^1":
+  version: 1.3.6
+  resolution: "@types/express-socket.io-session@npm:1.3.6"
+  dependencies:
+    "@types/express": "*"
+    "@types/express-session": "*"
+    "@types/socket.io": 2.1.13
+  checksum: 6f73f5a4563c87cd880600cef4cbe95b870e6e1dd4bd3caf4accc0652d24a76746d8d5f18145e97be05c716be0c1dce026b6b9369b25fc6179bdd981f4f0cf91
   languageName: node
   linkType: hard
 
@@ -3908,12 +3928,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/socket.io-parser@npm:*":
+  version: 2.2.1
+  resolution: "@types/socket.io-parser@npm:2.2.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 4ebe4881725c673fbb8fdbba0f88c7a87fde76e0a590a9de3171adfa999a7f94f9ecca3daafb53414a7d11d5c3fff8592c241562989e28113d7ecd746c799d08
+  languageName: node
+  linkType: hard
+
 "@types/socket.io-redis@npm:^3.0.0":
   version: 3.0.0
   resolution: "@types/socket.io-redis@npm:3.0.0"
   dependencies:
     socket.io-redis: "*"
   checksum: 7f4100d465cc393808e66e91cbe29fc6c30b0ce96614f0ddfbf459a2225ac52036c35542a32782f0fe96a3d445cda8cd075f90592c56fbe609473ac22baa5b05
+  languageName: node
+  linkType: hard
+
+"@types/socket.io@npm:2.1.13":
+  version: 2.1.13
+  resolution: "@types/socket.io@npm:2.1.13"
+  dependencies:
+    "@types/engine.io": "*"
+    "@types/node": "*"
+    "@types/socket.io-parser": "*"
+  checksum: 7c4748d30632dd54a7fc36ee1d51edb31014e78a13f2e4cb6a4a37bf5c6415472b2f827b36238d495a47ea677eb95261b1fdee68bfee6d9e4a3bd26077d88ace
   languageName: node
   linkType: hard
 
@@ -4298,6 +4338,7 @@ __metadata:
     "@types/express": ^4.17.17
     "@types/express-serve-static-core": ^4.17.31
     "@types/express-session": ^1.17.5
+    "@types/express-socket.io-session": ^1
     "@types/express-validator": ^3.0.0
     "@types/http-errors": ^2
     "@types/jsonwebtoken": ^9
@@ -4343,6 +4384,7 @@ __metadata:
     eslint-plugin-react: ^7.32.1
     express: ^4.18.2
     express-session: ^1.17.3
+    express-socket.io-session: ^1.3.5
     express-validator: ^6.15.0
     global: ^4.4.0
     http-errors: ^2.0.0
@@ -4989,7 +5031,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:^5.6.0":
+"buffer@npm:^5.1.0, buffer@npm:^5.6.0":
   version: 5.7.1
   resolution: "buffer@npm:5.7.1"
   dependencies:
@@ -5607,10 +5649,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-parser@npm:~1.3.3":
+  version: 1.3.5
+  resolution: "cookie-parser@npm:1.3.5"
+  dependencies:
+    cookie: 0.1.3
+    cookie-signature: 1.0.6
+  checksum: 0a633b45346c34349d27c30f60dc35f296bd36c08069945dfb78b54ee8615724574b25e8cdf40dda183f93de56fbdb847b324ce6ac28d70c9c2474cdcc9ba6e6
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
   checksum: f4e1b0a98a27a0e6e66fd7ea4e4e9d8e038f624058371bf4499cfcd8f3980be9a121486995202ba3fca74fbed93a407d6d54d43a43f96fd28d0bd7a06761591a
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.1.3":
+  version: 0.1.3
+  resolution: "cookie@npm:0.1.3"
+  checksum: 2f620e61fa312bebb34a9cd4f437aac2f0b4d376fd05125b9a797ef234f7ecc790c9cb00267b2576a38fa9b0ee08d0238c22fb877386118b0ed46d009a8978c9
   languageName: node
   linkType: hard
 
@@ -5675,6 +5734,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"crc@npm:^3.3.0":
+  version: 3.8.0
+  resolution: "crc@npm:3.8.0"
+  dependencies:
+    buffer: ^5.1.0
+  checksum: dabbc4eba223b206068b92ca82bb471d583eb6be2384a87f5c3712730cfd6ba4b13a45e8ba3ef62174d5a781a2c5ac5c20bf36cf37bba73926899bd0aa19186f
+  languageName: node
+  linkType: hard
+
 "create-require@npm:^1.1.0":
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
@@ -5710,7 +5778,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:2.6.9":
+"debug@npm:2.6.9, debug@npm:~2.6.0":
   version: 2.6.9
   resolution: "debug@npm:2.6.9"
   dependencies:
@@ -6460,6 +6528,17 @@ __metadata:
     safe-buffer: 5.2.1
     uid-safe: ~2.1.5
   checksum: 1021a793433cbc6a1b32c803fcb2daa1e03a8f50dd907e8745ae57994370315a5cfde5b6ef7b062d9a9a0754ff268844bda211c08240b3a0e01014dcf1073ec5
+  languageName: node
+  linkType: hard
+
+"express-socket.io-session@npm:^1.3.5":
+  version: 1.3.5
+  resolution: "express-socket.io-session@npm:1.3.5"
+  dependencies:
+    cookie-parser: ~1.3.3
+    crc: ^3.3.0
+    debug: ~2.6.0
+  checksum: 0a2636ba30fe2b7c12edc59dcd4c74520875679e65a1343b8bb9f4b3a0908febabdd379c0d604e14b1f2d93ab479b3c978720b2b0f839bfd03512eba7068ef14
   languageName: node
   linkType: hard
 

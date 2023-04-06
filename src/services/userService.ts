@@ -23,7 +23,7 @@ export class UserService {
     });
   };
 
-  public async login(sessionId: string, user: UserAttributes): Promise<any> {
+  public async login(user: UserAttributes): Promise<any> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
 
@@ -38,7 +38,7 @@ export class UserService {
         },
       }
     );
-    return { token: { accessToken, refreshToken }, user, sessionId };
+    return { token: { accessToken, refreshToken }, user };
   }
 
   public async getUserWithChannels(

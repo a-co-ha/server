@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import sharedSession from "express-socket.io-session";
 import { corsOrigin, port, sessionConfig, SESSION_SECRET } from "./config";
 import {
   channelRouter,
@@ -59,10 +60,13 @@ export class AppServer {
       cors: { origin: corsOrigin, credentials: true },
     });
 
+    io.use(
+      sharedSession(session(sessionConfig), {
+        autoSave: true,
+      })
+    );
     const adapter = await createSocketAdapter();
     io.adapter(adapter);
-
-    io.use(wrap(session(sessionConfig)));
 
     io.use(socketValidation);
     io.use(socketMiddleware);

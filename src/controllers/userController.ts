@@ -9,7 +9,7 @@ interface IUserController {
 export class UserController implements IUserController {
   constructor(private userService: UserService) {}
   public login: AsyncRequestHandler = async (req, res) => {
-    const result = await this.userService.login(req.session.id, req.user);
+    const result = await this.userService.login(req.user);
     res.status(200).json(result);
   };
 

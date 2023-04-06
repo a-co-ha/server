@@ -30,10 +30,8 @@ export const socketValidation = async (socket, next) => {
 };
 
 export const socketMiddleware = async (socket, next) => {
-  const session = socket.handshake.session;
-  const sessionID = socket.request.session.id;
-  console.log(sessionID);
-  console.log(session);
+  const sessionID = socket.request.sessionid;
+  console.log(socket.request.session);
   const { user } = socket;
   const getChannel = await userService.getUserWithChannels(user.userId);
 
@@ -57,8 +55,8 @@ export const socketMiddleware = async (socket, next) => {
 
     socket.roomIds = rooms;
   }
-
   const sessionInfo = await redisCache.findSession(sessionID);
+  console.log(sessionInfo);
 
   socket.sessionID = sessionID;
 
