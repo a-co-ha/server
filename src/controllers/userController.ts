@@ -1,5 +1,6 @@
 import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
+import { connectSocket } from "../utils/connectSocket";
 
 interface IUserController {
   login: AsyncRequestHandler;
@@ -9,6 +10,7 @@ interface IUserController {
 export class UserController implements IUserController {
   constructor(private userService: UserService) {}
   public login: AsyncRequestHandler = async (req, res) => {
+    // await connectSocket(req.headers.authorization?.split(" ")[1]);
     const result = await this.userService.login(req.user);
     res.status(200).json(result);
   };

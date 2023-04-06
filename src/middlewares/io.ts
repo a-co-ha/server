@@ -11,8 +11,12 @@ export const wrap = (middleware) => (socket, next) =>
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
 export const socketValidation = async (socket, next) => {
-  // const user = socket.handshake.auth.token;
-  const user = socket.handshake.headers.token;
+  console.log(socket);
+  if (!socket.handshake.auth) {
+    return next(new Error("Authentication error"));
+  }
+  console.log(socket.handshake);
+  const user = socket.handshake.auth.token;
   try {
     const tokenType = user.split(" ")[0];
     const token = user.split(" ")[1];
@@ -30,8 +34,8 @@ export const socketValidation = async (socket, next) => {
 };
 
 export const socketMiddleware = async (socket, next) => {
-  const sessionID = socket.request.sessionid;
-  console.log(socket.request.session);
+  const sessionID = socket.request.session.id;
+  console.log(socket.request.sessionID);
   const { user } = socket;
   const getChannel = await userService.getUserWithChannels(user.userId);
 

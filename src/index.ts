@@ -59,17 +59,18 @@ export class AppServer {
       cookie: true,
       cors: { origin: corsOrigin, credentials: true },
     });
-
+    const sessionMiddleware = session(sessionConfig);
     io.use(
-      sharedSession(session(sessionConfig), {
+      sharedSession(sessionMiddleware, {
         autoSave: true,
       })
     );
+
     const adapter = await createSocketAdapter();
     io.adapter(adapter);
 
-    io.use(socketValidation);
-    io.use(socketMiddleware);
+    io.use(wrap(socketValidation));
+    io.use(wrap(socketMiddleware));
     socket(io);
 
     server.listen(port, async () => {
@@ -95,6 +96,14 @@ export class AppServer {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser(SESSION_SECRET));
     this.app.use(session(sessionConfig));
+    this.app.use((req, res, next) => {
+      const cookieString = req.headers.cookie; // 쿠키 문자열 가져오기
+      console.log("cookieString:", cookieString); // 쿠키 문자열 출력하기
+
+      const session = req.session; // 세션 객체 가져오기
+      console.log("session:", session.id);
+      next();
+    });
   }
 
   private routes() {
