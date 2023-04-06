@@ -27,7 +27,7 @@ export class UserService {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
 
-    // await connectSocket(sessionId, user);
+    await connectSocket(accessToken);
     await User.update(
       {
         refreshToken,

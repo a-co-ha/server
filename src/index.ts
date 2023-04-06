@@ -18,7 +18,7 @@ import {
   imageRouter,
   bookmarkListRouter,
 } from "./routers";
-import { LogColor, endPoint } from "./constants";
+import { LogColor, endPoint, TokenType } from "./constants";
 import {
   wrap,
   socketMiddleware,
@@ -26,6 +26,7 @@ import {
   errorHandler,
   DtoValidatorMiddleware,
   socketValidation,
+  decode,
 } from "./middlewares";
 import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
@@ -45,6 +46,7 @@ export class AppServer {
     this.app = express();
   }
   async config() {
+    this.app.use(session(sessionConfig));
     this.middleWare();
     new MySqlAdapter();
     new MongoAdapter();
@@ -55,21 +57,38 @@ export class AppServer {
     const appServer = new AppServer();
     const server = createServer(appServer.app);
     await appServer.config();
+
     const io = new Server(server, {
       cookie: true,
       cors: { origin: corsOrigin, credentials: true },
     });
     const sessionMiddleware = session(sessionConfig);
+    const adapter = await createSocketAdapter();
+    io.adapter(adapter);
+
     io.use(
       sharedSession(sessionMiddleware, {
         autoSave: true,
       })
     );
 
-    const adapter = await createSocketAdapter();
-    io.adapter(adapter);
+    io.use(async (socket, next) => {
+      if (socket.handshake.auth && socket.handshake.auth.token) {
+        const user = socket.handshake.auth.token;
+        const tokenType = user.split(" ")[0];
+        const token = user.split(" ")[1];
+        if (
+          !(tokenType === TokenType.ACCESS || tokenType === TokenType.REFRESH)
+        ) {
+          return next(new Error("토큰 타입 에러"));
+        }
+        const decoded = await decode(token);
+        socket.user = decoded;
 
-    io.use(wrap(socketValidation));
+        next();
+      }
+    });
+
     io.use(wrap(socketMiddleware));
     socket(io);
 
@@ -102,6 +121,7 @@ export class AppServer {
 
       const session = req.session; // 세션 객체 가져오기
       console.log("session:", session.id);
+      res.setHeader("set-cookie", session);
       next();
     });
   }
