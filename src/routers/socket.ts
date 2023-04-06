@@ -59,7 +59,6 @@ export const socket = (io: any) => {
 
     // 채널 연결
     for (const room of socket.roomIds) {
-      console.log(room);
       socket.join(room);
 
       // 커넥션했다고 알림

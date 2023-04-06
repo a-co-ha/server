@@ -7,13 +7,15 @@ export const mapSession = ([userID, name, connected, img]) =>
 
 export default {
   async findSession(id) {
-    return await redisClient
+    const a = await redisClient
       .hmGet(`session:${id}`, ["userID", "name", "connected", "img"])
       .then(([userID, name, connected, img]) =>
         userID
           ? { userID, name, connected: connected === "true", img }
           : undefined
       );
+    console.log(a);
+    return a;
   },
   findLogin: async (id) => {
     try {

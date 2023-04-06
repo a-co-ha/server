@@ -6,13 +6,13 @@ import { userHasChannels } from "../interface";
 import { TokenType } from "../constants";
 import { decode } from "./loginRequired";
 export const wrap = (middleware) => (socket, next) =>
-  middleware(socket.request, {}, next);
+  middleware(socket.request, socket.request.res || {}, next);
 
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
 export const socketValidation = async (socket, next) => {
-  const user = socket.handshake.auth.token;
-  // const user = socket.handshake.headers.token;
+  // const user = socket.handshake.auth.token;
+  const user = socket.handshake.headers.token;
   try {
     const tokenType = user.split(" ")[0];
     const token = user.split(" ")[1];
@@ -30,8 +30,10 @@ export const socketValidation = async (socket, next) => {
 };
 
 export const socketMiddleware = async (socket, next) => {
-  // const sessionID = socket.handshake.headers.sessionid;
-  const sessionID = socket.handshake.auth.sessionId;
+  const session = socket.handshake.session;
+  const sessionID = socket.request.session.id;
+  console.log(sessionID);
+  console.log(session);
   const { user } = socket;
   const getChannel = await userService.getUserWithChannels(user.userId);
 
