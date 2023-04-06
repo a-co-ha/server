@@ -7,7 +7,7 @@ import {
 import { bookmarkInfo, IBookmarkListModel } from "../interface";
 import { BookmarkListInterface } from "../model/schema/bookmarkListSchema";
 
-class BookmarkListService implements IBookmarkListModel {
+export class BookmarkListService implements IBookmarkListModel {
   private bookmarkListModel: bookmarkListModelType;
   constructor(bookmarkListModel: bookmarkListModelType) {
     this.bookmarkListModel = bookmarkListModel;
@@ -21,7 +21,7 @@ class BookmarkListService implements IBookmarkListModel {
     return await bookmarkListModel.create({ channelId });
   }
 
-  async createBookmark(
+  async pushBookmark(
     channelId: number,
     bookmark: bookmarkInfo
   ): Promise<BookmarkListInterface> {
@@ -49,6 +49,7 @@ class BookmarkListService implements IBookmarkListModel {
       .then(() => this.findBookmarkList(channelId));
   }
   async deleteBookmarkList(channelId: number): Promise<BookmarkListInterface> {
+    await chatBookmarkModel.deleteMany({ channelId });
     return await bookmarkListModel.findOneAndDelete({ channelId });
   }
 }

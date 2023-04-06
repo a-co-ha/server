@@ -3,7 +3,6 @@ import { AsyncRequestHandler } from "../constants";
 
 interface ITemplateController {
   createTemplate: AsyncRequestHandler;
-  findTemplate: AsyncRequestHandler;
   addTemplatePage: AsyncRequestHandler;
   updateTemplate: AsyncRequestHandler;
   deleteTemplate: AsyncRequestHandler;
@@ -32,22 +31,6 @@ export class TemplateController implements ITemplateController {
       );
       res.json(createTemplate);
     }
-  };
-
-  findTemplate: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const id = req.params.id;
-    const channelId = parseInt(channel);
-    const type = req.query.type as string;
-    if (type === "template-prgress") {
-      const findTemplate = await templateService.findTemplate(channelId, id);
-      res.json(findTemplate);
-    }
-    const findTemplate = await templateNormalService.findTemplate(
-      channelId,
-      id
-    );
-    res.json(findTemplate);
   };
 
   addTemplatePage: AsyncRequestHandler = async (req, res) => {

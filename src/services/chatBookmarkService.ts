@@ -1,4 +1,8 @@
-import { chatBookmarkModel, chatBookmarkModelType } from "../model";
+import {
+  chatBookmarkModel,
+  chatBookmarkModelType,
+  bookmarkListModel,
+} from "../model";
 import { IChatBookmarkModel, bookmarkInfo } from "../interface";
 import { bookmarkListService } from "./bookmarkListService";
 
@@ -10,8 +14,12 @@ class ChatBookmarkService implements IChatBookmarkModel {
 
   async createBookmark(bookmarkInfo: bookmarkInfo): Promise<bookmarkInfo> {
     const { channelId } = bookmarkInfo;
-    const bookmark = await chatBookmarkModel.create(bookmarkInfo);
-    await bookmarkListService.createBookmark(channelId, bookmark);
+    const bookmarkList = await bookmarkListModel.findOne({ channelId });
+    if (!bookmarkList) {
+      throw new Error("채널이 없습니다.");
+    }
+    const bookmark = await this.chatBookmarkModel.create(bookmarkInfo);
+    await bookmarkListService.pushBookmark(channelId, bookmark);
     return bookmark;
   }
 

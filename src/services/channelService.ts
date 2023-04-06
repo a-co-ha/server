@@ -1,5 +1,5 @@
 import { listModel } from "./../model/index";
-import { channelJoinInterface } from "./../interface/index";
+import { ChannelAttributes, channelJoinInterface } from "./../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../utils/decode";
 import { Channel, channelModel } from "../model/channel";
@@ -7,6 +7,11 @@ import { ChannelUser, channelUserModel } from "../model/channelUser";
 import { User, userModel } from "../model/user";
 import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
+import { ListService, listService } from "./listService";
+import {
+  bookmarkListService,
+  BookmarkListService,
+} from "./bookmarkListService";
 
 export class ChannelService {
   constructor(
@@ -14,7 +19,9 @@ export class ChannelService {
     private channelModel: Channel,
     private userModel: User,
     private listModel: listModelType,
-    private pageService: PageService
+    private listService: ListService,
+    private pageService: PageService,
+    private bookmarkListService: BookmarkListService
   ) {}
   public async create(
     info: channelJoinInterface,
@@ -32,6 +39,7 @@ export class ChannelService {
     });
 
     await this.createSpace(newChannel.id, blockId);
+    await this.bookmarkListService.createList(newChannel.id);
     await this.userJoin({
       userId,
       name,
@@ -106,6 +114,52 @@ export class ChannelService {
     return count !== 0;
   }
 
+  public async channelImagUpdate(
+    channelId: number,
+    userId: number,
+    channelImg: string
+  ): Promise<Channel> {
+    const { userId: admin } = await Channel.findOne({
+      where: { id: channelId },
+      raw: true,
+      attributes: ["userId"],
+    });
+    if (admin !== userId) {
+      throw new Error("권한 오류");
+    }
+
+    return await Channel.update(
+      { channelImg },
+      { where: { id: channelId } }
+    ).then(() => {
+      return Channel.findOne({ where: { id: channelId }, raw: true });
+    });
+  }
+
+  public async channelNameUpdate(
+    channelId: number,
+    userId: number,
+    channelName: string
+  ): Promise<Channel> {
+    const { userId: admin } = await Channel.findOne({
+      where: { id: channelId },
+      raw: true,
+      attributes: ["userId"],
+    });
+    if (admin !== userId) {
+      throw new Error("권한 오류");
+    }
+    const channelNameUpdate = await Channel.update(
+      { channelName },
+      { where: { id: channelId } }
+    ).then(() => {
+      ChannelUser.update({ channelName }, { where: { channelId } });
+      return Channel.findOne({ where: { id: channelId }, raw: true });
+    });
+
+    return channelNameUpdate;
+  }
+
   public async delete(channelId: number, userId: number): Promise<object> {
     const { userId: admin } = await Channel.findOne({
       where: { id: channelId },
@@ -126,7 +180,8 @@ export class ChannelService {
         channelId,
         status: "삭제 되었습니다.",
       };
-
+      await this.listService.deleteList(channelId);
+      await this.bookmarkListService.deleteBookmarkList(channelId);
       return deleteInfo;
     } catch (err) {
       throw new Error("채널 삭제 실패");
@@ -179,5 +234,7 @@ export const channelService = new ChannelService(
   channelModel,
   userModel,
   listModel,
-  pageService
+  listService,
+  pageService,
+  bookmarkListService
 );

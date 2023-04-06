@@ -1,4 +1,13 @@
-import { IsEmail, IsInt, IsOptional, IsString, Min } from "class-validator";
+import {
+  IsEmail,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from "class-validator";
 
 //채널 정보
 export class ChannelDto {
@@ -7,6 +16,8 @@ export class ChannelDto {
   channel: number;
 
   // 채널 이름
+  @MinLength(1)
+  @MaxLength(10)
   @IsOptional()
   @IsString()
   channelName: string;

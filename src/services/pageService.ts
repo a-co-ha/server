@@ -54,7 +54,6 @@ export class PageService implements IPageModel {
 
     const listId = list._id;
     const room = await this.createRoom(channelId);
-    console.log(room);
     const pushTemplateList = await this.listModel.findByIdAndUpdate(
       { _id: listId },
       { $push: { EditablePage: { page }, SocketPage: { room: room } } }
@@ -63,8 +62,9 @@ export class PageService implements IPageModel {
     return pushTemplateList;
   }
 
-  async pushPage(id: string, page: page): Promise<page> {
+  async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
+
     return await this.pageModel.findOneAndUpdate(
       { _id: id, channelId },
       {

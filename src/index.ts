@@ -102,7 +102,7 @@ export class AppServer {
     this.app.use(
       endPoint.channel,
       loginRequired,
-      DtoValidatorMiddleware(ChannelDto),
+      // DtoValidatorMiddleware(ChannelDto),
       channelRouter
     );
     this.app.use(

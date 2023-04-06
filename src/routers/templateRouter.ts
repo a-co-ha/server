@@ -5,7 +5,6 @@ import { cascade } from "../middlewares";
 export const templateRouter = Router();
 
 templateRouter.post("/", asyncHandler(templateController.createTemplate));
-templateRouter.get("/:id", asyncHandler(templateController.findTemplate));
 templateRouter.patch("/:id", asyncHandler(templateController.addTemplatePage));
 templateRouter.patch(
   "/update/:id",

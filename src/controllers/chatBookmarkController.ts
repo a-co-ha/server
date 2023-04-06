@@ -1,6 +1,6 @@
 import { bookmarkInfo } from "../interface";
 import { chatBookmarkService } from "../services";
-import { AsyncRequestHandler } from "../types";
+import { AsyncRequestHandler } from "../constants";
 
 interface IChatBookmarkController {
   createBookmark: AsyncRequestHandler;

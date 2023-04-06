@@ -1,20 +1,23 @@
 import { AsyncRequestHandler } from "./../constants";
 import { channelService, ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
-import { channelJoinInterface } from "../interface";
+import {
+  ChannelAttributes,
+  channelJoinInterface,
+  IChannelInfo,
+} from "../interface";
 
 interface IChannelController {
   create: AsyncRequestHandler;
   join: AsyncRequestHandler;
+  channelImagUpdate: AsyncRequestHandler;
+  channelNameUpdate: AsyncRequestHandler;
   delete: AsyncRequestHandler;
   channelExit: AsyncRequestHandler;
   getUsers: AsyncRequestHandler;
 }
 export class ChannelController implements IChannelController {
-  constructor(
-    private channelService: ChannelService,
-    private listService: ListService
-  ) {}
+  constructor(private channelService: ChannelService) {}
 
   public create: AsyncRequestHandler = async (req, res) => {
     const { userId, name } = req.user;
@@ -46,12 +49,37 @@ export class ChannelController implements IChannelController {
     res.json(result);
   };
 
+  public channelImagUpdate: AsyncRequestHandler = async (req, res) => {
+    const channelImg = req.body.channelImg.location;
+    const { channel: channelId } = req.body;
+    const userId = req.user.userId;
+
+    const channelImagupdate = await this.channelService.channelImagUpdate(
+      channelId,
+      userId,
+      channelImg
+    );
+    res.json(channelImagupdate);
+  };
+
+  public channelNameUpdate: AsyncRequestHandler = async (req, res) => {
+    const { channel: channelId, channelName } = req.body;
+
+    const userId = req.user.userId;
+    const channelNameUpdate = await this.channelService.channelNameUpdate(
+      channelId,
+      userId,
+      channelName
+    );
+    res.json(channelNameUpdate);
+  };
+
   public delete: AsyncRequestHandler = async (req, res) => {
     const channelId = req.body.channel;
     const { userId } = req.user;
 
     const deleteChannel = await this.channelService.delete(channelId, userId);
-    await this.listService.deleteList(channelId);
+
     res.json(deleteChannel);
   };
 
@@ -73,7 +101,4 @@ export class ChannelController implements IChannelController {
     res.json(result);
   };
 }
-export const channelController = new ChannelController(
-  channelService,
-  listService
-);
+export const channelController = new ChannelController(channelService);
