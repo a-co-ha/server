@@ -1,4 +1,12 @@
-import { IsArray, IsMongoId, IsOptional, IsString } from "class-validator";
+import "reflect-metadata";
+import {
+  IsArray,
+  IsMongoId,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+import { Transform, TransformFnParams } from "class-transformer";
 import { block } from "../interface";
 
 // 제목 2-10글자
@@ -15,9 +23,9 @@ export class PageDto {
   @IsOptional()
   public blockId: string;
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  public label: string;
+  public label: string[];
 
   @IsArray()
   @IsOptional()
@@ -26,4 +34,9 @@ export class PageDto {
   @IsString()
   @IsOptional()
   public pageName: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Transform(({ value }: TransformFnParams) => parseInt(value))
+  public channel: string;
 }

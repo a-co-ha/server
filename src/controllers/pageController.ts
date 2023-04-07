@@ -1,11 +1,10 @@
 import { pageService, templateService } from "../services";
 import { page } from "../interface";
 import { AsyncRequestHandler } from "../constants";
-import { deleteImage } from "../middlewares";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
-  pushPage: AsyncRequestHandler;
+  pushBlock: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
   imageDelete: AsyncRequestHandler;
@@ -14,21 +13,19 @@ interface IPageController {
 
 export class PageController implements IPageController {
   findPage: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const type = req.query.type;
+    const { id, channel, type } = req.body;
+
     if (
       type === "normal" ||
       type === "progress-page" ||
       type === "normal-page"
     ) {
-      const findPost = await pageService.findPage(channelId, id, type);
+      const findPost = await pageService.findPage(channel, id, type);
       res.json(findPost);
     }
     if (type === "template-progress" || type === "template-normal") {
       const findProgress = await templateService.findTemplate(
-        channelId,
+        channel,
         id,
         type
       );
@@ -37,43 +34,36 @@ export class PageController implements IPageController {
   };
 
   createPage: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const blockId = req.body.blockId;
-    const createPage = await pageService.createPage(channelId, blockId);
+    const { blockId, channel } = req.body;
+
+    const createPage = await pageService.createPage(channel, blockId);
     res.json(createPage);
   };
 
   createRoom: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-
-    const createPage = await pageService.createRoom(channelId);
+    const channel = req.body.channel;
+    const createPage = await pageService.createRoom(channel);
     res.json(createPage);
   };
 
-  pushPage: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const { label, blocks, pageName } = req.body;
+  pushBlock: AsyncRequestHandler = async (req, res) => {
+    const { id, channel, label, blocks, pageName } = req.body;
+
     const page: page = {
-      channelId: channelId,
+      channelId: channel,
       pageName: pageName,
       label: label,
       blocks: blocks,
     };
 
-    const pushPage = await pageService.pushPage(id, page);
+    const pushPage = await pageService.pushBlock(id, page);
 
     res.json(pushPage);
   };
 
   deletePage: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const deletePage = await pageService.deletePage(id, channelId);
+    const { id, channel } = req.body;
+    const deletePage = await pageService.deletePage(id, channel);
     res.json(deletePage);
   };
 

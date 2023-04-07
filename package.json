@@ -68,6 +68,7 @@
     "promise-mysql": "^5.2.0",
     "pug": "^3.0.2",
     "redis": "latest",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "latest",
     "sequelize-cli": "^6.6.0",
     "sequelize-typescript": "^2.1.5",

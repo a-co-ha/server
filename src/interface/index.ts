@@ -7,6 +7,10 @@ export interface block {
   imgUrl?: string;
 }
 
+export interface label {
+  content: string;
+}
+
 export interface page {
   channelId?: number;
   pageName?: string;
@@ -25,7 +29,7 @@ export interface IPageModel {
     progressStatus?: string,
     type?: string
   ): Promise<page>;
-  pushPage(id: string, page: page): Promise<page>;
+  pushBlock(id: string, page: page): Promise<page>;
   deletePage(id: string, channelId: number): Promise<object>;
 }
 
@@ -124,11 +128,10 @@ export interface IChatBookmarkModel {
 }
 
 export interface IBookmarkListModel {
-  createList(channelId: number): Promise<BookmarkListInterface>;
-  createBookmark(
-    channelId: number,
-    bookmark: bookmarkInfo
-  ): Promise<BookmarkListInterface>;
+  // createBookmark(
+  //   channelId: number,
+  //   bookmark: bookmarkInfo
+  // ): Promise<BookmarkListInterface>;
   findBookmarkList(channelId: number): Promise<BookmarkListInterface>;
   updateBookmarkList(
     channelId: number,

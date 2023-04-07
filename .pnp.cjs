@@ -4257,6 +4257,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["promise-mysql", "npm:5.2.0"],\
             ["pug", "npm:3.0.2"],\
             ["redis", "npm:4.6.5"],\
+            ["reflect-metadata", "npm:0.1.13"],\
             ["sequelize", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:6.29.3"],\
             ["sequelize-cli", "npm:6.6.0"],\
             ["sequelize-typescript", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:2.1.5"],\
@@ -10266,6 +10267,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["promise-mysql", "npm:5.2.0"],\
             ["pug", "npm:3.0.2"],\
             ["redis", "npm:4.6.5"],\
+            ["reflect-metadata", "npm:0.1.13"],\
             ["sequelize", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:6.29.3"],\
             ["sequelize-cli", "npm:6.6.0"],\
             ["sequelize-typescript", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:2.1.5"],\
@@ -17230,7 +17232,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/sequelize", "npm:4.28.14"],\
             ["@types/validator", null],\
             ["glob", "npm:7.2.0"],\
-            ["reflect-metadata", null],\
+            ["reflect-metadata", "npm:0.1.13"],\
             ["sequelize", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:6.29.3"]\
           ],\
           "packagePeers": [\

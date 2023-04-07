@@ -77,8 +77,9 @@ export class PageService implements IPageModel {
     return pushTemplateList;
   }
 
-  async pushPage(id: string, page: page): Promise<page> {
+  async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
+
     return await this.pageModel.findOneAndUpdate(
       { _id: id, channelId },
       {
