@@ -2,6 +2,7 @@
 import { UserAttributes } from "../interface/userInterface";
 import "express-session";
 import "express";
+import { Socket } from "socket.io";
 
 declare global {
   namespace Express {
@@ -13,8 +14,9 @@ declare global {
 
 declare module "express-session" {
   interface SessionData {
-    userId: number;
-    auth: boolean;
+    userId?: number;
+    auth?: boolean;
+    user?: UserAttributes;
   }
 }
 

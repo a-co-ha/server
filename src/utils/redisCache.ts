@@ -1,21 +1,13 @@
+import { UserAttributes } from "./../interface/userInterface";
 /* eslint-disable no-var */
-import { RedisCommandRawReply } from "@redis/client/dist/lib/commands";
 import { redisClient } from "./redisClient";
 
-export const mapSession = ([userID, name, connected, img]) =>
-  userID ? { userID, name, connected: connected === "true", img } : undefined;
+// export const mapSession = ([userID, name, connected, img]) =>
+//   userID ? { userID, name, connected: connected === "true", img } : undefined;
 
 export default {
-  async findSession(id) {
-    const a = await redisClient
-      .hmGet(`session:${id}`, ["userID", "name", "connected", "img"])
-      .then(([userID, name, connected, img]) =>
-        userID
-          ? { userID, name, connected: connected === "true", img }
-          : undefined
-      );
-    console.log("findsession", a);
-    return a;
+  async findSession(id): Promise<UserAttributes> {
+    return JSON.parse(await redisClient.get(`session:${id}`)).user;
   },
   findLogin: async (id) => {
     try {
@@ -61,16 +53,18 @@ export default {
     keys.forEach((key) => {
       commands.push(key);
     });
+
     var multi = redisClient.multi();
 
     commands.forEach(async (command) => {
-      const a = multi.hmGet(command, ["userID", "name", "connected", "img"]);
+      const a = multi.get(command);
       return a;
     });
 
     const result = await new Promise((resolve, reject) => {
       resolve(multi.EXEC());
     });
+
     return result;
   },
 
@@ -84,23 +78,6 @@ export default {
       .rPush(`messages:${message.to}`, value)
       .expire(`messages:${message.from}`, 24 * 60 * 60)
       .expire(`messages:${message.to}`, 24 * 60 * 60)
-      .exec();
-  },
-
-  saveSession: async (id, { userID, name, img, connected }) => {
-    await redisClient
-      .multi()
-      .hSet(`session:${id}`, [
-        "userID",
-        userID,
-        "name",
-        name,
-        "img",
-        img,
-        "connected",
-        connected,
-      ])
-      .expire(`session:${id}`, 24 * 60 * 60)
       .exec();
   },
 
