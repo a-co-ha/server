@@ -65,4 +65,5 @@ export const corsOrigin = [
   "http://localhost:3001",
   "https://acoha.site",
   "https://npm.acoha.site",
+  "https://acoha.store"
 ];
