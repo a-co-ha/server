@@ -1,36 +1,31 @@
+import { LogColor } from "./../constants";
+import { socketValidation } from "./../middlewares/io";
 /* eslint-disable prefer-const */
 import { messageController } from "../controllers";
-import redisCache, { mapSession } from "../utils/redisCache";
+import redisCache from "../utils/redisCache";
 
 export const socket = (io: any) => {
   io.on("connection", async (socket: any) => {
-    console.log(
-      `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID}
-       userName : ${socket.name}`
-    );
+    const sessionID = socket.handshake.auth.sessionID;
+    await socketValidation(sessionID, socket);
 
-    if (socket.name === null) {
-      socket.name = socket.userID;
-    }
-    // 세션 저장
-    redisCache.saveSession(socket.sessionID, {
-      userID: socket.userID,
-      name: socket.name,
-      img: socket.img,
-      connected: "true",
-    });
+    console.log(
+      LogColor.INFO,
+      `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID} name : ${socket.name}`
+    );
 
     // 내 세션확인
     socket.emit("session", {
       sessionID: socket.sessionID,
       userID: socket.userID,
+      name: socket.name,
     });
 
     const users = [];
     const [messages, sessions] = await Promise.all([
       redisCache.findMessagesForUser(socket.userID),
       redisCache.findAllSessions().then((res) => {
-        return res.map((session) => mapSession(session));
+        return res.map((session) => JSON.parse(session).user);
       }),
     ]);
 
@@ -47,11 +42,10 @@ export const socket = (io: any) => {
 
     sessions.forEach((session) => {
       users.push({
-        userID: session.userID,
-        username: session.name,
-        connected: session.connected,
+        userID: session.userId,
+        name: session.name,
         img: session.img,
-        messages: messagesPerUser.get(session.userID) || [],
+        messages: messagesPerUser.get(session.userId) || [],
       });
     });
 
@@ -77,14 +71,6 @@ export const socket = (io: any) => {
           socket.broadcast.to(room).emit("user disconnected", {
             userID: socket.userID,
             username: socket.name,
-            connected: "false",
-          });
-
-          redisCache.saveSession(socket.sessionID, {
-            userID: socket.userID,
-            name: socket.name,
-            img: socket.img,
-            connected: "false",
           });
         }
       });

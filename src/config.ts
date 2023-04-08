@@ -47,10 +47,9 @@ export const sessionConfig = {
   store: new RedisStore({
     client: redisClient,
     ttl: REDIS_TIME_TO_LIVE,
-    prefix: "login:",
+    prefix: "session:",
   }),
   cookie: {
-    //세션 쿠키 설정 (세션 관리 시 클라이언트에 보내는 쿠키)
     httpOnly: true, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함 localhost, ip일때는 쓰면 안된다. 저장안됨
     sameSite: "lax",
   },
@@ -58,7 +57,7 @@ export const sessionConfig = {
   name: "sid",
   secret: SESSION_SECRET,
   resave: false,
-  saveUninitialized: true, // 세션에 저장할 내역이 없더라도 처음부터 세션을 생성할지 설정
+  saveUninitialized: false, // 세션에 저장할 내역 없으면 저장안함
 } as SessionOptions;
 
 export const corsOrigin = [

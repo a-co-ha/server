@@ -23,11 +23,10 @@ export class UserService {
     });
   };
 
-  public async login(user: UserAttributes): Promise<any> {
+  public async login(user: UserAttributes, sessionID: string): Promise<any> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
 
-    await connectSocket(accessToken);
     await User.update(
       {
         refreshToken,
@@ -38,7 +37,7 @@ export class UserService {
         },
       }
     );
-    return { token: { accessToken, refreshToken }, user };
+    return { token: { accessToken, refreshToken }, user, sessionID };
   }
 
   public async getUserWithChannels(
