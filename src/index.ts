@@ -27,9 +27,8 @@ import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
 import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
-// import { createServer } from "http";
+import { createServer } from "http";
 import fs from "fs";
-import https from "https";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
@@ -54,13 +53,7 @@ export class AppServer {
   static async start() {
     const appServer = new AppServer();
 
-    const server = https.createServer(
-      {
-        key: fs.readFileSync(path.join(__dirname, "cert.key")),
-        cert: fs.readFileSync(path.join(__dirname, "cert.crt")),
-      },
-      appServer.app
-    );
+    const server = createServer(appServer.app);
     await appServer.config();
 
     const io = new Server(server, {
