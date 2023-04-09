@@ -61,9 +61,9 @@ export const sessionConfig = {
 } as SessionOptions;
 
 export const corsOrigin = [
-  "http://ec2-54-180-147-65.ap-northeast-2.compute.amazonaws.com",
-  "http://localhost:3001",
-  "https://acoha.site",
-  "https://npm.acoha.site",
-  "https://acoha.store"
+  "http://localhost:3001/",
+  "https://acoha.site/",
+  "https://npm.acoha.site/",
+  "https://acoha.store/",
+  "http://3.35.132.30:3000"
 ];

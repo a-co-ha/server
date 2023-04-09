@@ -54,9 +54,11 @@ export class AppServer {
     await appServer.config();
 
     const io = new Server(server, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       allowUpgrades: true,
-      cors: { origin: corsOrigin, credentials: true },
+      cors: { origin: ["http://localhost:3001", "https://acoha.store"],
+         methods: ["GET"],
+    allowedHeaders: ["Authorization"], credentials: true },
     });
 
     const adapter = await createSocketAdapter();
@@ -87,7 +89,9 @@ export class AppServer {
   }
 
   private middleWare() {
-    this.app.use(cors({ origin: corsOrigin, credentials: true ,  optionsSuccessStatus: 200}));
+    this.app.use(cors({ origin: ["http://localhost:3001","https://acoha.store"], credentials: true , 
+      methods: ["GET", "POST"],
+      optionsSuccessStatus: 200}));
     this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
