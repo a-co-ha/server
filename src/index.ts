@@ -27,12 +27,15 @@ import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
 import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
-import { createServer } from "http";
+// import { createServer } from "http";
+import fs from "fs";
+import https from "https";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
+import path from "path";
 
 export class AppServer {
   app: express.Application;
@@ -50,15 +53,25 @@ export class AppServer {
 
   static async start() {
     const appServer = new AppServer();
-    const server = createServer(appServer.app);
+
+    const server = https.createServer(
+      {
+        key: fs.readFileSync(path.join(__dirname, "cert.key")),
+        cert: fs.readFileSync(path.join(__dirname, "cert.crt")),
+      },
+      appServer.app
+    );
     await appServer.config();
 
     const io = new Server(server, {
-      transports: ['websocket', 'polling'],
+      // transports: ["websocket", "polling"],
       allowUpgrades: true,
-      cors: { origin: ["http://localhost:3001", "https://acoha.store"],
-         methods: ["GET"],
-    allowedHeaders: ["Authorization"], credentials: true },
+      cors: {
+        origin: ["http://localhost:3001", "https://acoha.store"],
+        methods: ["GET"],
+        allowedHeaders: ["Authorization"],
+        credentials: true,
+      },
     });
 
     const adapter = await createSocketAdapter();
@@ -89,9 +102,14 @@ export class AppServer {
   }
 
   private middleWare() {
-    this.app.use(cors({ origin: ["http://localhost:3001","https://acoha.store"], credentials: true , 
-      methods: ["GET", "POST"],
-      optionsSuccessStatus: 200}));
+    this.app.use(
+      cors({
+        origin: ["http://localhost:3001", "https://acoha.store"],
+        credentials: true,
+        methods: ["GET", "POST"],
+        optionsSuccessStatus: 200,
+      })
+    );
     this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));

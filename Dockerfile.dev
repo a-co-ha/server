@@ -32,6 +32,9 @@ RUN yarn install --immutable
 # Build TypeScript code
 RUN yarn build
 
+COPY ./src/cert.crt ./dist
+COPY ./src/cert.key ./dist
+
 # Docker Demon Port Mapping
 EXPOSE 3001
 

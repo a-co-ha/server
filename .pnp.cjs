@@ -2291,6 +2291,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:1.3.2"\
       ],\
       [\
+        "fs",\
+        "npm:0.0.1-security"\
+      ],\
+      [\
         "fs-extra",\
         "npm:9.1.0"\
       ],\
@@ -2453,6 +2457,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       [\
         "http2-wrapper",\
         "npm:1.0.3"\
+      ],\
+      [\
+        "https",\
+        "npm:1.0.0"\
       ],\
       [\
         "https-proxy-agent",\
@@ -4232,8 +4240,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express-session", "npm:1.17.3"],\
             ["express-socket.io-session", "npm:1.3.5"],\
             ["express-validator", "npm:6.15.0"],\
+            ["fs", "npm:0.0.1-security"],\
             ["global", "npm:4.4.0"],\
             ["http-errors", "npm:2.0.0"],\
+            ["https", "npm:1.0.0"],\
             ["husky", "npm:8.0.3"],\
             ["ioredis", "npm:5.3.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
@@ -10177,8 +10187,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express-session", "npm:1.17.3"],\
             ["express-socket.io-session", "npm:1.3.5"],\
             ["express-validator", "npm:6.15.0"],\
+            ["fs", "npm:0.0.1-security"],\
             ["global", "npm:4.4.0"],\
             ["http-errors", "npm:2.0.0"],\
+            ["https", "npm:1.0.0"],\
             ["husky", "npm:8.0.3"],\
             ["ioredis", "npm:5.3.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
@@ -13052,6 +13064,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["fs", [\
+        ["npm:0.0.1-security", {\
+          "packageLocation": "./.yarn/cache/fs-npm-0.0.1-security-5060b47e87-53c6230e1f.zip/node_modules/fs/",\
+          "packageDependencies": [\
+            ["fs", "npm:0.0.1-security"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["fs-extra", [\
         ["npm:9.1.0", {\
           "packageLocation": "./.yarn/cache/fs-extra-npm-9.1.0-983c2ddb4c-ba71ba32e0.zip/node_modules/fs-extra/",\
@@ -13565,6 +13586,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["http2-wrapper", "npm:1.0.3"],\
             ["quick-lru", "npm:5.1.1"],\
             ["resolve-alpn", "npm:1.2.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["https", [\
+        ["npm:1.0.0", {\
+          "packageLocation": "./.yarn/cache/https-npm-1.0.0-39254cc592-ccea8a8363.zip/node_modules/https/",\
+          "packageDependencies": [\
+            ["https", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
