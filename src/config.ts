@@ -54,7 +54,6 @@ export const sessionConfig = {
     sameSite: "lax",
   },
   credentials: true,
-  name: "sid",
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false, // 세션에 저장할 내역 없으면 저장안함

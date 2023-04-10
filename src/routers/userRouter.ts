@@ -11,5 +11,4 @@ userRouter.get(
   loginRequired,
   asyncHandler(userController.tokenRefresh)
 );
-// 로그아웃 나중에 포스트로 바꿀 것
-userRouter.get("/logout", asyncHandler(userController.logout));
+userRouter.post("/logout", asyncHandler(userController.logout));

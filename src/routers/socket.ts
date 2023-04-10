@@ -19,6 +19,7 @@ export const socket = (io: any) => {
       sessionID: socket.sessionID,
       userID: socket.userID,
       name: socket.name,
+      
     });
 
     const users = [];
@@ -51,6 +52,7 @@ export const socket = (io: any) => {
 
     socket.emit("users", users);
 
+if (socket.roomIds){
     // 채널 연결
     for (const room of socket.roomIds) {
       socket.join(room);
@@ -75,6 +77,7 @@ export const socket = (io: any) => {
         }
       });
     }
+  }
 
     // DM 연결
     socket.join(socket.userID);
@@ -91,7 +94,11 @@ export const socket = (io: any) => {
     socket.on("message-send", async (data: any) => {
       const { roomId } = data;
       data.from = socket.userID;
-      const response = await messageController.createMessage(socket);
+      data.name = socket.name;
+      data.text = socket.text;
+      data.img = socket.img;
+      data.to = roomId;
+      const response = await messageController.createMessage(data);
       socket.to(roomId).to(socket.userID).emit("message-receive", response);
     });
   });

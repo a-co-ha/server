@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { pageController } from "../controllers";
 import { asyncHandler } from "../utils/asyncHandler";
-import { DtoValidatorMiddleware } from "../middlewares";
+import { DtoValidatorMiddleware, loginRequired } from "../middlewares";
 import { PageDto } from "../dto";
 export const pageRouter = Router();
 
@@ -20,7 +20,7 @@ pageRouter.post(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.createRoom)
 );
-pageRouter.get("/room/:id", asyncHandler(pageController.getChat));
+pageRouter.get("/room/:id", loginRequired, asyncHandler(pageController.getChat));
 pageRouter.put(
   "/:id",
   DtoValidatorMiddleware(PageDto),

@@ -29,7 +29,7 @@ import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
 // import { createServer } from "http";
 import fs from "fs";
-import https from "https";
+import {createServer} from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
@@ -54,13 +54,8 @@ export class AppServer {
   static async start() {
     const appServer = new AppServer();
 
-    const server = https.createServer(
-      {
-        key: fs.readFileSync(path.join(__dirname, "cert.key")),
-        cert: fs.readFileSync(path.join(__dirname, "cert.crt")),
-      },
-      appServer.app
-    );
+      const server = createServer(appServer.app);
+      
     await appServer.config();
 
     const io = new Server(server, {
@@ -106,7 +101,7 @@ export class AppServer {
       cors({
         origin: ["http://localhost:3001", "https://acoha.store"],
         credentials: true,
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST","PUT", "DELETE", "PATCH"],
         optionsSuccessStatus: 200,
       })
     );
@@ -136,7 +131,6 @@ export class AppServer {
     );
     this.app.use(
       endPoint.page,
-      // loginRequired,
       // DtoValidatorMiddleware(PageDto),
       pageRouter
     );

@@ -29,7 +29,6 @@ Message.init(
       type: DataTypes.STRING(45),
       allowNull: false,
     },
-
     img: {
       type: DataTypes.STRING(200),
       allowNull: true,

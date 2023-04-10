@@ -1,4 +1,4 @@
-import { ErrorType } from "./../constants";
+import { ErrorType, LogColor } from "./../constants";
 import { errorResponse } from "./../utils/errorResponse";
 import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
@@ -23,6 +23,7 @@ export class UserController implements IUserController {
         errorResponse(res, ErrorType.SERVERERROR, err);
       }
     });
+    console.log("로그인 세션", req.session);
     // await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
@@ -39,14 +40,16 @@ export class UserController implements IUserController {
   };
 
   public logout: AsyncRequestHandler = async (req, res) => {
-    console.log("세션 제거 전", req.session);
+    console.log(LogColor.INFO, "세션 제거 전", req.session);
+    console.log(LogColor.INFO, "세션 아이디" , req.session.id);
+    const user = req.session?.user;
     req.session.destroy((err) => {
       if (err) {
         console.error("세션 삭제 중 오류 발생: ", err);
         res.status(500).send("세션 삭제 중 오류 발생");
       } else {
         console.log("세션 제거 후", req.session);
-        res.status(200).json({ message: "로그아웃" });
+        res.status(200).json({ user, message: "로그아웃 성공"});
       }
     });
   };
