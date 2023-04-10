@@ -27,8 +27,6 @@ import { createSocketAdapter } from "./utils/redisClient";
 import { MongoAdapter } from "./db/mongo";
 import logger from "morgan";
 import { MySqlAdapter } from "./db/mysql";
-// import { createServer } from "http";
-import fs from "fs";
 import {createServer} from "http";
 import { Server } from "socket.io";
 import { sequelize } from "./model";
@@ -54,8 +52,8 @@ export class AppServer {
   static async start() {
     const appServer = new AppServer();
 
-      const server = createServer(appServer.app);
-      
+    const server = createServer(appServer.app);
+
     await appServer.config();
 
     const io = new Server(server, {
