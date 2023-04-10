@@ -17,7 +17,11 @@ export class PageService implements IPageModel {
     this.socketModel = socketModel;
   }
 
-  async findPage(channelId: number, id: string, type?: string): Promise<page> {
+  public async findPage(
+    channelId: number,
+    id: string,
+    type?: string
+  ): Promise<page> {
     return await pageModel.findOne({ _id: id, channelId, type });
   }
 

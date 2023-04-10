@@ -9,10 +9,10 @@ import {
   MaxLength,
 } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
-import { block } from "../interface";
+import { pageStatusUpdate } from "../interface";
 
 // 제목 2-10글자
-export class PageDto {
+export class TemplateDto {
   @IsMongoId()
   @IsOptional()
   public id: string;
@@ -31,7 +31,7 @@ export class PageDto {
 
   @IsArray()
   @IsOptional()
-  public blocks: block[];
+  public pages: pageStatusUpdate[];
 
   @MinLength(2)
   @MaxLength(10)

@@ -5,38 +5,52 @@ import {
   templateModel,
   templateModelType,
 } from "../model";
-import { pageService } from "./pageService";
+import { PageService, pageService } from "./pageService";
 import { ITemplateModel, template, pageStatusUpdate } from "../interface";
-import { listService } from "./listService";
+import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 
-class TemplateService implements ITemplateModel {
+class TemplateService {
   private templateModel: templateModelType;
   private listModel: listModelType;
-  constructor(templateModel: templateModelType, listModel: listModelType) {
+  private pageService: PageService;
+  private listService: ListService;
+  constructor(
+    templateModel: templateModelType,
+    listModel: listModelType,
+    pageService: PageService,
+    listService: ListService
+  ) {
     this.templateModel = templateModel;
     this.listModel = listModel;
+    this.pageService = pageService;
+    this.listService = listService;
   }
 
-  async createTemplate(
+  public async createTemplate(
     channelId: number,
     blockId: string,
     type: string
   ): Promise<template> {
     const pageType = "progress-page";
     const progressStatus = "todo";
-    const pages = await pageService.createPage(
+
+    const pages = await this.pageService.createPage(
       channelId,
       blockId,
       pageType,
       progressStatus
     );
-    const template = await templateModel.create({ channelId, pages, type });
+    const template = await this.templateModel.create({
+      channelId,
+      pages,
+      type,
+    });
     await this.createListTemplate(channelId, template);
 
     return template;
   }
-  async createListTemplate(
+  public async createListTemplate(
     channelId: number,
     template: template
   ): Promise<ListInterface> {
@@ -49,19 +63,19 @@ class TemplateService implements ITemplateModel {
 
     return pushTemplateList;
   }
-  async findTemplate(
+  public async findTemplate(
     channelId: number,
     id: string,
     type?: string
   ): Promise<template> {
-    const progress = templateModel.findOne({ _id: id, type }).populate({
+    const progress = this.templateModel.findOne({ _id: id, type }).populate({
       path: "pages",
       select: "pageName label progressStatus type",
     });
     return await progress.findOne({ channelId });
   }
 
-  async addTemplatePage(
+  public async addTemplatePage(
     channelId: number,
     id: string,
     blockId: string,
@@ -76,7 +90,7 @@ class TemplateService implements ITemplateModel {
         throw new Error("progressStatus를 입력하세요");
       }
       pageType = "progress-page";
-      const pages = await pageService.createPage(
+      const pages = await this.pageService.createPage(
         channelId,
         blockId,
         pageType,
@@ -90,16 +104,16 @@ class TemplateService implements ITemplateModel {
     }
   }
 
-  async updateTemplateProgress(
+  public async updateTemplateProgress(
     channelId: number,
     id: string,
     pageName: string,
-    pages: [pageStatusUpdate],
+    pages: pageStatusUpdate[],
     type: string
   ): Promise<template> {
     pages.map((page) => {
       if (page.progressStatus) {
-        return pageService.pageStatusUpdate(page._id, page.progressStatus);
+        return this.pageService.pageStatusUpdate(page._id, page.progressStatus);
       }
     });
     return await this.templateModel
@@ -109,19 +123,22 @@ class TemplateService implements ITemplateModel {
       });
   }
 
-  async deleteTemplate(id: string, channelId: number): Promise<object> {
-    const deleteTemplate = await templateModel.deleteOne({ _id: id });
-    await listService.deleteListTemplate(channelId, id);
+  public async deleteTemplate(id: string, channelId: number): Promise<object> {
+    const deleteTemplate = await this.templateModel.deleteOne({ _id: id });
+    await this.listService.deleteListTemplate(channelId, id);
     return deleteTemplate;
   }
 
   async percentageProgress(id: string): Promise<object> {
-    const progress = templateModel.findOne({ _id: id }).populate({
+    const progress = await templateModel.findOne({ _id: id }).populate({
       path: "pages",
       select: "progressStatus",
     });
+    if (progress.type !== "template-progress") {
+      throw new Error("진행현황 템플릿이 아닙니다.");
+    }
 
-    const progressPages = (await progress).pages;
+    const progressPages = progress.pages;
     const length = progressPages.length;
     let count = 0;
     progressPages.map((page) => {
@@ -137,4 +154,9 @@ class TemplateService implements ITemplateModel {
   }
 }
 
-export const templateService = new TemplateService(templateModel, listModel);
+export const templateService = new TemplateService(
+  templateModel,
+  listModel,
+  pageService,
+  listService
+);

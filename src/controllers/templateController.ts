@@ -11,21 +11,18 @@ interface ITemplateController {
 
 export class TemplateController implements ITemplateController {
   createTemplate: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const type = req.query.type as string;
-    const channelId = parseInt(channel);
-    const blockId = req.body.blockId;
-    console.log(type);
+    const { channel, blockId, type } = req.body;
+
     if (type === "template-progress") {
       const createTemplate = await templateService.createTemplate(
-        channelId,
+        channel,
         blockId,
         type
       );
       res.json(createTemplate);
     } else {
       const createTemplate = await templateNormalService.createTemplate(
-        channelId,
+        channel,
         blockId,
         type
       );
@@ -34,15 +31,10 @@ export class TemplateController implements ITemplateController {
   };
 
   addTemplatePage: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const id = req.params.id;
-    const type = req.query.type as string;
-    console.log(type);
-    const { progressStatus, blockId } = req.body;
+    const { id, progressStatus, blockId, channel, type } = req.body;
     if (type === "template-progress") {
       const addTemplatePage = await templateService.addTemplatePage(
-        channelId,
+        channel,
         id,
         blockId,
         type,
@@ -51,7 +43,7 @@ export class TemplateController implements ITemplateController {
       res.json(addTemplatePage);
     } else {
       const addTemplatePage = await templateNormalService.addTemplatePage(
-        channelId,
+        channel,
         id,
         blockId,
         type,
@@ -62,15 +54,11 @@ export class TemplateController implements ITemplateController {
   };
 
   updateTemplate: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const id = req.params.id;
-    const type = req.query.type as string;
-    const { pages, pageName } = req.body;
+    const { id, channel, pages, pageName, type } = req.body;
 
     if (type === "template-progress") {
       const updateProgress = await templateService.updateTemplateProgress(
-        channelId,
+        channel,
         id,
         pageName,
         pages,
@@ -80,7 +68,7 @@ export class TemplateController implements ITemplateController {
     } else {
       const updateNormalTemplate =
         await templateNormalService.updateTemplateNormal(
-          channelId,
+          channel,
           id,
           pageName,
           pages,
@@ -91,15 +79,13 @@ export class TemplateController implements ITemplateController {
   };
 
   deleteTemplate: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const deleteProgress = await templateService.deleteTemplate(id, channelId);
+    const { id, channel } = req.body;
+    const deleteProgress = await templateService.deleteTemplate(id, channel);
     res.json(deleteProgress);
   };
 
   percentageProgress: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.body;
     const percentageProgress = await templateService.percentageProgress(id);
     res.json(percentageProgress);
   };

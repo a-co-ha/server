@@ -73,7 +73,7 @@ export interface ITemplateModel {
     channelId: number,
     id: string,
     pageName: string,
-    pages: [pageStatusUpdate],
+    pages: pageStatusUpdate[],
     type: string
   ): Promise<template>;
   deleteTemplate(id: string, channelId: number): Promise<object>;
