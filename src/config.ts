@@ -72,7 +72,11 @@ export const corsOrigin = [
 export const ioCorsOptions = {
   allowUpgrades: true,
   cors: {
-    origin: corsOrigin,
+    origin: [
+      "http://localhost:3001",
+      "https://acoha.store",
+      "https://acoha.site",
+    ],
     methods: ["GET"],
     allowedHeaders: ["Authorization"],
     credentials: true,
@@ -80,7 +84,12 @@ export const ioCorsOptions = {
 };
 
 export const corsOptions = {
-  origin: corsOrigin,
+  origin: [
+    "http://localhost:3001",
+    "https://acoha.store",
+    "https://acoha.site",
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  optionsSuccessStatus: 200,
 };

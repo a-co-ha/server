@@ -20,7 +20,11 @@ pageRouter.post(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.createRoom)
 );
-pageRouter.get("/room/:id", loginRequired, asyncHandler(pageController.getChat));
+pageRouter.get(
+  "/room/:id",
+  loginRequired,
+  asyncHandler(pageController.getChat)
+);
 pageRouter.put(
   "/:id",
   DtoValidatorMiddleware(PageDto),

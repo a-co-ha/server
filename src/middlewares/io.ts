@@ -6,7 +6,6 @@ export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, socket.request.res || {}, next);
 
 export const socketValidation = async (sessionID: string, socket) => {
-  console.log("세션아이디", sessionID);
   const sessionInfo = await redisCache.findSession(sessionID);
   if (!sessionInfo) {
     socket.emit("error", "세션을 찾을 수 없습니다. ");
@@ -20,13 +19,6 @@ export const socketValidation = async (sessionID: string, socket) => {
   socket.userID = sessionInfo.userId;
   socket.name = sessionInfo.name;
   socket.img = sessionInfo.img;
-  console.log(
-    socket.sessionID,
-    socket.userID,
-    socket.name,
-    socket.img,
-    socket.roomIds
-  );
 };
 
 const getChannels = async (userId: number) => {
@@ -37,7 +29,7 @@ const getChannels = async (userId: number) => {
   if (isUser(getChannel)) {
     const channels = getChannel.channels.map(async (i) => {
       const { id } = i;
-      return channelService.getRooms(id);
+      return await channelService.getRooms(id);
     });
     return await Promise.all(channels).then((results) => {
       return results.flatMap((room) => {

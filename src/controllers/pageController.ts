@@ -84,9 +84,22 @@ export class PageController implements IPageController {
   };
 
   getChat: AsyncRequestHandler = async (req, res) => {
-    const {userId} = req.user;
-    const messages = await redisCache.findMessagesForUser(userId);
-    res.json({messages});
+    const { userId } = req.user;
+    const roomId = req.params.id;
+    const messages = await redisCache.findMessagesForUser(roomId);
+    const messagesPerUser = new Map();
+    // todo
+    for (const message of messages) {
+      const { from, to } = message;
+      const otherUser = userId === from ? to : from;
+
+      if (messagesPerUser.has(otherUser)) {
+        messagesPerUser.get(otherUser).push(message);
+      } else {
+        messagesPerUser.set(otherUser, [message]);
+      }
+    }
+    res.json(messages);
   };
 }
 

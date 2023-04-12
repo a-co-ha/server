@@ -8,36 +8,19 @@ import { redisClient } from "./redisClient";
 export default {
   async findSession(id): Promise<UserAttributes> {
     try {
-      const a = JSON.parse(await redisClient.get(`session:${id}`)).user;
-      return a;
+      return JSON.parse(await redisClient.get(`session:${id}`)).user;
     } catch (e) {
       console.error(e);
       return null;
     }
   },
-  findLogin: async (id) => {
-    try {
-      const session = await redisClient.get(`login:${id}`);
 
-      if (session) {
-        return JSON.parse(session);
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  },
-
-  findMessagesForUser: async (userID) => {
-    const a = await redisClient
-      .lRange(`messages:${userID}`, 0, -1)
+  findMessagesForUser: async (roomId) => {
+    return await redisClient
+      .lRange(`messages:${roomId}`, 0, -1)
       .then((results) => {
         return results.map((result) => JSON.parse(result));
       });
-
-    return a;
   },
 
   findAllSessions: async (): Promise<any> => {
@@ -63,8 +46,7 @@ export default {
     var multi = redisClient.multi();
 
     commands.forEach(async (command) => {
-      const a = multi.get(command);
-      return a;
+      return multi.get(command);
     });
 
     const result = await new Promise((resolve, reject) => {
@@ -77,7 +59,6 @@ export default {
   saveMessage: async (message) => {
     message.createAt = new Date();
     const value = JSON.stringify(message);
-
     await redisClient
       .multi()
       .rPush(`messages:${message.from}`, value)
@@ -86,8 +67,6 @@ export default {
       .expire(`messages:${message.to}`, 24 * 60 * 60)
       .exec();
   },
-
-  get: (key) => redisClient.get(`${key}`),
 
   delete: async (key) => {
     await redisClient.DEL(`session:${key}`);

@@ -7,18 +7,18 @@ interface IMessageController {
 export class MessageController implements IMessageController {
   createMessage = async (data: any) => {
     const { roomId, text, name, img } = data;
-console.log(text);
+
     // redisCache.delete(`messageList:${channelId}`);
     // console.log({ name, githubID, img, text, channelId });
     const messageResponse = await Message.create({
       name,
       img,
-      text : text,
+      text: text,
       roomId,
     });
     const message = messageResponse.get({ plain: true });
 
-    redisCache.saveMessage({data});
+    await redisCache.saveMessage(data);
 
     return {
       meta: {

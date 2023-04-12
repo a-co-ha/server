@@ -1,11 +1,12 @@
 import { AsyncRequestHandler } from "./../constants";
-import { channelService, ChannelService } from "../services/channelService";
+import channelService, { ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
 import {
   ChannelAttributes,
   channelJoinInterface,
   IChannelInfo,
 } from "../interface";
+import { Socket } from "../socket/socketServer";
 
 interface IChannelController {
   create: AsyncRequestHandler;
@@ -45,7 +46,9 @@ export class ChannelController implements IChannelController {
       userId,
       name,
     };
+
     const result = await this.channelService.join(joinInfo);
+
     res.json(result);
   };
 

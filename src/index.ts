@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import sharedSession from "express-socket.io-session";
-import { corsOptions, corsOrigin, port, SESSION_SECRET } from "./config";
+import { corsOptions, port, SESSION_SECRET } from "./config";
 import {
   channelRouter,
   githubRouter,
@@ -22,9 +21,8 @@ import {
   errorHandler,
   DtoValidatorMiddleware,
 } from "./middlewares";
-import { MongoAdapter } from "./db/mongo";
+import { MongoAdapter, MySqlAdapter } from "./db";
 import logger from "morgan";
-import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
