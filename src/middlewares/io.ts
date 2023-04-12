@@ -6,21 +6,27 @@ export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, socket.request.res || {}, next);
 
 export const socketValidation = async (sessionID: string, socket) => {
-  console.log("세션아이디" , sessionID);
+  console.log("세션아이디", sessionID);
   const sessionInfo = await redisCache.findSession(sessionID);
   if (!sessionInfo) {
     socket.emit("error", "세션을 찾을 수 없습니다. ");
     socket.disconnect();
     return;
   }
-  
+
   socket.roomIds = await getChannels(sessionInfo.userId);
 
   socket.sessionID = sessionID;
   socket.userID = sessionInfo.userId;
   socket.name = sessionInfo.name;
   socket.img = sessionInfo.img;
-  console.log(socket.sessionID, socket.userID, socket.name, socket.img, socket.roomIds);
+  console.log(
+    socket.sessionID,
+    socket.userID,
+    socket.name,
+    socket.img,
+    socket.roomIds
+  );
 };
 
 const getChannels = async (userId: number) => {

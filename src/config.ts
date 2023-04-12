@@ -64,5 +64,21 @@ export const corsOrigin = [
   "https://acoha.site/",
   "https://npm.acoha.site/",
   "https://acoha.store/",
-  "http://3.35.132.30:3000"
+  "http://3.35.132.30:3000",
 ];
+
+export const ioCorsOptions = {
+  allowUpgrades: true,
+  cors: {
+    origin: corsOrigin,
+    methods: ["GET"],
+    allowedHeaders: ["Authorization"],
+    credentials: true,
+  },
+};
+
+export const corsOptions = {
+  origin: corsOrigin,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+};

@@ -8,12 +8,12 @@ import { redisClient } from "./redisClient";
 export default {
   async findSession(id): Promise<UserAttributes> {
     try {
-   const a =  JSON.parse(await redisClient.get(`session:${id}`)).user;
-   return a;
-     } catch(e){
-    console.error(e);
-    return null;
-  }
+      const a = JSON.parse(await redisClient.get(`session:${id}`)).user;
+      return a;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   },
   findLogin: async (id) => {
     try {
@@ -90,6 +90,6 @@ export default {
   get: (key) => redisClient.get(`${key}`),
 
   delete: async (key) => {
-    await redisClient.DEL(key);
+    await redisClient.DEL(`session:${key}`);
   },
 };
