@@ -13,11 +13,15 @@ import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
 
 export const githubLogin = async (req, res, next) => {
-  const host = req.headers.host;
-  console.log(host);
+
+  const origin = req.headers.origin;
+
   let id = oauthClient;
   let secret = oauthSecret;
-
+  if (origin === "http://localhost:3001") {
+    id = oauthClientLOCAL;
+    secret = oauthSecretLOCAL;
+  }
   const requestToken = req.query.code;
   try {
     const response = await axios.post(
