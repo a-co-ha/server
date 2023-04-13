@@ -1,5 +1,5 @@
 import { AsyncRequestHandler } from "./../constants";
-import channelService, { ChannelService } from "../services/channelService";
+import { channelService, ChannelService } from "../services/channelService";
 import { listService, ListService } from "../services/listService";
 import {
   ChannelAttributes,

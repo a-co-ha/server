@@ -15,7 +15,7 @@ import {
 import { Socket } from "../socket/socketServer";
 
 export class ChannelService {
-  private socket: Socket;
+  // private socket: Socket;
   constructor(
     private channelUserModel: ChannelUser,
     private channelModel: Channel,

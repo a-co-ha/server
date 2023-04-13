@@ -1,4 +1,3 @@
-import { UserAttributes } from "./../interface/userInterface";
 import io from "socket.io-client";
 import { port } from "../config";
 import { LogColor } from "../constants";
@@ -19,7 +18,6 @@ export const connectSocket = (sessionID): Promise<any> => {
     socket.on("connect_error", (error) => {
       reject(error);
     });
-
     socket.on("users", (data) => {
       console.log(LogColor.INFO, "users", JSON.stringify(data));
     });
@@ -29,10 +27,13 @@ export const connectSocket = (sessionID): Promise<any> => {
     socket.on("session", (data) => {
       console.log(LogColor.INFO, "session", data);
       setTimeout(() => {
-        socket.emit("message-send", {
-          roomId: data?.roomIds[0],
-          text: "444444",
-        });
+        socket.emit("force disconnect");
+        //{
+        //   socket.emit("message-send", {
+        //     roomId: data?.roomIds[0],
+        //     text: "444444",
+        //   }
+        // );
       }, 10000);
     });
     socket.on("user connected", (data) => {

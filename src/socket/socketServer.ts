@@ -32,7 +32,6 @@ export class Socket {
       socket.join(room);
       this.io.to(room).emit("user connected", {
         userID: userID,
-        // name: socket.name,
         connected: "true",
       });
     }
@@ -66,25 +65,10 @@ export class Socket {
 
           // 커넥션했다고 알림
           socket.broadcast.to(room).emit("user connected", {
+            roomId: room,
             userID: socket.userID,
             name: socket.name,
             connected: "true",
-          });
-
-          // 연결 해제
-          socket.on("disconnect", async () => {
-            delete this.currentSocket[socket.userID];
-            const matchingSockets = await this.io
-              .in(socket.userID)
-              .fetchSockets();
-
-            const isDisconnected = matchingSockets.length === 0;
-            if (isDisconnected) {
-              socket.broadcast.to(room).emit("user disconnected", {
-                userID: socket.userID,
-                name: socket.name,
-              });
-            }
           });
         }
       }
@@ -110,6 +94,29 @@ export class Socket {
         data.to = roomId;
         const response = await messageController.createMessage(data);
         socket.to(roomId).to(socket.userID).emit("message-receive", response);
+      });
+
+      // 연결 해제
+      socket.on("force disconnect", async () => {
+        delete this.currentSocket[socket.userID];
+        const matchingSockets = await this.io.in(socket.userID).fetchSockets();
+
+        const isDisconnected = matchingSockets.length === 0;
+
+        if (isDisconnected) {
+          for (const room of socket.roomIds) {
+            socket.broadcast.to(room).emit("user disconnected", {
+              roomId: room,
+              userID: socket.userID,
+              name: socket.name,
+              connected: "false",
+            });
+          }
+
+          socket.disconnect(true).then((res) => {
+            console.log(res);
+          });
+        }
       });
     });
   }
