@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import sharedSession from "express-socket.io-session";
-import { corsOrigin, port, SESSION_SECRET } from "./config";
+import { corsOptions, port, SESSION_SECRET } from "./config";
 import {
   channelRouter,
   githubRouter,
@@ -10,7 +9,6 @@ import {
   listRouter,
   oauthRouter,
   pageRouter,
-  socket,
   templateRouter,
   userRouter,
   bookmarkRouter,
@@ -23,18 +21,14 @@ import {
   errorHandler,
   DtoValidatorMiddleware,
 } from "./middlewares";
-import { createSocketAdapter } from "./utils/redisClient";
-import { MongoAdapter } from "./db/mongo";
+import { MongoAdapter, MySqlAdapter } from "./db";
 import logger from "morgan";
-import { MySqlAdapter } from "./db/mysql";
 import { createServer } from "http";
-import fs from "fs";
-import { Server } from "socket.io";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
-import path from "path";
+import { Socket } from "./socket/socketServer";
 
 export class AppServer {
   app: express.Application;
@@ -52,32 +46,12 @@ export class AppServer {
 
   static async start() {
     const appServer = new AppServer();
-
     const server = createServer(appServer.app);
     await appServer.config();
 
-    const io = new Server(server, {
-      // transports: ["websocket", "polling"],
-      allowUpgrades: true,
-      cors: {
-        origin: ["http://localhost:3001", "https://acoha.store"],
-        methods: ["GET"],
-        allowedHeaders: ["Authorization"],
-        credentials: true,
-      },
-    });
-
-    const adapter = await createSocketAdapter();
-    io.adapter(adapter);
-
-    io.use(
-      sharedSession(useSession(), {
-        autoSave: true,
-      })
-    );
-
-    socket(io);
-
+    const socket = new Socket(server);
+    await socket.config();
+    socket.start();
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
@@ -95,14 +69,7 @@ export class AppServer {
   }
 
   private middleWare() {
-    this.app.use(
-      cors({
-        origin: ["http://localhost:3001", "https://acoha.store"],
-        credentials: true,
-        methods: ["GET", "POST"],
-        optionsSuccessStatus: 200,
-      })
-    );
+    this.app.use(cors(corsOptions));
     this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
@@ -121,18 +88,8 @@ export class AppServer {
       DtoValidatorMiddleware(InviteDto),
       channelRouter
     );
-    this.app.use(
-      endPoint.channel,
-      loginRequired,
-      // DtoValidatorMiddleware(ChannelDto),
-      channelRouter
-    );
-    this.app.use(
-      endPoint.page,
-      // loginRequired,
-      // DtoValidatorMiddleware(PageDto),
-      pageRouter
-    );
+    this.app.use(endPoint.channel, loginRequired, channelRouter);
+    this.app.use(endPoint.page, pageRouter);
     this.app.use(endPoint.template, templateRouter);
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);

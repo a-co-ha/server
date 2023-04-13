@@ -12,6 +12,7 @@ export const socketValidation = async (sessionID: string, socket) => {
     socket.disconnect();
     return;
   }
+
   socket.roomIds = await getChannels(sessionInfo.userId);
 
   socket.sessionID = sessionID;
@@ -28,7 +29,7 @@ const getChannels = async (userId: number) => {
   if (isUser(getChannel)) {
     const channels = getChannel.channels.map(async (i) => {
       const { id } = i;
-      return channelService.getRooms(id);
+      return await channelService.getRooms(id);
     });
     return await Promise.all(channels).then((results) => {
       return results.flatMap((room) => {

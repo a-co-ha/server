@@ -10,7 +10,6 @@ import { User, userModel } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
-import { connectSocket } from "../utils/connectSocket";
 
 export class UserService {
   constructor(private user: User) {}

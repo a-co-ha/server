@@ -1,6 +1,7 @@
 import { pageService, templateService } from "../services";
 import { page } from "../interface";
 import { AsyncRequestHandler } from "../constants";
+import redisCache from "../utils/redisCache";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
@@ -82,9 +83,23 @@ export class PageController implements IPageController {
     res.json(deleteImg);
   };
 
-  //todo
   getChat: AsyncRequestHandler = async (req, res) => {
-    res.json({ message: {} });
+    const { userId } = req.user;
+    const roomId = req.params.id;
+    const messages = await redisCache.findMessagesForUser(roomId);
+    const messagesPerUser = new Map();
+    // todo
+    for (const message of messages) {
+      const { from, to } = message;
+      const otherUser = userId === from ? to : from;
+
+      if (messagesPerUser.has(otherUser)) {
+        messagesPerUser.get(otherUser).push(message);
+      } else {
+        messagesPerUser.set(otherUser, [message]);
+      }
+    }
+    res.json(messages);
   };
 }
 

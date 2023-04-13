@@ -12,8 +12,10 @@ import {
   bookmarkListService,
   BookmarkListService,
 } from "./bookmarkListService";
+import { Socket } from "../socket/socketServer";
 
 export class ChannelService {
+  // private socket: Socket;
   constructor(
     private channelUserModel: ChannelUser,
     private channelModel: Channel,
@@ -22,8 +24,12 @@ export class ChannelService {
     private listService: ListService,
     private pageService: PageService,
     private socketModel: socketModelType,
-    private bookmarkListService: BookmarkListService
-  ) {}
+    private bookmarkListService: BookmarkListService // server: any
+  ) {
+    // this.socket = new Socket(server);
+    // this.socket.config();
+    // this.socket.start();
+  }
   public async create(
     info: channelJoinInterface,
     blockId: string
@@ -86,6 +92,7 @@ export class ChannelService {
       name,
       userId,
     } = joinInfo;
+    console.log(joinInfo);
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
@@ -105,7 +112,15 @@ export class ChannelService {
     } else {
       throw new Error("channel Not matching");
     }
+    // const server = createServer();
+    // const socket = new Socket(server);
 
+    // const rooms = await this.getRooms(channelInfo.id);
+    // console.log("my rooms", rooms);
+
+    // rooms.forEach((room: any) => {
+    //   socket.join(room, userId);
+    // });
     return { channelId: channelInfo.id, userId, channelName };
   }
 

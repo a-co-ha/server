@@ -1,9 +1,9 @@
-import { ErrorType } from "./../constants";
+import { ErrorType, LogColor } from "./../constants";
 import { errorResponse } from "./../utils/errorResponse";
 import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
 import { connectSocket } from "../utils/connectSocket";
-import { read } from "fs";
+import redisCache from "../utils/redisCache";
 
 interface IUserController {
   login: AsyncRequestHandler;
@@ -39,16 +39,14 @@ export class UserController implements IUserController {
   };
 
   public logout: AsyncRequestHandler = async (req, res) => {
-    console.log("세션 제거 전", req.session);
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("세션 삭제 중 오류 발생: ", err);
-        res.status(500).send("세션 삭제 중 오류 발생");
-      } else {
-        console.log("세션 제거 후", req.session);
-        res.status(200).json({ message: "로그아웃" });
-      }
-    });
+    const session = await redisCache.findSession(req.body.sessionID);
+    if (!session) {
+      throw new Error("세션을 찾을 수 없습니다. ");
+    }
+    await redisCache.delete(req.body.sessionID);
+    res
+      .status(200)
+      .json({ sessionID: req.body.sessionID, message: "로그아웃 성공" });
   };
 }
 
