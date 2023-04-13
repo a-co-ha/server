@@ -3,6 +3,8 @@ import {
   GITHUBACCESSURL,
   GITHUBUSERURL,
   oauthClient,
+  oauthClientLOCAL,
+  oauthSecretLOCAL,
   oauthSecret,
 } from "../config";
 import { User, UserAttributes } from "../interface";
@@ -11,6 +13,11 @@ import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
 
 export const githubLogin = async (req, res, next) => {
+  const host = req.headers.host;
+  console.log(host);
+  let id = oauthClient;
+  let secret = oauthSecret;
+
   const requestToken = req.query.code;
   try {
     const response = await axios.post(
@@ -21,8 +28,8 @@ export const githubLogin = async (req, res, next) => {
           accept: `application/json`,
         },
         params: {
-          client_id: oauthClient,
-          client_secret: oauthSecret,
+          client_id: id,
+          client_secret: secret,
           code: requestToken,
         },
       }

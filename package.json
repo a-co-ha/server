@@ -61,6 +61,7 @@
     "ioredis": "latest",
     "jsonwebtoken": "^9.0.0",
     "koa-session2": "babel",
+    "mongoclient": "^1.0.3",
     "mongoose": "^6.9.0",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",

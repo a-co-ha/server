@@ -33,7 +33,7 @@ channelRouter.get(
 );
 channelRouter.patch(
   "/imageUpdate",
-  imageUpload.single("channelImg"),
+  imageUpload.single("image"),
   DtoValidatorMiddleware(ChannelDto),
   asyncHandler(channelController.channelImagUpdate)
 );
