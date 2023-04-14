@@ -7,6 +7,7 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
+import { logger } from "../utils/winston";
 
 export class MySqlAdapter {
   private pool: Pool;
@@ -22,9 +23,9 @@ export class MySqlAdapter {
         connectionLimit: 10000,
       });
 
-      console.debug(LogColor.INFO, "MySql Adapter Pool generated successfully");
+      logger.debug("MySql Adapter Pool generated successfully");
     } catch (error) {
-      console.error(LogColor.ERROR, "[mysql.connector][init][Error]: ", error);
+      logger.error("[mysql.connector][init][Error]: ", error);
       throw new Error("failed to initialized pool");
     }
   }
@@ -47,11 +48,7 @@ export class MySqlAdapter {
         });
       });
     } catch (error) {
-      console.error(
-        LogColor.ERROR,
-        "[mysql.connector][execute][Error]: ",
-        error
-      );
+      logger.error("[mysql.connector][execute][Error]: ", error);
       throw new Error("failed to execute MySQL query");
     }
   }

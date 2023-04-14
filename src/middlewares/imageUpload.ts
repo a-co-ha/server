@@ -46,6 +46,6 @@ export const deleteImage = async (key: string) => {
     const response = await s3.send(command);
     return response;
   } catch (err) {
-    console.log("Error deleting image", err);
+    logger.info("Error deleting image", err);
   }
 };

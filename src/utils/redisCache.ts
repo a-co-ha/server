@@ -1,6 +1,7 @@
 import { UserAttributes } from "./../interface/userInterface";
 /* eslint-disable no-var */
 import { redisClient } from "./redisClient";
+import { logger } from "./winston";
 
 // export const mapSession = ([userID, name, connected, img]) =>
 //   userID ? { userID, name, connected: connected === "true", img } : undefined;
@@ -10,7 +11,7 @@ export default {
     try {
       return JSON.parse(await redisClient.get(`session:${id}`)).user;
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       return null;
     }
   },

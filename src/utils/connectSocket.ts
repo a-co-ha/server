@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { port } from "../config";
-import { LogColor } from "../constants";
+import { logger } from "./winston";
 
 export const connectSocket = (sessionID): Promise<any> => {
   return new Promise((resolve, reject) => {
@@ -19,13 +19,13 @@ export const connectSocket = (sessionID): Promise<any> => {
       reject(error);
     });
     socket.on("users", (data) => {
-      console.log(LogColor.INFO, "users", JSON.stringify(data));
+      logger.info("users", JSON.stringify(data));
     });
     socket.on("message-receive", (data) => {
-      console.log(LogColor.INFO, "receive message ", data);
+      logger.info("receive message ", data);
     });
     socket.on("session", (data) => {
-      console.log(LogColor.INFO, "session", data);
+      logger.info("session", data);
       setTimeout(() => {
         // socket.emit("force disconnect");
         //{
@@ -36,7 +36,7 @@ export const connectSocket = (sessionID): Promise<any> => {
       }, 10000);
     });
     socket.on("user connected", (data) => {
-      console.log(LogColor.INFO, "user_connected", data);
+      logger.info("user_connected", data);
     });
   });
 };

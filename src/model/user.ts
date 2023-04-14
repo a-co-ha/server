@@ -5,13 +5,7 @@ import { ChannelUser } from "./channelUser";
 import { Sequelize } from "sequelize";
 
 export class User extends Model<UserAttributes> {
-  public userId!: number;
-  public name!: string;
-  public githubID!: string;
-  public githubURL!: string;
-  public img!: string;
-  public refreshToken: string;
-
+  declare refreshToken: string;
   public static associations: {
     userHasChannels: Association<User, ChannelUser>;
   };

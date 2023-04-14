@@ -6,13 +6,6 @@ import { sequelize } from "./index";
 import { User } from "./user";
 
 export class Message extends Model<MessageAttributes> {
-  public readonly id!: number;
-  public name!: string;
-  public img!: string;
-  public text!: string;
-  public roomId!: string;
-  public readonly createdAt!: Date;
-
   public static associations: {
     belongToChannel: Association<Channel, Message>;
     belongToUser: Association<User, Message>;

@@ -1,6 +1,6 @@
-import { LogColor } from "../constants";
 import mongoose from "mongoose";
 import { mongoDBUri } from "../config";
+import { logger } from "../utils/winston";
 
 export class MongoAdapter {
   constructor() {
@@ -11,7 +11,7 @@ export class MongoAdapter {
     mongoose.set("strictQuery", true);
     mongoose.connect(mongoDBUri);
     mongoose.connection.on("connected", () => {
-      console.info(LogColor.INFO, `connected to MongoDB`);
+      logger.info(`connected to MongoDB`);
     });
   }
 }

@@ -13,6 +13,7 @@ import {
   BookmarkListService,
 } from "./bookmarkListService";
 import { Socket } from "../socket/socketServer";
+import { logger } from "../utils/winston";
 
 export class ChannelService {
   // private socket: Socket;
@@ -92,7 +93,7 @@ export class ChannelService {
       name,
       userId,
     } = joinInfo;
-    console.log(joinInfo);
+    logger.info(joinInfo);
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
@@ -116,7 +117,7 @@ export class ChannelService {
     // const socket = new Socket(server);
 
     // const rooms = await this.getRooms(channelInfo.id);
-    // console.log("my rooms", rooms);
+    //  logger.info("my rooms", rooms);
 
     // rooms.forEach((room: any) => {
     //   socket.join(room, userId);

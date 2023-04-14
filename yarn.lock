@@ -4232,7 +4232,9 @@ __metadata:
     "@babel/node": ^7.20.7
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-decorators": ^7.20.5
+    "@babel/plugin-proposal-private-methods": ^7.18.6
     "@babel/plugin-transform-modules-commonjs": ^7.21.2
+    "@babel/plugin-transform-typescript": ^7.21.3
     "@babel/preset-env": ^7.21.4
     "@babel/preset-typescript": ^7.18.6
     "@octokit/plugin-retry": ^4.1.3
@@ -4338,6 +4340,7 @@ __metadata:
     socket.io-redis: 6.0.1
     socket.io-sessions: ^0.6.1
     sqlite3: ^5.1.4
+    stream: ^0.0.2
     supports-color: ^9.3.1
     ts-node: ^10.9.1
     typeorm: ^0.3.11
@@ -6040,6 +6043,13 @@ __metadata:
   version: 1.4.356
   resolution: "electron-to-chromium@npm:1.4.356"
   checksum: 5a61003c574f5fb6d32dcfc0ae2220a45a6a395ccadd9495c8227e9c33f36ea97cb34aa925c2b039d17dfea5a8040825026db2df01a352d2d1c0037f53dbeebb
+  languageName: node
+  linkType: hard
+
+"emitter-component@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "emitter-component@npm:1.1.1"
+  checksum: 10e907f507a8c16a318e07595119e58b5c3267528d4e3b962ee9b14fd83c97599e7931ccb983ec551a8de8116955c1d6ae7d213c5b0c920b62c02b7cb8d7a4d7
   languageName: node
   linkType: hard
 
@@ -11193,6 +11203,15 @@ __metadata:
     inherits: ~2.0.4
     readable-stream: ^3.5.0
   checksum: 4c47ef64d6f03815a9ca3874e2319805e8e8a85f3550776c47ce523b6f4c6cd57f40e46ec6a9ab8ad260fde61863c2718f250d3bedb3fe9052444eb9abfd9921
+  languageName: node
+  linkType: hard
+
+"stream@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "stream@npm:0.0.2"
+  dependencies:
+    emitter-component: ^1.1.1
+  checksum: 43d89e176c282234d452754f9b55a82c74ea68345bf6176af32c4c213801f88df7984c83ec5a735457705dddf4668373edb9f0ec270a7491e1d881631a763978
   languageName: node
   linkType: hard
 

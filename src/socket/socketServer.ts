@@ -4,9 +4,10 @@ import { createSocketAdapter } from "../utils/redisClient";
 import sharedSession from "express-socket.io-session";
 import useSession from "../middlewares/useSession";
 import { socketValidation } from "../middlewares";
-import { LogColor } from "../constants";
+
 import redisCache from "../utils/redisCache";
 import { messageController } from "../controllers";
+import { logger } from "../utils/winston";
 
 export class Socket {
   private io: Server;
@@ -42,8 +43,7 @@ export class Socket {
       const sessionID = socket.handshake.auth.sessionID;
       await socketValidation(sessionID, socket);
       this.currentSocket[socket.userID] = socket;
-      console.log(
-        LogColor.INFO,
+      logger.info(
         `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID} name : ${socket.name} rooms : ${socket.roomIds}`
       );
 
@@ -86,7 +86,7 @@ export class Socket {
 
       // 특정 채널에 전체 메세지
       socket.on("message-send", async (data: any) => {
-        console.log(LogColor.INFO, data);
+        logger.info(data);
         const { roomId, text } = data;
         data.from = socket.userID;
         data.name = socket.name;

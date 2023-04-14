@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+
 import { corsOptions, port, SESSION_SECRET } from "./config";
 import {
   channelRouter,
@@ -15,20 +16,22 @@ import {
   imageRouter,
   bookmarkListRouter,
 } from "./routers";
-import { LogColor, endPoint } from "./constants";
+import { endPoint } from "./constants";
 import {
   loginRequired,
   errorHandler,
   DtoValidatorMiddleware,
 } from "./middlewares";
 import { MongoAdapter, MySqlAdapter } from "./db";
-import logger from "morgan";
+
 import { createServer } from "http";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
 import { Socket } from "./socket/socketServer";
+import morgan from "morgan";
+import { logger } from "./utils/winston";
 
 export class AppServer {
   app: express.Application;
@@ -55,22 +58,23 @@ export class AppServer {
     server.listen(port, async () => {
       try {
         await sequelize.authenticate().then(() => {
-          console.info(LogColor.INFO, "sequelize connection success");
+          logger.info("sequelize connection success");
         });
         await sequelize.sync();
-        console.info(
-          LogColor.INFO,
-          `server listening at http://localhost:${port}`
-        );
+        logger.info(`server listening at http://localhost:${port}`);
       } catch (err) {
-        console.error(err);
+        logger.error(err);
       }
     });
   }
 
   private middleWare() {
+    const combined =
+      ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
+    const morganFormat =
+      process.env.NODE_ENV !== "production" ? "development" : combined;
+    this.app.use(morgan(morganFormat, { stream: logger.stream }));
     this.app.use(cors(corsOptions));
-    this.app.use(logger("dev"));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser(SESSION_SECRET));
