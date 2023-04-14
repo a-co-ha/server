@@ -19,6 +19,7 @@ export interface page {
   blocks: {};
   type?: string;
   categories?: string;
+  session?: any;
 }
 
 export interface IPageModel {
