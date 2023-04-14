@@ -4,20 +4,25 @@ import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { MongoAdapter } from "../db/mongo";
+import { Message, messageModel } from "../model/message";
+import { User } from "../model/user";
 export class PageService implements IPageModel {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoAdapter: MongoAdapter;
+  private messageModel: Message;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
-    socketModel: socketModelType
+    socketModel: socketModelType,
+    messageModel: Message
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoAdapter = new MongoAdapter();
+    this.messageModel = messageModel;
   }
 
   public async findPage(
@@ -96,7 +101,7 @@ export class PageService implements IPageModel {
 
     const pushTemplateList = await this.listModel.findByIdAndUpdate(
       { _id: listId },
-      { $push: { SocketPage: { room } } }
+      { $push: { SocketPage: { page: room } } }
     );
 
     return pushTemplateList;
@@ -143,6 +148,34 @@ export class PageService implements IPageModel {
 
     return deletePage;
   }
+
+  public async getMessage(roomId: string): Promise<any[]> {
+    const messages: any = await Message.findAll({
+      include: {
+        model: User,
+        attributes: ["userId"],
+      },
+      where: { roomId },
+      attributes: {
+        exclude: ["id", "roomId"],
+      },
+      raw: true,
+    });
+
+    const modifiedMessages = messages.map((message) => {
+      const modifiedMessage = { ...message };
+      modifiedMessage.userId = message["user.userId"];
+      delete modifiedMessage["user.userId"];
+      return modifiedMessage;
+    });
+
+    return modifiedMessages;
+  }
 }
 
-export const pageService = new PageService(pageModel, listModel, socketModel);
+export const pageService = new PageService(
+  pageModel,
+  listModel,
+  socketModel,
+  messageModel
+);

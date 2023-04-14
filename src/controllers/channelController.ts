@@ -53,9 +53,7 @@ export class ChannelController implements IChannelController {
   };
 
   public channelImagUpdate: AsyncRequestHandler = async (req, res) => {
-    const channelImg = req.body.image.location;
-    console.log(channelImg);
-    console.log(req.body);
+    const channelImg = req.body.channelImg.location;
 
     const { channel: channelId } = req.body;
     const userId = req.user.userId;

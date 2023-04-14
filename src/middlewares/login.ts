@@ -13,7 +13,6 @@ import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
 
 export const githubLogin = async (req, res, next) => {
-
   const origin = req.headers.origin;
 
   let id = oauthClient;
