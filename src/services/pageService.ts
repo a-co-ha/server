@@ -104,8 +104,7 @@ export class PageService implements IPageModel {
 
   public async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
-    const session = await this.mongoAdapter.startTransaction();
-    try {
+
       const result = await this.pageModel
         .findOneAndUpdate(
           { _id: id, channelId },
@@ -116,16 +115,9 @@ export class PageService implements IPageModel {
           },
           { new: true }
         )
-        .session(session);
-      await this.mongoAdapter.commitTransaction(session);
       return result;
-    } catch (error) {
-      await this.mongoAdapter.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
     }
-  }
+  
 
   public async pageStatusUpdate(
     id: string,

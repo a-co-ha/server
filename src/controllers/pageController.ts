@@ -87,6 +87,7 @@ export class PageController implements IPageController {
     const { userId } = req.user;
     const roomId = req.params.id;
     const messages = await redisCache.findMessagesForUser(roomId);
+    console.log(messages);
     const messagesPerUser = new Map();
     // todo
     for (const message of messages) {

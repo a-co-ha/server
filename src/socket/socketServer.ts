@@ -86,6 +86,7 @@ export class Socket {
 
       // 특정 채널에 전체 메세지
       socket.on("message-send", async (data: any) => {
+        console.log(LogColor.INFO, data);
         const { roomId, text } = data;
         data.from = socket.userID;
         data.name = socket.name;
@@ -97,7 +98,7 @@ export class Socket {
       });
 
       // 연결 해제
-      socket.on("force disconnect", async () => {
+      socket.on("disconnect", async () => {
         delete this.currentSocket[socket.userID];
         const matchingSockets = await this.io.in(socket.userID).fetchSockets();
 
@@ -112,10 +113,6 @@ export class Socket {
               connected: "false",
             });
           }
-
-          socket.disconnect(true).then((res) => {
-            console.log(res);
-          });
         }
       });
     });
