@@ -28,6 +28,7 @@ export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
+
 export const REDIS_TIME_TO_LIVE = parseInt(
   process.env.REDIS_TIME_TO_LIVE ?? "300"
 );

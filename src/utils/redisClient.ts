@@ -6,14 +6,18 @@ import { createAdapter, RedisAdapter } from "@socket.io/redis-adapter";
 
 dotenv.config();
 const host = process.env.REDIS_HOST;
+const password = process.env.REDIS_PASSWORD;
 const redisOptions: RedisClientOptions = {
   socket: {
     host: host,
     port: 6379,
   },
+  password : password
 };
 
+
 export const redisClient = createClient(redisOptions);
+
 
 export const subClient = createClient(redisOptions).duplicate();
 
