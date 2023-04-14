@@ -4,21 +4,28 @@ import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../utils";
+import { MongoAdapter } from "../db/mongo";
+import { Message, messageModel } from "../model/message";
+import { User } from "../model/user";
 export class PageService implements IPageModel {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
+  private mongoAdapter: MongoAdapter;
+  private messageModel: Message;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
     socketModel: socketModelType,
-    mongoTransaction: MongoTransaction
+    mongoTransaction: MongoTransaction,
+    messageModel: Message
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoTransaction = mongoTransaction;
+    this.messageModel = messageModel;
   }
 
   public async findPage(
@@ -127,7 +134,10 @@ export class PageService implements IPageModel {
       const list = await listModel.findOne({ channelId });
       const listId = list._id;
       const pushTemplateList = await this.listModel
-        .findByIdAndUpdate({ _id: listId }, { $push: { SocketPage: { room } } })
+        .findByIdAndUpdate(
+          { _id: listId },
+          { $push: { SocketPage: { page: room } } }
+        )
         .session(session);
       await this.mongoTransaction.commitTransaction(session);
       return pushTemplateList;
@@ -200,11 +210,35 @@ export class PageService implements IPageModel {
       session.endSession();
     }
   }
+
+  public async getMessage(roomId: string): Promise<any[]> {
+    const messages: any = await Message.findAll({
+      include: {
+        model: User,
+        attributes: ["userId"],
+      },
+      where: { roomId },
+      attributes: {
+        exclude: ["id", "roomId"],
+      },
+      raw: true,
+    });
+
+    const modifiedMessages = messages.map((message) => {
+      const modifiedMessage = { ...message };
+      modifiedMessage.userId = message["user.userId"];
+      delete modifiedMessage["user.userId"];
+      return modifiedMessage;
+    });
+
+    return modifiedMessages;
+  }
 }
 
 export const pageService = new PageService(
   pageModel,
   listModel,
   socketModel,
-  mongoTransaction
+  mongoTransaction,
+  messageModel
 );
