@@ -6,7 +6,7 @@ import {
   channelJoinInterface,
   IChannelInfo,
 } from "../interface";
-import { Socket } from "../socket/socketServer";
+import { Socket } from "../socketServer";
 
 interface IChannelController {
   create: AsyncRequestHandler;

@@ -12,7 +12,7 @@ import {
   bookmarkListService,
   BookmarkListService,
 } from "./bookmarkListService";
-import { Socket } from "../socket/socketServer";
+import { Socket } from "../socketServer";
 import { logger } from "../utils/winston";
 
 export class ChannelService {

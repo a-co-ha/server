@@ -29,9 +29,10 @@ import { sequelize } from "./model";
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
-import { Socket } from "./socket/socketServer";
+import { Socket } from "./socketServer";
 import morgan from "morgan";
 import { logger } from "./utils/winston";
+import { morganMiddleware } from "./middlewares/morgan";
 
 export class AppServer {
   app: express.Application;
@@ -69,11 +70,8 @@ export class AppServer {
   }
 
   private middleWare() {
-    const combined =
-      ':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"';
-    const morganFormat =
-      process.env.NODE_ENV !== "production" ? "development" : combined;
-    this.app.use(morgan(morganFormat, { stream: logger.stream }));
+    this.app.use(morganMiddleware);
+
     this.app.use(cors(corsOptions));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));

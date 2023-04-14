@@ -1,13 +1,13 @@
-import { ioCorsOptions } from "./../config";
+import { ioCorsOptions } from "./config";
 import { Server, Socket as SocketIO } from "socket.io";
-import { createSocketAdapter } from "../utils/redisClient";
+import { createSocketAdapter } from "./utils/redisClient";
 import sharedSession from "express-socket.io-session";
-import useSession from "../middlewares/useSession";
-import { socketValidation } from "../middlewares";
+import useSession from "./middlewares/useSession";
+import { socketValidation } from "./middlewares";
 
-import redisCache from "../utils/redisCache";
-import { messageController } from "../controllers";
-import { logger } from "../utils/winston";
+import redisCache from "./utils/redisCache";
+import { messageController } from "./controllers";
+import { logger } from "./utils/winston";
 
 export class Socket {
   private io: Server;
