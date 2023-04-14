@@ -12,12 +12,10 @@ const redisOptions: RedisClientOptions = {
     host: host,
     port: 6379,
   },
-  password : password
+  password: password,
 };
 
-
 export const redisClient = createClient(redisOptions);
-
 
 export const subClient = createClient(redisOptions).duplicate();
 
