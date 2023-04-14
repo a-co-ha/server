@@ -13,8 +13,8 @@ export class ListService {
     const list = await listModel.findOne({ channelId });
     const listId = list._id;
     const listPage = await listModel.findOne({ _id: listId }).populate({
-      path: "EditablePage.page EditablePage.template SocketPage.room",
-      select: "pageName type categories roomName",
+      path: "EditablePage.page EditablePage.template SocketPage.page",
+      select: "pageName type categories pageName",
     });
 
     return listPage;

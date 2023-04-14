@@ -20,14 +20,7 @@ export class MessageController implements IMessageController {
 
     await redisCache.saveMessage(data);
 
-    return {
-      meta: {
-        type: "success",
-        status: 200,
-        message: "",
-      },
-      message,
-    };
+    return { message };
   };
 }
 

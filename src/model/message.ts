@@ -17,46 +17,55 @@ export class Message extends Model<MessageAttributes> {
     belongToChannel: Association<Channel, Message>;
     belongToUser: Association<User, Message>;
   };
+
+  public static initialize(sequelize: Sequelize): void {
+    this.init(
+      {
+        id: {
+          type: DataTypes.NUMBER,
+          // primaryKey: true,
+        },
+        name: {
+          type: DataTypes.STRING(45),
+          allowNull: false,
+        },
+        img: {
+          type: DataTypes.STRING(200),
+          allowNull: true,
+        },
+        text: {
+          type: DataTypes.STRING(2000),
+          allowNull: true,
+        },
+        roomId: {
+          type: DataTypes.STRING(100),
+          primaryKey: true,
+          field: "room_id",
+        },
+        createdAt: {
+          type: DataTypes.DATE,
+          field: "create_at",
+        },
+      },
+      {
+        modelName: "message",
+        tableName: "message",
+        sequelize,
+        freezeTableName: true,
+        timestamps: true,
+        createdAt: true,
+        updatedAt: false,
+      }
+    );
+    this.belongsTo(User, { foreignKey: "name", targetKey: "name" });
+    User.hasMany(Message, {
+      sourceKey: "name",
+      foreignKey: "name",
+      as: "belongToUser",
+    });
+  }
 }
 
-Message.init(
-  {
-    id: {
-      type: DataTypes.NUMBER,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    img: {
-      type: DataTypes.STRING(200),
-      allowNull: true,
-    },
-    text: {
-      type: DataTypes.STRING(2000),
-      allowNull: true,
-    },
-    roomId: {
-      type: DataTypes.NUMBER,
-      primaryKey: true,
-      field: "room_id",
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      field: "create_at",
-    },
-  },
-  {
-    modelName: "message",
-    tableName: "message",
-    sequelize,
-    freezeTableName: true,
-    timestamps: true,
-    createdAt: true,
-    updatedAt: false,
-  }
-);
 // todo
 // Channel.belongsTo(Message, {
 //   targetKey: "id",
@@ -66,3 +75,5 @@ Message.init(
 // });
 // Message.hasOne(User);
 // Message.hasOne(Channel);
+Message.initialize(sequelize);
+export const messageModel = new Message();

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 export interface SocketInterface {
   channelId: number;
-  roomName: string;
+  pageName: string;
   type: string;
   categories: string;
 }
@@ -13,7 +13,7 @@ export const socketSchema = new Schema<SocketInterface>(
   {
     channelId: { type: Number, required: true },
 
-    roomName: { type: String, default: "제목 없음" },
+    pageName: { type: String, default: "제목 없음" },
     type: { type: String, default: "socket" },
     categories: {
       type: String,
@@ -49,7 +49,7 @@ export const ListSchema = new Schema<ListInterface>({
   ],
   SocketPage: [
     {
-      room: {
+      page: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "socket",
       },

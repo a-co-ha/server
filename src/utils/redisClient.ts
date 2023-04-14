@@ -1,3 +1,4 @@
+import { LogColor } from "./../constants";
 // import { RedisAdapter, createAdapter } from "socket.io-redis";
 import dotenv from "dotenv";
 import { createClient, RedisClientOptions } from "@redis/client";
@@ -20,7 +21,7 @@ export const createSocketAdapter = async (): Promise<
   (nsp: any) => RedisAdapter
 > => {
   await Promise.all([redisClient.connect(), subClient.connect()]);
-  console.log("Redis clients are all connected!");
+  console.log(LogColor.INFO, "Redis clients are all connected!");
 
   const adapter = createAdapter(redisClient, subClient);
   return adapter;

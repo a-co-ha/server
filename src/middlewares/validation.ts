@@ -8,8 +8,7 @@ export const DtoValidatorMiddleware = (
   skipMissingProperties = false
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const fileDto: any = plainToClass(type, { image: req.file });
-
+    const fileDto: any = plainToClass(type, { channelImg: req.file });
     for (const key in fileDto) {
       if (fileDto.hasOwnProperty(key) && fileDto[key] === undefined) {
         delete fileDto[key];

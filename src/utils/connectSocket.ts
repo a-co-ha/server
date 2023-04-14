@@ -21,19 +21,18 @@ export const connectSocket = (sessionID): Promise<any> => {
     socket.on("users", (data) => {
       console.log(LogColor.INFO, "users", JSON.stringify(data));
     });
-    socket.on("message-send", (data) => {
+    socket.on("message-receive", (data) => {
       console.log(LogColor.INFO, "receive message ", data);
     });
     socket.on("session", (data) => {
       console.log(LogColor.INFO, "session", data);
       setTimeout(() => {
-        socket.emit("force disconnect");
+        // socket.emit("force disconnect");
         //{
-        //   socket.emit("message-send", {
-        //     roomId: data?.roomIds[0],
-        //     text: "444444",
-        //   }
-        // );
+        socket.emit("message-send", {
+          roomId: data?.roomIds[0],
+          text: "444444",
+        });
       }, 10000);
     });
     socket.on("user connected", (data) => {
