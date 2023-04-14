@@ -9,7 +9,6 @@ export const DtoValidatorMiddleware = (
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const fileDto: any = plainToClass(type, { channelImg: req.file });
-    console.log(fileDto);
 
     for (const key in fileDto) {
       if (fileDto.hasOwnProperty(key) && fileDto[key] === undefined) {

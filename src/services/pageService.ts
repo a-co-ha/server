@@ -3,21 +3,22 @@ import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
-import { MongoAdapter } from "../db/mongo";
+import { mongoTransaction, MongoTransaction } from "../utils";
 export class PageService implements IPageModel {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
-  private mongoAdapter: MongoAdapter;
+  private mongoTransaction: MongoTransaction;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
-    socketModel: socketModelType
+    socketModel: socketModelType,
+    mongoTransaction: MongoTransaction
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
-    this.mongoAdapter = new MongoAdapter();
+    this.mongoTransaction = mongoTransaction;
   }
 
   public async findPage(
@@ -25,15 +26,15 @@ export class PageService implements IPageModel {
     id: string,
     type?: string
   ): Promise<page> {
-    const session = await this.mongoAdapter.startTransaction();
+    const session = await this.mongoTransaction.startTransaction();
     try {
       const result = await pageModel
         .findOne({ _id: id, channelId, type })
         .session(session);
-      await this.mongoAdapter.commitTransaction(session);
+      await this.mongoTransaction.commitTransaction(session);
       return result;
     } catch (error) {
-      await this.mongoAdapter.abortTransaction(session);
+      await this.mongoTransaction.abortTransaction(session);
       throw error;
     } finally {
       session.endSession();
@@ -45,66 +46,103 @@ export class PageService implements IPageModel {
     blockId: string,
     type?: string,
     progressStatus?: string
-  ): Promise<page> {
+  ): Promise<any> {
+    const session = await this.mongoTransaction.startTransaction();
     const blocks: block = {
       blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
     };
-    const page = await this.pageModel.create({
-      channelId,
-      blocks,
-      type,
-      progressStatus,
-    });
-    if (!type) {
-      await this.createListPage(channelId, page);
-    }
+    try {
+      const page = await this.pageModel.create(
+        [
+          {
+            channelId,
+            blocks,
+            type,
+            progressStatus,
+          },
+        ],
+        { session }
+      );
+      if (!type) {
+        await this.createListPage(channelId, page[0]);
+      }
+      await this.mongoTransaction.commitTransaction(session);
 
-    return page;
+      return page;
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   public async createRoom(channelId: number): Promise<any> {
-    const room = await this.socketModel.create({ channelId });
-    return this.createSocketPageList(channelId, room);
+    const session = await this.mongoTransaction.startTransaction();
+    try {
+      const room = await this.socketModel.create([{ channelId }], { session });
+      await this.mongoTransaction.commitTransaction(session);
+      return this.createSocketPageList(channelId, room[0]);
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   public async createListPage(
     channelId: number,
-    page: page
+    page: any
   ): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-
-    const listId = list._id;
-
-    const pushTemplateList = await this.listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { EditablePage: { page } } }
-    );
-
-    return pushTemplateList;
+    const session = await this.mongoTransaction.startTransaction();
+    try {
+      const list = await listModel.findOne({ channelId });
+      const listId = list._id;
+      const pushTemplateList = await this.listModel
+        .findByIdAndUpdate(
+          { _id: listId },
+          { $push: { EditablePage: { page } } }
+        )
+        .session(session);
+      await this.mongoTransaction.commitTransaction(session);
+      return pushTemplateList;
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   public async createSocketPageList(
     channelId: number,
     room: any
   ): Promise<any> {
-    const list = await listModel.findOne({ channelId });
-
-    const listId = list._id;
-
-    const pushTemplateList = await this.listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { SocketPage: { room } } }
-    );
-
-    return pushTemplateList;
+    const session = await this.mongoTransaction.startTransaction();
+    try {
+      const list = await listModel.findOne({ channelId });
+      const listId = list._id;
+      const pushTemplateList = await this.listModel
+        .findByIdAndUpdate({ _id: listId }, { $push: { SocketPage: { room } } })
+        .session(session);
+      await this.mongoTransaction.commitTransaction(session);
+      return pushTemplateList;
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   public async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
-    const session = await this.mongoAdapter.startTransaction();
+
+    const session = await this.mongoTransaction.startTransaction();
     try {
       const result = await this.pageModel
         .findOneAndUpdate(
@@ -117,10 +155,10 @@ export class PageService implements IPageModel {
           { new: true }
         )
         .session(session);
-      await this.mongoAdapter.commitTransaction(session);
+      await this.mongoTransaction.commitTransaction(session);
       return result;
     } catch (error) {
-      await this.mongoAdapter.abortTransaction(session);
+      await this.mongoTransaction.abortTransaction(session);
       throw error;
     } finally {
       session.endSession();
@@ -131,18 +169,42 @@ export class PageService implements IPageModel {
     id: string,
     progressStatus: string
   ): Promise<page> {
-    return await this.pageModel.findByIdAndUpdate(
-      { _id: id },
-      { progressStatus }
-    );
+    const session = await this.mongoTransaction.startTransaction();
+    try {
+      const result = await this.pageModel
+        .findByIdAndUpdate({ _id: id }, { progressStatus })
+        .session(session);
+      await this.mongoTransaction.commitTransaction(session);
+      return result;
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 
   public async deletePage(id: string, channelId: number): Promise<object> {
-    const deletePage = await this.pageModel.deleteOne({ _id: id });
-    await listService.deleteListPage(channelId, id);
-
-    return deletePage;
+    const session = await this.mongoTransaction.startTransaction();
+    try {
+      const deletePage = await this.pageModel
+        .deleteOne({ _id: id })
+        .session(session);
+      await listService.deleteListPage(channelId, id);
+      await this.mongoTransaction.commitTransaction(session);
+      return deletePage;
+    } catch (error) {
+      await this.mongoTransaction.abortTransaction(session);
+      throw error;
+    } finally {
+      session.endSession();
+    }
   }
 }
 
-export const pageService = new PageService(pageModel, listModel, socketModel);
+export const pageService = new PageService(
+  pageModel,
+  listModel,
+  socketModel,
+  mongoTransaction
+);
