@@ -147,19 +147,42 @@ export class PageService implements IPageModel {
 
     const session = await this.mongoTransaction.startTransaction();
     try {
-      const result = await this.pageModel
-        .findOneAndUpdate(
-          { _id: id, channelId },
-          {
-            pageName: pageName,
-            label: label,
-            blocks: blocks,
-          },
-          { new: true }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
+      // 재시도 로직 추가
+      let retries = 0;
+      while (retries < 3) {
+        // 최대 3번까지 재시도
+        try {
+          const pageExists = await this.pageModel
+            .exists({ _id: id, channelId })
+            .session(session);
+          if (!pageExists) {
+            throw new Error("Page not found"); // 페이지가 없으면 에러 처리
+          }
+          const result = await this.pageModel
+            .findOneAndUpdate(
+              { _id: id, channelId },
+              {
+                pageName: pageName,
+                label: label,
+                blocks: blocks,
+              },
+              { new: true }
+            )
+            .session(session);
+          await this.mongoTransaction.commitTransaction(session);
+          return result;
+        } catch (error) {
+          // WriteConflict 오류가 발생한 경우, 재시도
+          if (error.code === 112 && error.errmsg.includes("WriteConflict")) {
+            retries++;
+            continue;
+          }
+          await this.mongoTransaction.abortTransaction(session);
+          throw error;
+        }
+      }
+      // 최대 재시도 횟수를 초과한 경우 에러 처리
+      throw new Error("Max retries exceeded for findAndModify operation");
     } catch (error) {
       await this.mongoTransaction.abortTransaction(session);
       throw error;
