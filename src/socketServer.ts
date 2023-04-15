@@ -54,7 +54,7 @@ export class Socket {
         name: socket.name,
         roomIds: socket.roomIds,
       });
-
+  
       const users = await this.getUsers(socket);
       socket.emit("users", users);
 
