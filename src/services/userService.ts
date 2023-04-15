@@ -18,7 +18,7 @@ export class UserService {
     payload: UserAttributes
   ): string => {
     return jwt.sign(payload, jwtSecret, {
-      expiresIn: isAccess ? "1h" : "3h",
+      expiresIn: isAccess ? "1h" : "24h",
     });
   };
 
