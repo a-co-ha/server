@@ -1,12 +1,10 @@
+import { Channel } from "./../model/channel";
+import { mysqlTransaction } from "./../db/mysqlTransaction";
 import { AsyncRequestHandler } from "./../constants";
 import { channelService, ChannelService } from "../services/channelService";
-import { listService, ListService } from "../services/listService";
-import {
-  ChannelAttributes,
-  channelJoinInterface,
-  IChannelInfo,
-} from "../interface";
+import { channelJoinInterface } from "../interface";
 import { Socket } from "../socketServer";
+import { MysqlTransaction } from "../db/mysqlTransaction";
 
 interface IChannelController {
   create: AsyncRequestHandler;
@@ -18,7 +16,10 @@ interface IChannelController {
   getUsers: AsyncRequestHandler;
 }
 export class ChannelController implements IChannelController {
-  constructor(private channelService: ChannelService) {}
+  constructor(
+    private channelService: ChannelService,
+    private mysqlTransaction: MysqlTransaction
+  ) {}
 
   public create: AsyncRequestHandler = async (req, res) => {
     const { userId, name } = req.user;
@@ -29,8 +30,13 @@ export class ChannelController implements IChannelController {
       userId,
       name,
     };
-
-    const newChannel = await this.channelService.create(channelInfo, blockId);
+    let newChannel: Channel;
+    await this.mysqlTransaction.execute(async (t) => {
+      newChannel = await this.channelService.create(t, channelInfo, blockId);
+    });
+    if (!newChannel) {
+      throw Error("채널 생성 실패");
+    }
     const { id: channelId } = newChannel;
 
     res.json({ id: channelId, channelName, admin: userId });
@@ -46,8 +52,10 @@ export class ChannelController implements IChannelController {
       userId,
       name,
     };
-
-    const result = await this.channelService.join(joinInfo);
+    let result: Channel;
+    await this.mysqlTransaction.execute(async (t) => {
+      result = await this.channelService.join(t, joinInfo);
+    });
 
     res.json(result);
   };
@@ -57,12 +65,15 @@ export class ChannelController implements IChannelController {
 
     const { channel: channelId } = req.body;
     const userId = req.user.userId;
-
-    const channelImagupdate = await this.channelService.channelImagUpdate(
-      channelId,
-      userId,
-      channelImg
-    );
+    let channelImagupdate: Channel;
+    await this.mysqlTransaction.execute(async (t) => {
+      channelImagupdate = await this.channelService.channelImagUpdate(
+        t,
+        channelId,
+        userId,
+        channelImg
+      );
+    });
     res.json(channelImagupdate);
   };
 
@@ -70,11 +81,15 @@ export class ChannelController implements IChannelController {
     const { channel: channelId, channelName } = req.body;
 
     const userId = req.user.userId;
-    const channelNameUpdate = await this.channelService.channelNameUpdate(
-      channelId,
-      userId,
-      channelName
-    );
+    let channelNameUpdate: Channel;
+    await this.mysqlTransaction.execute(async (t) => {
+      channelNameUpdate = await this.channelService.channelNameUpdate(
+        t,
+        channelId,
+        userId,
+        channelName
+      );
+    });
     res.json(channelNameUpdate);
   };
 
@@ -82,19 +97,23 @@ export class ChannelController implements IChannelController {
     const channelId = req.body.channel;
     const { userId } = req.user;
 
-    const deleteChannel = await this.channelService.delete(channelId, userId);
-
-    res.json(deleteChannel);
+    await this.mysqlTransaction.execute(async (t) => {
+      await this.channelService.delete(t, channelId, userId);
+    });
+    res.json({ channelId, status: "삭제되었습니다." });
   };
 
   public channelExit: AsyncRequestHandler = async (req, res) => {
     const { channel: channelId } = req.body;
     const { userId } = req.user;
-
-    const channelExit = await this.channelService.deleteChannelUser(
-      channelId,
-      userId
-    );
+    let channelExit: Channel;
+    await this.mysqlTransaction.execute(async (t) => {
+      channelExit = await this.channelService.deleteChannelUser(
+        t,
+        channelId,
+        userId
+      );
+    });
     res.json(channelExit);
   };
 
@@ -105,4 +124,7 @@ export class ChannelController implements IChannelController {
     res.json(result);
   };
 }
-export const channelController = new ChannelController(channelService);
+export const channelController = new ChannelController(
+  channelService,
+  mysqlTransaction
+);

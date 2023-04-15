@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
 import { corsOptions, port, SESSION_SECRET } from "./config";
 import {
   channelRouter,
@@ -23,7 +22,6 @@ import {
   DtoValidatorMiddleware,
 } from "./middlewares";
 import { MongoAdapter, MySqlAdapter } from "./db";
-
 import { createServer } from "http";
 import { sequelize } from "./model";
 import { InviteDto } from "./dto";

@@ -1,5 +1,4 @@
-import { LogColor } from "../constants";
-import mysql, { Pool } from "mysql2";
+import mysql, { Pool, PoolConnection } from "mysql2";
 import {
   mysqlPort,
   mysqlHost,
@@ -23,16 +22,16 @@ export class MySqlAdapter {
         connectionLimit: 10000,
       });
 
-      logger.debug("MySql Adapter Pool generated successfully");
+      logger.info("MySql Adapter Pool generated successfully");
     } catch (error) {
       logger.error("[mysql.connector][init][Error]: ", error);
       throw new Error("failed to initialized pool");
     }
   }
 
+  // 시퀄라이즈안쓸때만쓰면됌
   public async execute<T>(
     query: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
     params: string[] | Object
   ): Promise<T> {
     try {

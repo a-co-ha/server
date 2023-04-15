@@ -1,3 +1,4 @@
+import { mysqlTransaction, MysqlTransaction } from "./../db/mysqlTransaction";
 import { listModel, socketModel, socketModelType } from "./../model/index";
 import { ChannelAttributes, channelJoinInterface } from "./../interface/index";
 import { IChannelInfo } from "../interface";
@@ -13,7 +14,6 @@ import {
   BookmarkListService,
 } from "./bookmarkListService";
 import { Socket } from "../socketServer";
-import { logger } from "../utils/winston";
 
 export class ChannelService {
   // private socket: Socket;
@@ -32,28 +32,33 @@ export class ChannelService {
     // this.socket.start();
   }
   public async create(
+    t: any,
     info: channelJoinInterface,
     blockId: string
   ): Promise<any> {
     const { admin, channelName, userId, name } = info;
-    const channelNameCheck = await this.get(info);
-    if (channelNameCheck) {
-      throw new Error("같은 이름의 채널이 이미 있습니다.");
-    }
 
-    const newChannel = await Channel.create({
-      userId: admin as number,
-      channelName,
-    });
+    const channelNameCheck = await this.get(t, info);
+    if (channelNameCheck) {
+      throw Error("같은 이름의 채널이 이미 있습니다.");
+    }
+    const newChannel = await Channel.create(
+      {
+        userId: admin as number,
+        channelName,
+      },
+      { transaction: t }
+    );
 
     await this.createSpace(newChannel.id, blockId);
     await this.bookmarkListService.createList(newChannel.id);
-    await this.userJoin({
+    await this.userJoin(t, {
       userId,
       name,
       channelName,
       id: newChannel.id,
     });
+
     return newChannel;
   }
 
@@ -67,26 +72,33 @@ export class ChannelService {
     await this.pageService.createPage(channelId, blockId);
   }
 
-  private async userJoin(info: channelJoinInterface): Promise<void> {
+  private async userJoin(
+    transaction: any,
+    info: channelJoinInterface
+  ): Promise<void> {
     const { userId, id, name, channelName } = info;
-    await ChannelUser.create({
-      userId,
-      channelId: id,
-      name,
-      channelName,
-    });
+    await ChannelUser.create(
+      {
+        userId,
+        channelId: id,
+        name,
+        channelName,
+      },
+      { transaction }
+    );
   }
 
   // 채널 주인과, 채널 이름으로 찾음
-  private async get(info: IChannelInfo): Promise<Channel> {
+  private async get(transaction: any, info: IChannelInfo): Promise<Channel> {
     const { admin, channelName } = info;
     return await Channel.findOne({
       where: { userId: admin, channelName },
       raw: true,
+      transaction,
     });
   }
 
-  public async join(joinInfo: channelJoinInterface): Promise<any> {
+  public async join(t: any, joinInfo: channelJoinInterface): Promise<any> {
     const {
       admin: adminCode,
       channelName: channelCode,
@@ -101,10 +113,10 @@ export class ChannelService {
       throw new Error("이미 참여한 채널입니다. ");
     }
 
-    const channelInfo = await this.get({ admin, channelName });
+    const channelInfo = await this.get(t, { admin, channelName });
 
     if (channelName === channelInfo.channelName) {
-      await this.userJoin({
+      await this.userJoin(t, {
         userId,
         name,
         channelName,
@@ -137,6 +149,7 @@ export class ChannelService {
   }
 
   public async channelImagUpdate(
+    t: any,
     channelId: number,
     userId: number,
     channelImg: string
@@ -145,20 +158,26 @@ export class ChannelService {
       where: { id: channelId },
       raw: true,
       attributes: ["userId"],
+      transaction: t,
     });
     if (admin !== userId) {
-      throw new Error("권한 오류");
+      throw Error("권한 오류");
     }
 
     return await Channel.update(
       { channelImg },
-      { where: { id: channelId } }
+      { where: { id: channelId }, transaction: t }
     ).then(() => {
-      return Channel.findOne({ where: { id: channelId }, raw: true });
+      return Channel.findOne({
+        where: { id: channelId },
+        raw: true,
+        transaction: t,
+      });
     });
   }
 
   public async channelNameUpdate(
+    t: any,
     channelId: number,
     userId: number,
     channelName: string
@@ -167,63 +186,70 @@ export class ChannelService {
       where: { id: channelId },
       raw: true,
       attributes: ["userId"],
+      transaction: t,
     });
     if (admin !== userId) {
-      throw new Error("권한 오류");
+      throw Error("권한 오류");
     }
     const channelNameUpdate = await Channel.update(
       { channelName },
-      { where: { id: channelId } }
+      { where: { id: channelId }, transaction: t }
     ).then(() => {
-      ChannelUser.update({ channelName }, { where: { channelId } });
-      return Channel.findOne({ where: { id: channelId }, raw: true });
+      ChannelUser.update(
+        { channelName },
+        { where: { channelId }, transaction: t }
+      );
+      return Channel.findOne({
+        where: { id: channelId },
+        raw: true,
+        transaction: t,
+      });
     });
 
     return channelNameUpdate;
   }
 
-  public async delete(channelId: number, userId: number): Promise<object> {
-    console.log(channelId, userId);
-    const { userId: admin } = await Channel.findOne({
+  public async delete(
+    t: any,
+    channelId: number,
+    userId: number
+  ): Promise<number> {
+    const channel = await Channel.findOne({
       where: { id: channelId },
       raw: true,
       attributes: ["userId"],
+      transaction: t,
     });
 
+    const admin = channel.userId;
     if (admin !== userId) {
-      throw new Error("권한 오류");
+      throw Error("권한 오류");
     }
     if (!admin) {
-      throw new Error("채널이 존재하지 않습니다. ");
+      throw Error("채널이 존재하지 않습니다. ");
     }
 
-    await this.deleteChannelUser(channelId);
+    await this.deleteChannelUser(t, channelId);
 
-    try {
-      await Channel.destroy({ where: { id: channelId } });
+    await Channel.destroy({ where: { id: channelId }, transaction: t });
 
-      const deleteInfo = {
-        channelId,
-        status: "삭제 되었습니다.",
-      };
-      await this.listService.deleteList(channelId);
-      await this.bookmarkListService.deleteBookmarkList(channelId);
-      return deleteInfo;
-    } catch (err) {
-      throw new Error("채널 삭제 실패");
-    }
+    await this.listService.deleteList(channelId);
+    await this.bookmarkListService.deleteBookmarkList(channelId);
+    return channelId;
   }
 
   public async deleteChannelUser(
+    transaction: any,
     channelId: number,
     userId?: number
   ): Promise<any> {
     const result = await ChannelUser.destroy({
       where: userId ? { userId, channelId } : { channelId },
+      transaction,
     });
 
     if (result < 0) {
-      throw new Error("채널에서 나가는 중 에러가 발생했습니다.");
+      throw Error("채널에서 나가는 중 에러가 발생했습니다.");
     }
 
     return { channelId, status: "채널에서 나갔습니다." };
