@@ -28,24 +28,17 @@ export class PageService implements IPageModel {
     this.messageModel = messageModel;
   }
 
-  public async findPage(
+ public async findPage(
     channelId: number,
     id: string,
     type?: string
   ): Promise<page> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
+    
       const result = await pageModel
         .findOne({ _id: id, channelId, type })
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
+     
       return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    
   }
 
   public async createPage(
@@ -152,7 +145,7 @@ export class PageService implements IPageModel {
   public async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
   
-    const session = await this.mongoTransaction.startTransaction();
+  let session = await this.mongoTransaction.startTransaction();
     try {
       // 재시도 로직 추가
       let retries = 0;
@@ -181,8 +174,17 @@ export class PageService implements IPageModel {
             retries++;
             continue;
           }
-          await this.mongoTransaction.abortTransaction(session);
-          throw error;
+     // 중단된 트랜잭션일 경우 새로운 트랜잭션 시작
+     if (error.code === 251 && error.errmsg.includes('Transaction with')) {
+    session.endSession();
+     session = await this.mongoTransaction.startTransaction();
+    retries++;
+     continue;
+   }
+await this.mongoTransaction.abortTransaction(session);
+throw error;
+          
+          
         }
       }
       // 최대 재시도 횟수를 초과한 경우 에러 처리
