@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { channelController } from "../controllers/channelController";
 import { asyncHandler } from "../utils";
-import { imageUpload, deleteImage } from "../middlewares/imageUpload";
+import { imageUpload } from "../middlewares/imageUpload";
 import { DtoValidatorMiddleware } from "../middlewares";
 import { ChannelDto } from "../dto";
 export const channelRouter = Router();

@@ -93,7 +93,7 @@ export class ChannelService {
       name,
       userId,
     } = joinInfo;
-    logger.info(joinInfo);
+
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
@@ -183,6 +183,7 @@ export class ChannelService {
   }
 
   public async delete(channelId: number, userId: number): Promise<object> {
+    console.log(channelId, userId);
     const { userId: admin } = await Channel.findOne({
       where: { id: channelId },
       raw: true,
@@ -191,6 +192,9 @@ export class ChannelService {
 
     if (admin !== userId) {
       throw new Error("권한 오류");
+    }
+    if (!admin) {
+      throw new Error("채널이 존재하지 않습니다. ");
     }
 
     await this.deleteChannelUser(channelId);
