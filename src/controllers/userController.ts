@@ -24,7 +24,7 @@ export class UserController implements IUserController {
         errorResponse(res, ErrorType.SERVERERROR, err);
       }
     });
-    await connectSocket(req.sessionID);
+    // await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
 

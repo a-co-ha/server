@@ -94,7 +94,7 @@ export class Socket {
         data.text = text;
         data.to = roomId;
         const response = await messageController.createMessage(data);
-
+        console.log(response);
         socket.to(roomId).to(socket.userID).emit("message-receive", response);
       });
 
