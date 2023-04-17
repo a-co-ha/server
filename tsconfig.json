@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "es6",
+    "jsx": "react",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strictPropertyInitialization": false,
+    "emitDecoratorMetadata": true,
+    "noImplicitAny": false,
+  },
+    "include": ["src/**/*", ".eslintrc.cjs"],
+}
