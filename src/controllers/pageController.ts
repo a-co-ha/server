@@ -87,7 +87,7 @@ export class PageController implements IPageController {
     const { userId } = req.user;
     const roomId = req.params.id;
 
-    const massages = await pageService.getMessage(roomId);
+    const messages = await pageService.getMessage(roomId);
     // const messages = await redisCache.findMessagesForUser(roomId);
     // const messagesPerUser = new Map();
     // todo
@@ -101,7 +101,7 @@ export class PageController implements IPageController {
     //     messagesPerUser.set(otherUser, [message]);
     //   }
     // }
-    res.json({ roomId, massages });
+    res.json({ roomId, messages });
   };
 }
 

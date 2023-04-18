@@ -28,14 +28,23 @@ export class PageService implements IPageModel {
     this.messageModel = messageModel;
   }
 
-  public async findPage(
+ public async findPage(
     channelId: number,
     id: string,
     type?: string
   ): Promise<page> {
+<<<<<<< HEAD
     const result = await pageModel.findOne({ _id: id, channelId, type });
 
     return result;
+=======
+    
+      const result = await pageModel
+        .findOne({ _id: id, channelId, type })
+     
+      return result;
+    
+>>>>>>> 4004ea6c8bf04ead8807159270386f23e69efd82
   }
 
   public async createPage(
@@ -141,29 +150,56 @@ export class PageService implements IPageModel {
 
   public async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
-
-    const session = await this.mongoTransaction.startTransaction();
+  
+  let session = await this.mongoTransaction.startTransaction();
     try {
-      const result = await this.pageModel
-        .findOneAndUpdate(
-          { _id: id, channelId },
-          {
-            pageName: pageName,
-            label: label,
-            blocks: blocks,
-          },
-          { new: true }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
+      // 재시도 로직 추가
+      let retries = 0;
+      while (retries < 3) { // 최대 3번까지 재시도
+        try {
+          const pageExists = await this.pageModel.exists({ _id: id, channelId }).session(session);
+          if (!pageExists) {
+            throw new Error('Page not found'); // 페이지가 없으면 에러 처리
+          }
+          const result = await this.pageModel
+            .findOneAndUpdate(
+              { _id: id, channelId },
+              {
+                pageName: pageName,
+                label: label,
+                blocks: blocks,
+              },
+              { new: true }
+            )
+            .session(session);
+          await this.mongoTransaction.commitTransaction(session);
+          return result;
+        } catch (error) {
+          // WriteConflict 오류가 발생한 경우, 재시도
+          if (error.code === 112 && error.errmsg.includes('WriteConflict')) {
+            retries++;
+            continue;
+          }
+     // 중단된 트랜잭션일 경우 새로운 트랜잭션 시작
+     if (error.code === 251 && error.errmsg.includes('Transaction with')) {
+    session.endSession();
+     session = await this.mongoTransaction.startTransaction();
+    retries++;
+     continue;
+   }
+await this.mongoTransaction.abortTransaction(session);
+throw error;
+          
+          
+        }
+      }
+      // 최대 재시도 횟수를 초과한 경우 에러 처리
+      throw new Error('Max retries exceeded for findAndModify operation');
+    }  finally {
       session.endSession();
     }
   }
+  
 
   public async pageStatusUpdate(
     id: string,
