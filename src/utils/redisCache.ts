@@ -1,7 +1,6 @@
 /* eslint-disable no-var */
 import { UserAttributes } from "./../interface/userInterface";
 import { redisClient } from "./redisClient";
-import { logger } from "./winston";
 
 // export const mapSession = ([userID, name, connected, img]) =>
 //   userID ? { userID, name, connected: connected === "true", img } : undefined;

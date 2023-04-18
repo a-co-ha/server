@@ -2,7 +2,6 @@ import { channelService } from "../services/channelService";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 import { userHasChannels } from "../interface";
-import { logger } from "../utils/winston";
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, socket.request.res || {}, next);
 
@@ -28,12 +27,14 @@ const getChannels = async (userId: number) => {
   if (isUser(getChannel)) {
     const channels = getChannel.channels.map(async (i) => {
       const { id } = i;
+
       return await channelService.getRooms(id);
     });
+
     return await Promise.all(channels).then((results) => {
       return results.flatMap((room) => {
         return room.map((obj) => {
-          return obj._id.toString().slice(2);
+          return obj._id.toString();
         });
       });
     });

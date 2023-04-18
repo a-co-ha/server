@@ -4,6 +4,7 @@ import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
 import { connectSocket } from "../utils/connectSocket";
 import redisCache from "../utils/redisCache";
+import { logger } from "../utils/winston";
 
 interface IUserController {
   login: AsyncRequestHandler;
@@ -23,6 +24,8 @@ export class UserController implements IUserController {
         errorResponse(res, ErrorType.SERVERERROR, err);
       }
     });
+    logger.info(req.sessionID);
+    logger.info(req.session.user);
     // await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
@@ -40,6 +43,7 @@ export class UserController implements IUserController {
 
   public logout: AsyncRequestHandler = async (req, res) => {
     const session = await redisCache.findSession(req.body.sessionID);
+    const { userId } = session;
     if (!session) {
       throw new Error("세션을 찾을 수 없습니다. ");
     }

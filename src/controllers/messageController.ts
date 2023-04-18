@@ -17,12 +17,8 @@ export class MessageController implements IMessageController {
       roomId,
     });
     const message = messageResponse.get({ plain: true });
-<<<<<<< HEAD
     message["userId"] = from;
     delete message.roomId;
-=======
-   message["userId"] = from;
->>>>>>> 4004ea6c8bf04ead8807159270386f23e69efd82
     await redisCache.saveMessage(data);
 
     return { message };
