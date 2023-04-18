@@ -28,7 +28,6 @@ import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
 import { Socket } from "./socketServer";
-import morgan from "morgan";
 import { logger } from "./utils/winston";
 import { morganMiddleware } from "./middlewares/morgan";
 

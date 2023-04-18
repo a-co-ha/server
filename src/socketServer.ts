@@ -4,15 +4,35 @@ import { createSocketAdapter } from "./utils/redisClient";
 import sharedSession from "express-socket.io-session";
 import useSession from "./middlewares/useSession";
 import { socketValidation } from "./middlewares";
-
 import redisCache from "./utils/redisCache";
 import { messageController } from "./controllers";
 import { logger } from "./utils/winston";
+import { Server as httpServer } from "http";
+interface SocketData {
+  sessionID: string;
+  userID: string;
+  name: string;
+  roomIds: string;
+}
 
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+interface InterServerEvents {
+  ping: () => void;
+}
 export class Socket {
   private io: Server;
   private currentSocket: { [key: string]: SocketIO } = {};
-  constructor(server: any) {
+
+  constructor(server: httpServer) {
     this.io = new Server(server, ioCorsOptions);
   }
 
@@ -40,21 +60,23 @@ export class Socket {
 
   public start() {
     this.io.on("connection", async (socket: any) => {
-      const sessionID = socket.handshake.auth.sessionID;
-      await socketValidation(sessionID, socket);
-      this.currentSocket[socket.userID] = socket;
-      logger.info(
-        `socket connected userID : ${socket.userID} sessionID : ${socket.sessionID} name : ${socket.name} rooms : ${socket.roomIds}`
-      );
+      try {
+        const sessionID = socket.handshake.auth.sessionID;
+        await socketValidation(sessionID, socket);
 
-      // 내 세션확인
-      socket.emit("session", {
-        sessionID: socket.sessionID,
-        userID: socket.userID,
-        name: socket.name,
-        roomIds: socket.roomIds,
-      });
+        this.currentSocket[socket.userID] = socket;
 
+        // 내 세션확인
+        socket.emit("session", {
+          sessionID: socket.sessionID,
+          userID: socket.userID,
+          name: socket.name,
+          roomIds: socket.roomIds,
+        });
+      } catch (err: any) {
+        logger.error(err.message);
+        socket.disconnect();
+      }
       const users = await this.getUsers(socket);
       socket.emit("users", users);
 
@@ -86,7 +108,6 @@ export class Socket {
 
       // 특정 채널에 전체 메세지
       socket.on("message-send", async (data: any) => {
-        logger.info(data);
         const { roomId, text } = data;
         data.from = socket.userID;
         data.name = socket.name;
@@ -94,8 +115,7 @@ export class Socket {
         data.text = text;
         data.to = roomId;
         const response = await messageController.createMessage(data);
-
-        socket.to(roomId).to(socket.userID).emit("message-receive", response);
+        socket.to(roomId).emit("message-receive", response);
       });
 
       // 연결 해제

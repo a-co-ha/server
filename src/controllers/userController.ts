@@ -4,7 +4,6 @@ import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
 import { connectSocket } from "../utils/connectSocket";
 import redisCache from "../utils/redisCache";
-import { logger } from "../utils/winston";
 
 interface IUserController {
   login: AsyncRequestHandler;

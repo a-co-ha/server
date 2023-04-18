@@ -1,9 +1,4 @@
-import { sequelize } from "./../model/index";
-import {
-  ChannelAttributes,
-  userHasChannels,
-  userToken,
-} from "./../interface/index";
+import { ChannelAttributes, userHasChannels } from "./../interface/index";
 import { Channel } from "./../model/channel";
 import { UserAttributes } from "../interface";
 import { User, userModel } from "../model/user";

@@ -19,16 +19,14 @@ export const connectSocket = (sessionID): Promise<any> => {
       reject(error);
     });
     socket.on("users", (data) => {
-      logger.info("users", JSON.stringify(data));
+      logger.warn(` users ${JSON.stringify(data)}`);
     });
     socket.on("message-receive", (data) => {
-      logger.info("receive message ", data);
+      logger.warn(` message-receive ${JSON.stringify(data)}`);
     });
     socket.on("session", (data) => {
-      logger.info("session", data);
+      logger.warn(`session ${JSON.stringify(data)}`);
       setTimeout(() => {
-        // socket.emit("force disconnect");
-        //{
         socket.emit("message-send", {
           roomId: data?.roomIds[0],
           text: "444444",
@@ -36,7 +34,11 @@ export const connectSocket = (sessionID): Promise<any> => {
       }, 10000);
     });
     socket.on("user connected", (data) => {
-      logger.info("user_connected", data);
+      logger.warn(`user connected ${JSON.stringify(data)}`);
+    });
+
+    socket.on("disconnect", (data) => {
+      logger.warn(` disconnect ${JSON.stringify(data)}`);
     });
   });
 };

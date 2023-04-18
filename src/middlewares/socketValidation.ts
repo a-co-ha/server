@@ -1,24 +1,23 @@
-import { channelService } from "./../services/channelService";
+import { channelService } from "../services/channelService";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 import { userHasChannels } from "../interface";
+import { logger } from "../utils/winston";
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, socket.request.res || {}, next);
 
 export const socketValidation = async (sessionID: string, socket) => {
-  const sessionInfo = await redisCache.findSession(sessionID);
-  if (!sessionInfo) {
-    socket.emit("error", "세션을 찾을 수 없습니다. ");
-    socket.disconnect();
-    return;
+  try {
+    const sessionInfo = await redisCache.findSession(sessionID);
+    socket.roomIds = await getChannels(sessionInfo.userId);
+
+    socket.sessionID = sessionID;
+    socket.userID = sessionInfo.userId;
+    socket.name = sessionInfo.name;
+    socket.img = sessionInfo.img;
+  } catch (err: any) {
+    throw new Error(err.message);
   }
-
-  socket.roomIds = await getChannels(sessionInfo.userId);
-
-  socket.sessionID = sessionID;
-  socket.userID = sessionInfo.userId;
-  socket.name = sessionInfo.name;
-  socket.img = sessionInfo.img;
 };
 
 const getChannels = async (userId: number) => {

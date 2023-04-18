@@ -33,19 +33,9 @@ export class PageService implements IPageModel {
     id: string,
     type?: string
   ): Promise<page> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const result = await pageModel
-        .findOne({ _id: id, channelId, type })
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const result = await pageModel.findOne({ _id: id, channelId, type });
+
+    return result;
   }
 
   public async createPage(

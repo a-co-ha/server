@@ -1,5 +1,5 @@
-import { UserAttributes } from "./../interface/userInterface";
 /* eslint-disable no-var */
+import { UserAttributes } from "./../interface/userInterface";
 import { redisClient } from "./redisClient";
 import { logger } from "./winston";
 
@@ -7,12 +7,11 @@ import { logger } from "./winston";
 //   userID ? { userID, name, connected: connected === "true", img } : undefined;
 
 export default {
-  async findSession(id): Promise<UserAttributes> {
+  async findSession(id: string): Promise<UserAttributes> {
     try {
       return JSON.parse(await redisClient.get(`session:${id}`)).user;
     } catch (e) {
-      logger.error(e);
-      return null;
+      throw new Error(`세션을 찾을 수 없습니다.`);
     }
   },
 
