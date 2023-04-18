@@ -1,18 +1,11 @@
-import {
-  IsEmail,
-  IsInt,
-  IsOptional,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from "class-validator";
+import { Transform } from "class-transformer";
+import { IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 //채널 정보
 export class ChannelDto {
   // 채널 아이디
   @IsOptional()
+  @Transform(({ value }) => parseInt(value))
   channel: number;
 
   // 채널 이름
@@ -26,6 +19,7 @@ export class ChannelDto {
   channelImg: string;
 
   @IsOptional()
+  @IsString()
   blockId: string;
 }
 

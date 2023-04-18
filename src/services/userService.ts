@@ -1,16 +1,10 @@
-import { sequelize } from "./../model/index";
-import {
-  ChannelAttributes,
-  userHasChannels,
-  userToken,
-} from "./../interface/index";
+import { ChannelAttributes, userHasChannels } from "./../interface/index";
 import { Channel } from "./../model/channel";
 import { UserAttributes } from "../interface";
 import { User, userModel } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
-import { connectSocket } from "../utils/connectSocket";
 
 export class UserService {
   constructor(private user: User) {}
@@ -19,7 +13,7 @@ export class UserService {
     payload: UserAttributes
   ): string => {
     return jwt.sign(payload, jwtSecret, {
-      expiresIn: isAccess ? "1h" : "3h",
+      expiresIn: isAccess ? "1h" : "24h",
     });
   };
 

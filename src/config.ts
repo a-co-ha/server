@@ -11,8 +11,10 @@ export const port = parseInt(process.env.PORT ?? "8080", 10);
 export const mongoDBUri = process.env.DB_MONGO || "not found";
 export const mysqlHost = process.env.DB_NAME || "localhost";
 export const oauthClient = process.env.GITHUB_OAUTH_CLIENT_ID;
-export const oauthSecret = process.env.GITHUB_OAUTH_CLIENT_SECRET;
 export const oauthRedirect = process.env.GITHUB_OAUTH_REDIRECT_URL;
+export const oauthSecret = process.env.GITHUB_OAUTH_CLIENT_SECRET;
+export const oauthClientLOCAL = process.env.GITHUB_OAUTH_CLIENT_ID_LOCAL;
+export const oauthSecretLOCAL = process.env.GITHUB_OAUTH_CLIENT_SECRET_LOCAL;
 export const jwtSecret = process.env.JWT_SECRET || "JWT_SECRET";
 export const mysqlPort = parseInt(process.env.MYSQL_PORT ?? "3306");
 export const mysqlUser = process.env.MYSQL_USER;
@@ -26,6 +28,7 @@ export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
+
 export const REDIS_TIME_TO_LIVE = parseInt(
   process.env.REDIS_TIME_TO_LIVE ?? "300"
 );
@@ -51,18 +54,45 @@ export const sessionConfig = {
   }),
   cookie: {
     httpOnly: true, // 자바스크립트를 통해 세션 쿠키를 사용할 수 없도록 함 localhost, ip일때는 쓰면 안된다. 저장안됨
-    sameSite: "lax",
+    sameSite: "none",
+    secure: true,
+    domain: ".acoha.store",
   },
   credentials: true,
-  name: "sid",
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false, // 세션에 저장할 내역 없으면 저장안함
 } as SessionOptions;
 
 export const corsOrigin = [
-  "http://ec2-54-180-147-65.ap-northeast-2.compute.amazonaws.com",
-  "http://localhost:3001",
-  "https://acoha.site",
-  "https://npm.acoha.site",
+  "http://localhost:3001/",
+  "https://acoha.site/",
+  "https://npm.acoha.site/",
+  "https://acoha.store/",
+  "http://3.35.132.30:3000",
 ];
+
+export const ioCorsOptions = {
+  allowUpgrades: true,
+  cors: {
+    origin: [
+      "http://localhost:3001",
+      "https://acoha.store",
+      "https://acoha.site",
+    ],
+    methods: ["GET"],
+    allowedHeaders: ["Authorization"],
+    credentials: true,
+  },
+};
+
+export const corsOptions = {
+  origin: [
+    "http://localhost:3001",
+    "https://acoha.store",
+    "https://acoha.site",
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  optionsSuccessStatus: 200,
+};

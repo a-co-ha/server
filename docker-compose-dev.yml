@@ -3,9 +3,11 @@ services:
   redis-server:
     image: redis:latest
     container_name: "redis"
-    command: redis-server --port 6379
+    command: redis-server --requirepass ${REDIS_PASSWORD} --port ${REDIS_PORT}
     ports:
-      - 6379:6379
+      - ${REDIS_PORT}:${REDIS_PORT}
+    env_file:
+      - .env.dev
 
   express-server:
     container_name: express
@@ -16,5 +18,3 @@ services:
       - ".:/app"
     ports:
       - "3001:3001"
-    environment:
-      - NODE_ENV=development

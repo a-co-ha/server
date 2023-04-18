@@ -1,5 +1,4 @@
-import { LogColor } from "../constants";
-import mysql, { Pool } from "mysql2";
+import mysql, { Pool, PoolConnection } from "mysql2";
 import {
   mysqlPort,
   mysqlHost,
@@ -7,6 +6,7 @@ import {
   mysqlPassword,
   mysqlDataBase,
 } from "../config";
+import { logger } from "../utils/winston";
 
 export class MySqlAdapter {
   private pool: Pool;
@@ -22,16 +22,16 @@ export class MySqlAdapter {
         connectionLimit: 10000,
       });
 
-      console.debug(LogColor.INFO, "MySql Adapter Pool generated successfully");
+      logger.info("MySql Adapter Pool generated successfully");
     } catch (error) {
-      console.error(LogColor.ERROR, "[mysql.connector][init][Error]: ", error);
+      logger.error("[mysql.connector][init][Error]: ", error);
       throw new Error("failed to initialized pool");
     }
   }
 
+  // 시퀄라이즈안쓸때만쓰면됌
   public async execute<T>(
     query: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
     params: string[] | Object
   ): Promise<T> {
     try {
@@ -47,11 +47,7 @@ export class MySqlAdapter {
         });
       });
     } catch (error) {
-      console.error(
-        LogColor.ERROR,
-        "[mysql.connector][execute][Error]: ",
-        error
-      );
+      logger.error("[mysql.connector][execute][Error]: ", error);
       throw new Error("failed to execute MySQL query");
     }
   }

@@ -5,6 +5,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MinLength,
+  MaxLength,
 } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
 import { block } from "../interface";
@@ -31,6 +33,8 @@ export class PageDto {
   @IsOptional()
   public blocks: block[];
 
+  @MinLength(2)
+  @MaxLength(10)
   @IsString()
   @IsOptional()
   public pageName: string;

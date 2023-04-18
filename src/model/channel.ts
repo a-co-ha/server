@@ -4,11 +4,9 @@ import { ChannelUser } from "./channelUser";
 import { sequelize } from "./index";
 
 export class Channel extends Model<ChannelAttributes> {
-  public readonly id!: number;
-  public userId!: number;
-  public channelName!: string;
-  public channelImg!: string;
-
+  declare id: number;
+  declare channelName: string;
+  declare userId: number;
   public static associations: {
     channelHasManyUsers: Association<Channel, ChannelUser>;
   };
