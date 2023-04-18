@@ -57,6 +57,7 @@ export class ChannelService {
       channelName,
       id: newChannel.id,
     });
+
     return newChannel;
   }
 

@@ -3,10 +3,17 @@ import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
+<<<<<<< HEAD
 import { mongoTransaction, MongoTransaction } from "../db";
 import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
 export class PageService {
+=======
+import { mongoTransaction, MongoTransaction } from "../db"
+import { Message, messageModel } from "../model/message";
+import { User } from "../model/user";
+export class PageService  {
+>>>>>>> 8bf6b8c367a28975fdf44f7455ef4f936ecdbf31
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
@@ -31,8 +38,15 @@ export class PageService {
     id: string,
     type?: string
   ): Promise<page> {
+<<<<<<< HEAD
     const result = await pageModel.findOne({ _id: id, channelId, type });
     return result;
+=======
+
+    const result = await pageModel.findOne({ _id: id, channelId, type });
+    return result;
+
+>>>>>>> 8bf6b8c367a28975fdf44f7455ef4f936ecdbf31
   }
 
   public async createPage(
@@ -141,6 +155,7 @@ export class PageService {
 
     let session = await this.mongoTransaction.startTransaction();
     try {
+<<<<<<< HEAD
       const result = await this.pageModel
         .findOneAndUpdate(
           { _id: id, channelId },
@@ -162,6 +177,30 @@ export class PageService {
     }
   }
 
+=======
+      
+          const result = await this.pageModel
+            .findOneAndUpdate(
+              { _id: id, channelId },
+              {
+                pageName: pageName,
+                label: label,
+                blocks: blocks,
+              },
+              { new: true }
+            )
+            .session(session);
+          await this.mongoTransaction.commitTransaction(session);
+          return result;
+        }catch (error) {
+          await this.mongoTransaction.abortTransaction(session);
+          throw error;
+        } finally {
+          session.endSession();
+        }
+  }
+  
+>>>>>>> 8bf6b8c367a28975fdf44f7455ef4f936ecdbf31
   public async pageStatusUpdate(
     id: string,
     progressStatus: string

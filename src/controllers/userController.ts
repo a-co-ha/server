@@ -1,4 +1,3 @@
-import { redisClient } from "./../utils/redisClient";
 import { ErrorType, LogColor } from "./../constants";
 import { errorResponse } from "./../utils/errorResponse";
 import { UserService, userService } from "./../services/userService";
@@ -27,6 +26,8 @@ export class UserController implements IUserController {
       }
     });
 
+    logger.info(req.sessionID);
+    logger.info(req.session.user);
     // await connectSocket(req.sessionID, result.user.userId);
     res.status(200).json(result);
   };
