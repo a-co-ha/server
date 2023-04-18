@@ -1,36 +1,41 @@
 import { pageModel, templateModel, templateModelType } from "../model";
-import { pageService } from "./pageService";
+import { PageService, pageService } from "./pageService";
 import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
 
 class TemplateNormalService implements ITemplateNormalModel {
   private templateModel: templateModelType;
-  constructor(templateModel: templateModelType) {
+  private pageService:PageService
+  constructor(
+     templateModel: templateModelType,
+     pageService:PageService
+     ) {
     this.templateModel = templateModel;
+    this.pageService=pageService
   }
 
-  async createTemplate(
+  public async createTemplate(
     channelId: number,
     blockId: string,
     type?: string
   ): Promise<template> {
     const pageType = "normal-page";
-    const pages = await pageService.createPage(channelId, blockId, pageType);
+    const pages = await this.pageService.createPage(channelId, blockId, pageType);
     return await this.templateModel.create({ channelId, pages, type });
   }
 
-  async findTemplate(
+  public async findTemplate(
     channelId: number,
     id: string,
     type?: string
   ): Promise<template> {
-    const templateNormal = templateModel.findOne({ _id: id, type }).populate({
+    const templateNormal = this.templateModel.findOne({ _id: id, type }).populate({
       path: "pages",
       select: "pageName label type",
     });
     return await templateNormal.findOne({ channelId });
   }
 
-  async addTemplatePage(
+  public async addTemplatePage(
     channelId: number,
     id: string,
     blockId: string,
@@ -47,7 +52,7 @@ class TemplateNormalService implements ITemplateNormalModel {
 
       pageType = "normal-page";
       progressStatus = "null";
-      const pages = await pageService.createPage(channelId, blockId, pageType);
+      const pages = await this.pageService.createPage(channelId, blockId, pageType);
 
       return this.templateModel
         .findOneAndUpdate({ _id: id }, { $push: { pages } })
@@ -57,7 +62,7 @@ class TemplateNormalService implements ITemplateNormalModel {
     }
   }
 
-  async updateTemplateNormal(
+  public async updateTemplateNormal(
     channelId: number,
     id: string,
     pageName: string,
@@ -72,4 +77,4 @@ class TemplateNormalService implements ITemplateNormalModel {
   }
 }
 
-export const templateNormalService = new TemplateNormalService(templateModel);
+export const templateNormalService = new TemplateNormalService(templateModel,pageService);

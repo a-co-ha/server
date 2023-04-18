@@ -9,22 +9,26 @@ import { PageService, pageService } from "./pageService";
 import { ITemplateModel, template, pageStatusUpdate } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
+import { mongoTransaction, MongoTransaction } from "../db"
 
 class TemplateService {
   private templateModel: templateModelType;
   private listModel: listModelType;
   private pageService: PageService;
   private listService: ListService;
+  private mongoTransaction:MongoTransaction
   constructor(
     templateModel: templateModelType,
     listModel: listModelType,
     pageService: PageService,
-    listService: ListService
+    listService: ListService,
+    mongoTransaction:MongoTransaction
   ) {
     this.templateModel = templateModel;
     this.listModel = listModel;
     this.pageService = pageService;
     this.listService = listService;
+    this.mongoTransaction=mongoTransaction
   }
 
   public async createTemplate(
@@ -32,23 +36,31 @@ class TemplateService {
     blockId: string,
     type: string
   ): Promise<template> {
+    const session = await this.mongoTransaction.startTransaction();
+
     const pageType = "progress-page";
     const progressStatus = "todo";
-
-    const pages = await this.pageService.createPage(
-      channelId,
-      blockId,
-      pageType,
-      progressStatus
-    );
-    const template = await this.templateModel.create({
-      channelId,
-      pages,
-      type,
-    });
-    await this.createListTemplate(channelId, template);
-
-    return template;
+try{
+  const pages = await this.pageService.createPage(
+    channelId,
+    blockId,
+    pageType,
+    progressStatus
+  );
+  const template = await this.templateModel.create({
+    channelId,
+    pages,
+    type,
+  });
+  await this.createListTemplate(channelId, template);
+  await this.mongoTransaction.commitTransaction(session);
+  return template;
+}catch (error) {
+  await this.mongoTransaction.abortTransaction(session);
+  throw error;
+} finally {
+  session.endSession();
+}
   }
   public async createListTemplate(
     channelId: number,
@@ -158,5 +170,6 @@ export const templateService = new TemplateService(
   templateModel,
   listModel,
   pageService,
-  listService
+  listService,
+  mongoTransaction
 );
