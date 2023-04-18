@@ -27,9 +27,6 @@ export class UserController implements IUserController {
       }
     });
 
-    logger.info(req.sessionID);
-    logger.info(req.session.user);
-
     const existSession = await redisCache.getUserSession(
       result.user.userId as number
     );
@@ -42,7 +39,7 @@ export class UserController implements IUserController {
       req.sessionID
     );
 
-    // await connectSocket(req.sessionID, result.user.userId);
+    await connectSocket(req.sessionID, result.user.userId);
     res.status(200).json(result);
   };
 

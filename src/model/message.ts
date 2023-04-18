@@ -16,7 +16,8 @@ export class Message extends Model<MessageAttributes> {
       {
         id: {
           type: DataTypes.NUMBER,
-          // primaryKey: true,
+          primaryKey: true,
+          autoIncrement: true,
         },
         name: {
           type: DataTypes.STRING(45),
