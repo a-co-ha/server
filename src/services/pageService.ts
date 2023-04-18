@@ -3,16 +3,14 @@ import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
-import { mongoTransaction, MongoTransaction } from "../utils";
-import { MongoAdapter } from "../db/mongo";
+import { mongoTransaction, MongoTransaction } from "../db"
 import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
-export class PageService implements IPageModel {
+export class PageService  {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
-  private mongoAdapter: MongoAdapter;
   private messageModel: Message;
   constructor(
     pageModel: pageModelType,
@@ -33,12 +31,7 @@ export class PageService implements IPageModel {
     id: string,
     type?: string
   ): Promise<page> {
-    
-      const result = await pageModel
-        .findOne({ _id: id, channelId, type })
-     
-      return result;
-    
+      return await pageModel.findOne({ _id: id, channelId, type })    
   }
 
   public async createPage(
@@ -147,14 +140,7 @@ export class PageService implements IPageModel {
   
   let session = await this.mongoTransaction.startTransaction();
     try {
-      // 재시도 로직 추가
-      let retries = 0;
-      while (retries < 3) { // 최대 3번까지 재시도
-        try {
-          const pageExists = await this.pageModel.exists({ _id: id, channelId }).session(session);
-          if (!pageExists) {
-            throw new Error('Page not found'); // 페이지가 없으면 에러 처리
-          }
+      
           const result = await this.pageModel
             .findOneAndUpdate(
               { _id: id, channelId },
@@ -168,33 +154,14 @@ export class PageService implements IPageModel {
             .session(session);
           await this.mongoTransaction.commitTransaction(session);
           return result;
-        } catch (error) {
-          // WriteConflict 오류가 발생한 경우, 재시도
-          if (error.code === 112 && error.errmsg.includes('WriteConflict')) {
-            retries++;
-            continue;
-          }
-     // 중단된 트랜잭션일 경우 새로운 트랜잭션 시작
-     if (error.code === 251 && error.errmsg.includes('Transaction with')) {
-    session.endSession();
-     session = await this.mongoTransaction.startTransaction();
-    retries++;
-     continue;
-   }
-await this.mongoTransaction.abortTransaction(session);
-throw error;
-          
-          
+        }catch (error) {
+          await this.mongoTransaction.abortTransaction(session);
+          throw error;
+        } finally {
+          session.endSession();
         }
-      }
-      // 최대 재시도 횟수를 초과한 경우 에러 처리
-      throw new Error('Max retries exceeded for findAndModify operation');
-    }  finally {
-      session.endSession();
-    }
   }
   
-
   public async pageStatusUpdate(
     id: string,
     progressStatus: string
