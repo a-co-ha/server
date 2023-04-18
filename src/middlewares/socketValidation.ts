@@ -13,14 +13,6 @@ export const socketValidation = async (
   socket
 ) => {
   try {
-    const existSession = await redisCache.getUserSession(userID);
-
-    if (existSession) {
-      console.log(existSession.sessionID);
-      await redisCache.delete(existSession.sessionID);
-    }
-    await redisCache.saveUserSession(userID, sessionID);
-
     const sessionInfo = await redisCache.findSession(sessionID);
 
     socket.roomIds = await getChannels(sessionInfo.userId);

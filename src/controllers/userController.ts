@@ -28,6 +28,16 @@ export class UserController implements IUserController {
 
     logger.info(req.sessionID);
     logger.info(req.session.user);
+
+    const existSession = await redisCache.getUserSession(
+      req.session.user as number
+    );
+
+    if (existSession) {
+      console.log(existSession.sessionID);
+      await redisCache.delete(existSession.sessionID);
+    }
+
     // await connectSocket(req.sessionID, result.user.userId);
     res.status(200).json(result);
   };

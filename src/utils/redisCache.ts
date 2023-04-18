@@ -17,6 +17,7 @@ export default {
   async getUserSession(userID: number) {
     return JSON.parse(await redisClient.get(`user:${userID}`));
   },
+
   async findSession(id: string): Promise<UserAttributes> {
     try {
       return JSON.parse(await redisClient.get(`session:${id}`)).user;
