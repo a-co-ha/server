@@ -1,3 +1,4 @@
+import { SessionOptions } from "express-session";
 import { ErrorType, LogColor } from "./../constants";
 import { errorResponse } from "./../utils/errorResponse";
 import { UserService, userService } from "./../services/userService";
@@ -30,14 +31,16 @@ export class UserController implements IUserController {
     logger.info(req.session.user);
 
     const existSession = await redisCache.getUserSession(
-      req.session.user as number
+      result.user.userId as number
     );
 
     if (existSession) {
-      console.log(existSession.sessionID);
       await redisCache.delete(existSession.sessionID);
     }
-    await redisCache.saveUserSession(req.session.user as number, req.sessionID);
+    await redisCache.saveUserSession(
+      result.user.userId as number,
+      req.sessionID
+    );
 
     // await connectSocket(req.sessionID, result.user.userId);
     res.status(200).json(result);
