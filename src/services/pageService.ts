@@ -6,7 +6,9 @@ import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
-export class PageService {
+import { ClientSession } from "mongoose";
+
+export class PageService  {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
@@ -31,24 +33,26 @@ export class PageService {
     id: string,
     type?: string
   ): Promise<page> {
-    const result = await pageModel.findOne({ _id: id, channelId, type });
+
+    const result = await this.pageModel.findOne({ _id: id, channelId, type });
     return result;
   }
 
   public async createPage(
     channelId: number,
     blockId: string,
+    session:ClientSession,
     type?: string,
-    progressStatus?: string
+    progressStatus?: string,
   ): Promise<any> {
-    const session = await this.mongoTransaction.startTransaction();
+    // const session = await this.mongoTransaction.startTransaction();
     const blocks: block = {
       blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
     };
-    try {
+    // try {
       const page = await this.pageModel.create(
         [
           {
@@ -57,21 +61,20 @@ export class PageService {
             type,
             progressStatus,
           },
-        ],
-        { session }
+        ],{session}
       );
       if (!type) {
-        await this.createListPage(channelId, page[0]);
+        await this.pushListPage(channelId, page[0]);
       }
-      await this.mongoTransaction.commitTransaction(session);
+      // await this.mongoTransaction.commitTransaction(session);
 
-      return page;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+      return page[0];
+    // } catch (error) {
+    //   await this.mongoTransaction.abortTransaction(session);
+    //   throw error;
+    // } finally {
+    //   session.endSession();
+    // }
   }
 
   public async createRoom(channelId: number): Promise<any> {
@@ -88,7 +91,7 @@ export class PageService {
     }
   }
 
-  public async createListPage(
+  public async pushListPage(
     channelId: number,
     page: any
   ): Promise<ListInterface> {
@@ -184,12 +187,20 @@ export class PageService {
   public async deletePage(id: string, channelId: number): Promise<object> {
     const session = await this.mongoTransaction.startTransaction();
     try {
-      const deletePage = await this.pageModel
+    //   if(type ==="normal"){
+        const deletePage = await this.pageModel
         .deleteOne({ _id: id })
         .session(session);
       await listService.deleteListPage(channelId, id);
       await this.mongoTransaction.commitTransaction(session);
       return deletePage;
+    // }else{
+    //   const templateInEditablePageDeleteOne = await this.pageModel
+    //     .deleteOne({ _id: id })
+    //     .session(session);
+    //     await this.mongoTransaction.commitTransaction(session);
+    //     return templateInEditablePageDeleteOne
+    // }
     } catch (error) {
       await this.mongoTransaction.abortTransaction(session);
       throw error;

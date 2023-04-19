@@ -3036,7 +3036,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ],\
       [\
         "mongodb",\
-        "virtual:e69e713a39971e31e61cf2c513f4aefb1d4e4ea116a6ed3354a37307348fd40d38998f845448977fdd892a93a717215341a3e350a113057a126ecd1073296a00#npm:5.1.0"\
+        "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0"\
       ],\
       [\
         "mongodb-connection-string-url",\
@@ -4357,6 +4357,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["koa-session2", "npm:1.0.10"],\
             ["lint-staged", "npm:13.2.1"],\
             ["mongoclient", "npm:1.0.3"],\
+            ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0"],\
             ["mongoose", "npm:6.10.5"],\
             ["morgan", "npm:1.10.0"],\
             ["multer", "npm:1.4.5-lts.1"],\
@@ -10309,6 +10310,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["koa-session2", "npm:1.0.10"],\
             ["lint-staged", "npm:13.2.1"],\
             ["mongoclient", "npm:1.0.3"],\
+            ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0"],\
             ["mongoose", "npm:6.10.5"],\
             ["morgan", "npm:1.10.0"],\
             ["multer", "npm:1.4.5-lts.1"],\
@@ -15469,6 +15471,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
+        ["npm:5.2.0", {\
+          "packageLocation": "./.yarn/cache/mongodb-npm-5.2.0-932537c824-2114175fab.zip/node_modules/mongodb/",\
+          "packageDependencies": [\
+            ["mongodb", "npm:5.2.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0", {\
+          "packageLocation": "./.yarn/__virtual__/mongodb-virtual-5338e76c6e/0/cache/mongodb-npm-5.2.0-932537c824-2114175fab.zip/node_modules/mongodb/",\
+          "packageDependencies": [\
+            ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0"],\
+            ["@aws-sdk/credential-providers", null],\
+            ["@types/aws-sdk__credential-providers", null],\
+            ["@types/mongodb-client-encryption", null],\
+            ["@types/snappy", null],\
+            ["bson", "npm:5.2.0"],\
+            ["mongodb-client-encryption", null],\
+            ["mongodb-connection-string-url", "npm:2.6.0"],\
+            ["saslprep", "npm:1.0.3"],\
+            ["snappy", null],\
+            ["socks", "npm:2.7.1"]\
+          ],\
+          "packagePeers": [\
+            "@aws-sdk/credential-providers",\
+            "@types/aws-sdk__credential-providers",\
+            "@types/mongodb-client-encryption",\
+            "@types/snappy",\
+            "mongodb-client-encryption",\
+            "snappy"\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["virtual:e69e713a39971e31e61cf2c513f4aefb1d4e4ea116a6ed3354a37307348fd40d38998f845448977fdd892a93a717215341a3e350a113057a126ecd1073296a00#npm:5.1.0", {\
           "packageLocation": "./.yarn/__virtual__/mongodb-virtual-bf7e8f0649/0/cache/mongodb-npm-5.1.0-2eee478213-993c14299a.zip/node_modules/mongodb/",\
           "packageDependencies": [\
@@ -18817,7 +18851,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ioredis", "npm:5.3.1"],\
             ["js-yaml", "npm:4.1.0"],\
             ["mkdirp", "npm:2.1.6"],\
-            ["mongodb", null],\
+            ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.2.0"],\
             ["mssql", null],\
             ["mysql2", "npm:3.2.0"],\
             ["oracledb", null],\

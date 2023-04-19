@@ -1,8 +1,9 @@
 import { pageModel, templateModel, templateModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
+import { ClientSession } from "mongoose";
 
-class TemplateNormalService implements ITemplateNormalModel {
+class TemplateNormalService  {
   private templateModel: templateModelType;
   private pageService:PageService
   constructor(
@@ -16,22 +17,24 @@ class TemplateNormalService implements ITemplateNormalModel {
   public async createTemplate(
     channelId: number,
     blockId: string,
-    type?: string
+    type: string,
+    session:ClientSession,
   ): Promise<template> {
     const pageType = "normal-page";
-    const pages = await this.pageService.createPage(channelId, blockId, pageType);
+    const pages = await this.pageService.createPage(channelId, blockId,session, pageType);
     return await this.templateModel.create({ channelId, pages, type });
   }
 
   public async findTemplate(
     channelId: number,
     id: string,
+    session:ClientSession,
     type?: string
   ): Promise<template> {
     const templateNormal = this.templateModel.findOne({ _id: id, type }).populate({
       path: "pages",
       select: "pageName label type",
-    });
+    }).session(session);
     return await templateNormal.findOne({ channelId });
   }
 
@@ -40,24 +43,20 @@ class TemplateNormalService implements ITemplateNormalModel {
     id: string,
     blockId: string,
     type: string,
-    progressStatus?: string
+    session:ClientSession,
   ): Promise<template> {
-    const template = await this.findTemplate(channelId, id, type);
+    const template = await this.findTemplate(channelId, id, session,type);
     let pageType = "";
+
     const templateType = template.type;
     if (templateType === "template-normal") {
-      if (progressStatus) {
-        throw new Error();
-      }
-
       pageType = "normal-page";
-      progressStatus = "null";
-      const pages = await this.pageService.createPage(channelId, blockId, pageType);
+      const pages = await this.pageService.createPage(channelId, blockId,session ,pageType);
 
       return this.templateModel
-        .findOneAndUpdate({ _id: id }, { $push: { pages } })
+        .findOneAndUpdate({ _id: id }, { $push: { pages } }).session(session)
         .then(() => {
-          return this.findTemplate(channelId, id, type);
+          return this.findTemplate(channelId, id, session,type);
         });
     }
   }
@@ -67,12 +66,13 @@ class TemplateNormalService implements ITemplateNormalModel {
     id: string,
     pageName: string,
     pages: [pageStatusUpdate],
-    type: string
+    type: string,
+    session:ClientSession
   ): Promise<template> {
     return await this.templateModel
-      .findByIdAndUpdate({ _id: id }, { pageName, pages })
+      .findByIdAndUpdate({ _id: id }, { pageName, pages }).session(session)
       .then(() => {
-        return this.findTemplate(channelId, id, type);
+        return this.findTemplate(channelId, id,session, type);
       });
   }
 }
