@@ -17,6 +17,10 @@ export class PageDto {
   @IsOptional()
   public id: string;
 
+  @IsMongoId()
+  @IsOptional()
+  public templateId: string;
+
   @IsString()
   @IsOptional()
   public type: string;

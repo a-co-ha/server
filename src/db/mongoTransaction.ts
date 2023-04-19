@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 
 export class MongoTransaction {
   async startTransaction() {
@@ -19,11 +19,10 @@ export class MongoTransaction {
     session.endSession();
   }
 
-  async withTransaction<T>(fn: () => Promise<T>): Promise<T> {
+  async withTransaction<T>(fn: (session:ClientSession) => Promise<T>): Promise<T> {
     const session = await this.startTransaction();
     try {
-      const result = await fn();
-
+      const result = await fn(session);
       await this.commitTransaction(session);
       return result;
     } catch (error) {

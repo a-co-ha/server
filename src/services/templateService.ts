@@ -2,14 +2,16 @@ import {
   listModel,
   listModelType,
   pageModel,
+  pageModelType,
   templateModel,
   templateModelType,
 } from "../model";
 import { PageService, pageService } from "./pageService";
-import { ITemplateModel, template, pageStatusUpdate } from "../interface";
+import { ITemplateModel, template, pageStatusUpdate,block } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db"
+import { ClientSession } from "mongoose";
 
 class TemplateService {
   private templateModel: templateModelType;
@@ -17,51 +19,74 @@ class TemplateService {
   private pageService: PageService;
   private listService: ListService;
   private mongoTransaction:MongoTransaction
+  private pageModel:pageModelType
   constructor(
     templateModel: templateModelType,
     listModel: listModelType,
     pageService: PageService,
     listService: ListService,
-    mongoTransaction:MongoTransaction
+    mongoTransaction:MongoTransaction,
+    pageModel:pageModelType
   ) {
     this.templateModel = templateModel;
     this.listModel = listModel;
     this.pageService = pageService;
     this.listService = listService;
     this.mongoTransaction=mongoTransaction
+    this.pageModel = pageModel
   }
 
   public async createTemplate(
     channelId: number,
     blockId: string,
-    type: string
+    type: string,
+    session:ClientSession
   ): Promise<template> {
-    const session = await this.mongoTransaction.startTransaction();
-
+    // const session = await this.mongoTransaction.startTransaction();
+    // const blocks: block = {
+    //   blockId: blockId,
+    //   tag: "p",
+    //   html: "",
+    //   imgUrl: "",
+    // };
     const pageType = "progress-page";
     const progressStatus = "todo";
-try{
+    // try{
+    //   const pages = await this.pageModel.create(
+    //     [
+    //       {
+    //         channelId,
+    //         blocks,
+    //         pageType,
+    //         progressStatus,
+    //       },
+    //     ],
+    //     { session }
+    //   );
+
   const pages = await this.pageService.createPage(
     channelId,
     blockId,
+    session,
     pageType,
-    progressStatus
-  );
-  const template = await this.templateModel.create({
+    progressStatus,
+    );
+  
+  const template = await this.templateModel.create([{
     channelId,
     pages,
     type,
-  });
-  await this.createListTemplate(channelId, template);
-  await this.mongoTransaction.commitTransaction(session);
-  return template;
-}catch (error) {
-  await this.mongoTransaction.abortTransaction(session);
-  throw error;
-} finally {
-  session.endSession();
-}
+  }],{session});
+  await this.createListTemplate(channelId, template[0]);
+  // await this.mongoTransaction.commitTransaction(session);
+  return template[0];
+// }catch (error) {
+//   throw error;
+// } finally {
+//   session.endSession();
+// }
   }
+
   public async createListTemplate(
     channelId: number,
     template: template
@@ -78,13 +103,14 @@ try{
   public async findTemplate(
     channelId: number,
     id: string,
+    session:ClientSession,
     type?: string
   ): Promise<template> {
-    const progress = this.templateModel.findOne({ _id: id, type }).populate({
+    const progress =await this.templateModel.findOne({ _id: id,channelId}).populate({
       path: "pages",
       select: "pageName label progressStatus type",
-    });
-    return await progress.findOne({ channelId });
+    }).session(session);
+    return progress
   }
 
   public async addTemplatePage(
@@ -92,11 +118,13 @@ try{
     id: string,
     blockId: string,
     type: string,
+    session:ClientSession,
     progressStatus?: string
   ): Promise<template> {
-    const template = await this.findTemplate(channelId, id, type);
+    const template = await this.findTemplate(channelId, id,session);
     let pageType = "";
     const templateType = template.type;
+    
     if (templateType === "template-progress") {
       if (!progressStatus) {
         throw new Error("progressStatus를 입력하세요");
@@ -105,13 +133,17 @@ try{
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
+        session,
         pageType,
         progressStatus
       );
-      return this.templateModel
-        .findByIdAndUpdate({ _id: id }, { $push: { pages } })
-        .then(() => {
-          return this.findTemplate(channelId, id, type);
+      
+      return await this.templateModel
+        .findByIdAndUpdate({ _id: id }, { $push: { pages } }).session(session)
+        .then(async() => {   
+          console.log( await this.findTemplate(channelId, id,session));
+                 
+          return await this.findTemplate(channelId, id,session);
         });
     }
   }
@@ -121,19 +153,32 @@ try{
     id: string,
     pageName: string,
     pages: pageStatusUpdate[],
-    type: string
+    type: string,
+    session:ClientSession
   ): Promise<template> {
-    pages.map((page) => {
+    if(pages){
+      pages.map((page) => {
       if (page.progressStatus) {
         return this.pageService.pageStatusUpdate(page._id, page.progressStatus);
       }
-    });
+    });}
     return await this.templateModel
       .findByIdAndUpdate({ _id: id, channelId }, { pageName, pages })
       .then(() => {
-        return this.findTemplate(channelId, id, type);
+        return this.findTemplate(channelId, id,session,type);
       });
   }
+
+  public async templateInEditablePageDeleteOne(templateId:string,editablePageId:string,channelId:number,type:string,session:ClientSession):Promise<any>{
+    return await this.templateModel.findByIdAndUpdate(
+      {_id:templateId},{$pull:{pages:editablePageId}})
+      .then(async()=>{
+       this.pageModel.deleteOne({_id:editablePageId,channel:channelId})
+      return this.findTemplate(channelId,templateId,session)
+      })
+    
+  }
+
 
   public async deleteTemplate(id: string, channelId: number): Promise<object> {
     const deleteTemplate = await this.templateModel.deleteOne({ _id: id });
@@ -171,5 +216,6 @@ export const templateService = new TemplateService(
   listModel,
   pageService,
   listService,
-  mongoTransaction
+  mongoTransaction,
+  pageModel
 );

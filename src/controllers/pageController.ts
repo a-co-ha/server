@@ -2,43 +2,60 @@ import { pageService, templateService } from "../services";
 import { page } from "../interface";
 import { AsyncRequestHandler } from "../constants";
 import redisCache from "../utils/redisCache";
+import { mongoTransaction, MongoTransaction } from "../db"
+import { ClientSession } from "mongoose";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
   pushBlock: AsyncRequestHandler;
+  createRoom: AsyncRequestHandler;
+  getChat: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
-  // imageDelete: AsyncRequestHandler;
-  // imageUpload: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
+  constructor(
+    private mongoTransaction:MongoTransaction
+  ){
+    this.mongoTransaction = mongoTransaction
+  }
+  
   findPage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type } = req.body;
-
     if (
       type === "normal" ||
       type === "progress-page" ||
       type === "normal-page"
     ) {
-      const findPost = await pageService.findPage(channel, id, type);
-      res.json(findPost);
+      const findPosteResult = await this.mongoTransaction.withTransaction(async (session:ClientSession) => {
+        const findPost = await pageService.findPage(channel, id, type);
+        return findPost
+      })
+      res.json(findPosteResult);
     }
     if (type === "template-progress" || type === "template-normal") {
-      const findProgress = await templateService.findTemplate(
-        channel,
-        id,
-        type
-      );
-      res.json(findProgress);
+      const findProgressResult = await this.mongoTransaction.withTransaction(async (session:ClientSession) => {
+        const findProgress = await templateService.findTemplate(
+          channel,
+          id,
+          session,
+          type
+        );
+      return findProgress
+      })
+
+      res.json(findProgressResult);
     }
   };
 
   createPage: AsyncRequestHandler = async (req, res) => {
     const { blockId, channel } = req.body;
-
-    const createPage = await pageService.createPage(channel, blockId);
-    res.json(createPage);
+    const createPageResult = await this.mongoTransaction.withTransaction(async (session:ClientSession) => {
+      const createPage = await pageService.createPage(channel, blockId,session);
+      return createPage
+    })
+    res.json(createPageResult);
   };
 
   createRoom: AsyncRequestHandler = async (req, res) => {
@@ -63,25 +80,30 @@ export class PageController implements IPageController {
   };
 
   deletePage: AsyncRequestHandler = async (req, res) => {
-    const { id, channel } = req.body;
-    const deletePage = await pageService.deletePage(id, channel);
-    res.json(deletePage);
+    const { id, channel,type,templateId } = req.body;
+    if(type !=="normal"){
+      const templateInEditablePageResult = await this.mongoTransaction.withTransaction(async (session:ClientSession) => {
+
+        if(!templateId){
+          throw new Error("template id 를 일력하세요.")
+        }
+        const templateInEditablePage = await templateService.templateInEditablePageDeleteOne(templateId,id,channel,type,session)
+        return templateInEditablePage
+      })
+      res.json(templateInEditablePageResult);
+    }else{
+      const deletePageResult = await this.mongoTransaction.withTransaction(async (session:ClientSession) => {
+
+        const deletePage = await pageService.deletePage(id, channel);
+        return deletePage
+      })
+      res.json(deletePageResult);
+    }
+
+
   };
 
-  // imageUpload: AsyncRequestHandler = async (req, res) => {
-  //   const file = {
-  //     filePath: req.file.location,
-  //   };
-
-  //   res.json(file);
-  // };
-
-  // imageDelete: AsyncRequestHandler = async (req, res) => {
-  //   const deleteImageKey = req.body.imgKey;
-  //   const fileKey = deleteImageKey.split("/").pop().split("?")[0];
-  //   const deleteImg = await deleteImage(fileKey);
-  //   res.json(deleteImg);
-  // };
+  
 
   getChat: AsyncRequestHandler = async (req, res) => {
     const { userId } = req.user;
@@ -105,4 +127,4 @@ export class PageController implements IPageController {
   };
 }
 
-export const pageController = new PageController();
+export const pageController = new PageController(mongoTransaction);
