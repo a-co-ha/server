@@ -108,11 +108,10 @@ export class ChannelService {
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
-    if (await this.isInvited({ channelName, name })) {
-      throw new Error("이미 참여한 채널입니다. ");
-    }
-
     const channelInfo = await this.get(t, { admin, channelName });
+    if (await this.isInvited({ channelName, name })) {
+      throw Error(`${channelInfo.id}`);
+    }
 
     if (channelName === channelInfo.channelName) {
       await this.userJoin(t, {
