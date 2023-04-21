@@ -1,3 +1,4 @@
+import { socketModel, socketModelType } from "./../model/index";
 import {
   chatBookmarkModel,
   chatBookmarkModelType,
@@ -5,22 +6,26 @@ import {
 } from "../model";
 import { IChatBookmarkModel, bookmarkInfo } from "../interface";
 import { bookmarkListService } from "./bookmarkListService";
+import redisCache from "../utils/redisCache";
 
 class ChatBookmarkService implements IChatBookmarkModel {
-  private chatBookmarkModel: chatBookmarkModelType;
-  constructor(chatBookmarkModel: chatBookmarkModelType) {
-    this.chatBookmarkModel = chatBookmarkModel;
-  }
+  constructor(private socketModel: socketModelType) {}
 
-  async createBookmark(bookmarkInfo: bookmarkInfo): Promise<bookmarkInfo> {
-    const { channelId } = bookmarkInfo;
-    const bookmarkList = await bookmarkListModel.findOne({ channelId });
+  async createBookmark(bookmarkInfo: bookmarkInfo): Promise<any> {
+    const { roomId } = bookmarkInfo;
+
+    const bookmarkList = await socketModel.findOneAndUpdate(
+      { _id: roomId },
+      { bookmarkList: bookmarkInfo }
+    );
+
     if (!bookmarkList) {
       throw new Error("채널이 없습니다.");
     }
-    const bookmark = await this.chatBookmarkModel.create(bookmarkInfo);
-    await bookmarkListService.pushBookmark(channelId, bookmark);
-    return bookmark;
+
+    await redisCache.saveBookmark(bookmarkInfo);
+
+    return bookmarkInfo;
   }
 
   async findBookmark(id: string, channelId: number): Promise<bookmarkInfo> {
@@ -44,4 +49,7 @@ class ChatBookmarkService implements IChatBookmarkModel {
   }
 }
 
-export const chatBookmarkService = new ChatBookmarkService(chatBookmarkModel);
+export const chatBookmarkService = new ChatBookmarkService(
+  chatBookmarkModel,
+  socketModel
+);

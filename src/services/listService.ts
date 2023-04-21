@@ -24,6 +24,7 @@ export class ListService {
     const list = await listModel.findOne({ channelId });
 
     const listId = list._id;
+
     return await listModel
       .findByIdAndUpdate({ _id: listId }, { EditablePage: listPage })
       .then(() => this.findList(channelId));

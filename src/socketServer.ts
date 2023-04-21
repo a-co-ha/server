@@ -1,3 +1,4 @@
+import { chatBookmarkService } from "./services/chatBookmarkService";
 import { UserService, userService } from "./services/userService";
 import { ioCorsOptions } from "./config";
 import { Server, Socket as SocketIO } from "socket.io";
@@ -113,18 +114,48 @@ export class Socket {
       });
 
       // 특정 채널에 전체 메세지
-      socket.on("message-send", async (data: any, callback) => {
-        const { roomId, text } = data;
-        data.from = socket.userID;
-        data.name = socket.name;
-        data.img = socket.img;
-        data.text = text;
-        data.to = roomId;
-        const response = await messageController.createMessage(data);
-        callback(response);
-        socket.to(roomId).to(socket.userID).emit("message-receive", response);
-      });
+      socket.on(
+        "message-send",
+        async ({ roomId, text }: { roomId: string; text: string }) => {
+          const data = {
+            from: socket.userID,
+            name: socket.name,
+            img: socket.img,
+            text,
+            to: roomId,
+          };
+          const message = await messageController.createMessage(data);
 
+          socket.to(roomId).to(socket.userID).emit("message-receive", message);
+        }
+      );
+
+      // 북마크 등록
+      socket.on(
+        "SET_BOOKMARK",
+        async ({
+          bookmarkName,
+          content,
+          roomId,
+        }: {
+          bookmarkName: string;
+          content: string;
+          roomId: string;
+        }) => {
+          const data = {
+            bookmarkName,
+            content,
+            roomId,
+            userId: socket.userID,
+            userName: socket.name,
+          };
+          const createBookmark = await chatBookmarkService.createBookmark(data);
+          socket
+            .to(roomId)
+            .to(socket.userID)
+            .emit("NEW_BOOKMARK", createBookmark);
+        }
+      );
       // 연결 해제
       socket.on("disconnect", async () => {
         delete this.currentSocket[socket.userID];

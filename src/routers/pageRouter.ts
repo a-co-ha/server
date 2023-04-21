@@ -30,6 +30,11 @@ pageRouter.put(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.pushBlock)
 );
+pageRouter.put(
+  "/room/:id",
+  DtoValidatorMiddleware(PageDto),
+  asyncHandler(pageController.editRoomName)
+);
 pageRouter.delete(
   "/:id",
   DtoValidatorMiddleware(PageDto),

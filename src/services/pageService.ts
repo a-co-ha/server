@@ -138,7 +138,15 @@ export class PageService {
       session.endSession();
     }
   }
-
+  public async editRoomName(id: string, channel: number, pageName: string) {
+    await this.socketModel.findOneAndUpdate(
+      { _id: id, channelId: channel },
+      {
+        pageName: pageName,
+      },
+      { new: true }
+    );
+  }
   public async pushBlock(id: string, page: page): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
 

@@ -1,3 +1,4 @@
+import { bookmarkInfo } from "./../interface/index";
 /* eslint-disable no-var */
 import { UserAttributes } from "./../interface/userInterface";
 import { redisClient } from "./redisClient";
@@ -58,7 +59,14 @@ export default {
       .expire(`messages:${message.to}`, 24 * 60 * 60)
       .exec();
   },
-
+  saveBookmark: async (bookmarkInfo) => {
+    bookmarkInfo.createAt = new Date();
+    await redisClient.setEx(
+      `bookMark:${bookmarkInfo.roomId}`,
+      86400,
+      JSON.stringify({ bookmarkInfo })
+    );
+  },
   delete: async (key) => {
     await redisClient.DEL(`session:${key}`);
   },
