@@ -2,26 +2,20 @@ import { channelService } from "../services/channelService";
 import { userService } from "../services";
 import redisCache from "../utils/redisCache";
 import { userHasChannels } from "../interface";
-import { exists } from "fs";
-import e from "express";
+
 export const wrap = (middleware) => (socket, next) =>
   middleware(socket.request, socket.request.res || {}, next);
 
-export const socketValidation = async (
-  sessionID: string,
-  userID: number,
-  socket
-) => {
+export const socketValidation = async (sessionID: string, socket) => {
   try {
     const sessionInfo = await redisCache.findSession(sessionID);
-
     socket.roomIds = await getChannels(sessionInfo.userId);
     socket.sessionID = sessionID;
     socket.userID = sessionInfo.userId;
     socket.name = sessionInfo.name;
     socket.img = sessionInfo.img;
   } catch (err: any) {
-    throw new Error(err.message);
+    throw Error(err.message);
   }
 };
 

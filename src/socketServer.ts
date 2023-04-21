@@ -1,3 +1,4 @@
+import { UserService, userService } from "./services/userService";
 import { ioCorsOptions } from "./config";
 import { Server, Socket as SocketIO } from "socket.io";
 import { createSocketAdapter } from "./utils/redisClient";
@@ -61,10 +62,11 @@ export class Socket {
   public start() {
     this.io.on("connection", async (socket: any) => {
       try {
-        const sessionID = socket.handshake.auth.sessionID;
-        const userID = socket.handshake.auth.userID;
+        const sessionID = socket.handshake.headers.sessionid;
 
-        await socketValidation(sessionID, userID, socket);
+        // const sessionID = socket.handshake.auth.sessionID;
+
+        await socketValidation(sessionID, socket);
 
         this.currentSocket[socket.userID] = socket;
 
@@ -78,8 +80,10 @@ export class Socket {
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
+        return;
       }
-      const users = await this.getUsers(socket);
+
+      const users = await this.getUsers(socket.userID);
       socket.emit("users", users);
 
       if (socket.roomIds) {
@@ -109,7 +113,7 @@ export class Socket {
       });
 
       // 특정 채널에 전체 메세지
-      socket.on("message-send", async (data: any) => {
+      socket.on("message-send", async (data: any, callback) => {
         const { roomId, text } = data;
         data.from = socket.userID;
         data.name = socket.name;
@@ -117,7 +121,8 @@ export class Socket {
         data.text = text;
         data.to = roomId;
         const response = await messageController.createMessage(data);
-        socket.to(roomId).emit("message-receive", response);
+        callback(response);
+        socket.to(roomId).to(socket.userID).emit("message-receive", response);
       });
 
       // 연결 해제
@@ -141,21 +146,19 @@ export class Socket {
     });
   }
 
-  private async getUsers(socket: any): Promise<any> {
-    const users = [];
-    const [sessions] = await Promise.all([
-      redisCache.findAllSessions().then((res) => {
-        return res.map((session) => JSON.parse(session).user);
-      }),
-    ]);
+  private async getUsers(userID: number): Promise<any> {
+    const members = await userService.getChannelMembersID(userID);
+    if (members.length !== 0) {
+      const sessions = await redisCache.findMemberSessions(members);
 
-    sessions.forEach((session) => {
-      users.push({
-        userID: session.userId,
-        name: session.name,
-        img: session.img,
+      return sessions.map((session) => {
+        const parsedSession = JSON.parse(session).user;
+        return {
+          userID: parsedSession.userId,
+          name: parsedSession.name,
+          img: parsedSession.img,
+        };
       });
-    });
-    return users;
+    }
   }
 }

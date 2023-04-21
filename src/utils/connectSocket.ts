@@ -27,12 +27,12 @@ export const connectSocket = (sessionID, userID): Promise<any> => {
     });
     socket.on("session", (data) => {
       logger.warn(`session ${JSON.stringify(data)}`);
-      setTimeout(() => {
-        socket.emit("message-send", {
-          roomId: data?.roomIds[0],
-          text: "444444",
-        });
-      }, 10000);
+      // setTimeout(() => {
+      //   socket.emit("message-send", {
+      //     roomId: data?.roomIds[0],
+      //     text: "444444",
+      //   });
+      // }, 10000);
     });
     socket.on("user connected", (data) => {
       logger.warn(`user connected ${JSON.stringify(data)}`);

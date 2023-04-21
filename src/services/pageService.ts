@@ -8,7 +8,7 @@ import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
 import { ClientSession } from "mongoose";
 
-export class PageService  {
+export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
@@ -33,7 +33,6 @@ export class PageService  {
     id: string,
     type?: string
   ): Promise<page> {
-
     const result = await this.pageModel.findOne({ _id: id, channelId, type });
     return result;
   }
@@ -41,9 +40,9 @@ export class PageService  {
   public async createPage(
     channelId: number,
     blockId: string,
-    session:ClientSession,
+    session: ClientSession,
     type?: string,
-    progressStatus?: string,
+    progressStatus?: string
   ): Promise<any> {
     // const session = await this.mongoTransaction.startTransaction();
     const blocks: block = {
@@ -53,22 +52,23 @@ export class PageService  {
       imgUrl: "",
     };
     // try {
-      const page = await this.pageModel.create(
-        [
-          {
-            channelId,
-            blocks,
-            type,
-            progressStatus,
-          },
-        ],{session}
-      );
-      if (!type) {
-        await this.pushListPage(channelId, page[0]);
-      }
-      // await this.mongoTransaction.commitTransaction(session);
+    const page = await this.pageModel.create(
+      [
+        {
+          channelId,
+          blocks,
+          type,
+          progressStatus,
+        },
+      ],
+      { session }
+    );
+    if (!type) {
+      await this.pushListPage(channelId, page[0]);
+    }
+    // await this.mongoTransaction.commitTransaction(session);
 
-      return page[0];
+    return page[0];
     // } catch (error) {
     //   await this.mongoTransaction.abortTransaction(session);
     //   throw error;
@@ -187,20 +187,20 @@ export class PageService  {
   public async deletePage(id: string, channelId: number): Promise<object> {
     const session = await this.mongoTransaction.startTransaction();
     try {
-    //   if(type ==="normal"){
-        const deletePage = await this.pageModel
+      //   if(type ==="normal"){
+      const deletePage = await this.pageModel
         .deleteOne({ _id: id })
         .session(session);
       await listService.deleteListPage(channelId, id);
       await this.mongoTransaction.commitTransaction(session);
       return deletePage;
-    // }else{
-    //   const templateInEditablePageDeleteOne = await this.pageModel
-    //     .deleteOne({ _id: id })
-    //     .session(session);
-    //     await this.mongoTransaction.commitTransaction(session);
-    //     return templateInEditablePageDeleteOne
-    // }
+      // }else{
+      //   const templateInEditablePageDeleteOne = await this.pageModel
+      //     .deleteOne({ _id: id })
+      //     .session(session);
+      //     await this.mongoTransaction.commitTransaction(session);
+      //     return templateInEditablePageDeleteOne
+      // }
     } catch (error) {
       await this.mongoTransaction.abortTransaction(session);
       throw error;
@@ -217,7 +217,7 @@ export class PageService  {
       },
       where: { roomId },
       attributes: {
-        exclude: ["id", "roomId"],
+        exclude: ["roomId"],
       },
       raw: true,
     });
