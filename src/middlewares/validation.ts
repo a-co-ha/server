@@ -30,6 +30,7 @@ export const DtoValidatorMiddleware = (type: any) => {
         { ...paramDto },
         { ...fileDto }
       );
+
       next();
     } catch (errors: any) {
       const errorsMessageArray: string[] = [];

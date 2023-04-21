@@ -1,18 +1,32 @@
-import { listModel, listModelType, pageModel } from "../model";
+import {
+  listModel,
+  listModelType,
+  pageModel,
+  pageModelType,
+  templateModelType,
+} from "../model";
 import { list, template } from "../interface";
 import { ListInterface } from "../model/schema/listSchema";
 import { templateModel } from "../model/index";
+import { ClientSession } from "mongoose";
 
 export class ListService {
   private listModel: listModelType;
-  constructor(listModel: listModelType) {
+  private pageModel: pageModelType;
+  private templateModel: templateModelType;
+  constructor(
+    listModel: listModelType,
+    pageModel: pageModelType,
+    templateModel: templateModelType
+  ) {
     this.listModel = listModel;
+    this.pageModel = pageModel;
+    this.templateModel = templateModel;
   }
-
   async findList(channelId: number): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
+    const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
-    const listPage = await listModel.findOne({ _id: listId }).populate({
+    const listPage = await this.listModel.findOne({ _id: listId }).populate({
       path: "EditablePage.page EditablePage.template SocketPage.page",
       select: "pageName type categories pageName",
     });
@@ -20,63 +34,77 @@ export class ListService {
     return listPage;
   }
 
-  async updateList(channelId: number, listPage: list): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
+  async updateList(
+    channelId: number,
+    EditablePage: list,
+    session: ClientSession
+  ): Promise<ListInterface> {
+    const list = await this.listModel.findOne({ channelId });
 
     const listId = list._id;
-    return await listModel
-      .findByIdAndUpdate({ _id: listId }, { EditablePage: listPage })
+    return await this.listModel
+      .findByIdAndUpdate({ _id: listId }, { EditablePage })
+      .session(session)
       .then(() => this.findList(channelId));
   }
 
-  async deleteListPage(channelId: number, id: string): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-    const { _id } = list;
-
-    const findList = await listModel.findById(
-      { _id },
+  async deleteListPage(
+    channelId: number,
+    id: string,
+    session: ClientSession
+  ): Promise<ListInterface> {
+    const list = await this.listModel.findOne(
+      {
+        channelId,
+      },
       { EditablePage: { $elemMatch: { page: id } } }
     );
-    const listPageId = findList.EditablePage[0]._id;
-    const deleteList = await listModel.findByIdAndUpdate(
-      { _id },
-      { $pull: { EditablePage: { _id: listPageId } } }
-    );
+    console.log(list.EditablePage[0]._id);
+
+    const listPageId = list.EditablePage[0]._id;
+    const deleteList = await this.listModel
+      .findOneAndUpdate(
+        { channelId },
+        { $pull: { EditablePage: { _id: listPageId } } }
+      )
+      .session(session);
 
     return deleteList;
   }
 
   async deleteListTemplate(
     channelId: number,
-    id: string
+    id: string,
+    session: ClientSession
   ): Promise<ListInterface> {
-    const list = await listModel.findOne({ channelId });
-    const { _id } = list;
+    console.log(id);
 
-    const findList = await listModel.findById(
-      { _id },
+    const list = await this.listModel.findOne(
+      { channelId },
       { EditablePage: { $elemMatch: { template: id } } }
     );
 
-    const listTemplateId = findList.EditablePage[0]._id;
-    const deleteList = await listModel.findByIdAndUpdate(
-      { _id },
-      { $pull: { EditablePage: { _id: listTemplateId } } }
-    );
+    const listTemplateId = list.EditablePage[0]._id;
+    const deleteList = await this.listModel
+      .findOneAndUpdate(
+        { channelId },
+        { $pull: { EditablePage: { _id: listTemplateId } } }
+      )
+      .session(session);
 
     return deleteList;
   }
 
   async deleteList(channelId: number): Promise<list> {
-    const list = await listModel.findOne({ channelId });
+    const list = await this.listModel.findOne({ channelId });
     if (!list) {
       throw new Error("채널이 없습니다.");
     }
     const _id = list._id;
-    await pageModel.deleteMany({ channelId });
-    await templateModel.deleteMany({ channelId });
-    return listModel.findByIdAndDelete({ _id });
+    await this.pageModel.deleteMany({ channelId });
+    await this.templateModel.deleteMany({ channelId });
+    return this.listModel.findByIdAndDelete({ _id });
   }
 }
 
-export const listService = new ListService(listModel);
+export const listService = new ListService(listModel, pageModel, templateModel);

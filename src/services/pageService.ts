@@ -1,31 +1,34 @@
 import { socketModel, socketModelType } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
-import { listService } from "./listService";
+import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
 import { ClientSession } from "mongoose";
 
-export class PageService  {
+export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
   private messageModel: Message;
+  private listService: ListService;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
     socketModel: socketModelType,
     mongoTransaction: MongoTransaction,
-    messageModel: Message
+    messageModel: Message,
+    listService: ListService
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoTransaction = mongoTransaction;
     this.messageModel = messageModel;
+    this.listService = listService;
   }
 
   public async findPage(
@@ -33,7 +36,6 @@ export class PageService  {
     id: string,
     type?: string
   ): Promise<page> {
-
     const result = await this.pageModel.findOne({ _id: id, channelId, type });
     return result;
   }
@@ -41,78 +43,53 @@ export class PageService  {
   public async createPage(
     channelId: number,
     blockId: string,
-    session:ClientSession,
+    session: ClientSession,
     type?: string,
-    progressStatus?: string,
+    progressStatus?: string
   ): Promise<any> {
-    // const session = await this.mongoTransaction.startTransaction();
     const blocks: block = {
       blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
     };
-    // try {
-      const page = await this.pageModel.create(
-        [
-          {
-            channelId,
-            blocks,
-            type,
-            progressStatus,
-          },
-        ],{session}
-      );
-      if (!type) {
-        await this.pushListPage(channelId, page[0]);
-      }
-      // await this.mongoTransaction.commitTransaction(session);
+    const page = await this.pageModel.create(
+      [
+        {
+          channelId,
+          blocks,
+          type,
+          progressStatus,
+        },
+      ],
+      { session }
+    );
+    if (!type) {
+      await this.pushListPage(channelId, page[0], session);
+    }
 
-      return page[0];
-    // } catch (error) {
-    //   await this.mongoTransaction.abortTransaction(session);
-    //   throw error;
-    // } finally {
-    //   session.endSession();
-    // }
+    return page[0];
   }
 
-  public async createRoom(channelId: number): Promise<any> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const room = await this.socketModel.create([{ channelId }], { session });
-      await this.mongoTransaction.commitTransaction(session);
-      return this.createSocketPageList(channelId, room[0]);
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+  public async createRoom(
+    channelId: number,
+    session: ClientSession
+  ): Promise<any> {
+    const room = await this.socketModel.create([{ channelId }], { session });
+    return this.createSocketPageList(channelId, room[0]);
   }
 
   public async pushListPage(
     channelId: number,
-    page: any
+    page: any,
+    session: ClientSession
   ): Promise<ListInterface> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const list = await listModel.findOne({ channelId });
-      const listId = list._id;
-      const pushTemplateList = await this.listModel
-        .findByIdAndUpdate(
-          { _id: listId },
-          { $push: { EditablePage: { page } } }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return pushTemplateList;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const list = await listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate({ _id: listId }, { $push: { EditablePage: { page } } })
+      .session(session);
+    return pushTemplateList;
   }
 
   public async createSocketPageList(
@@ -139,74 +116,47 @@ export class PageService  {
     }
   }
 
-  public async pushBlock(id: string, page: page): Promise<page> {
+  public async pushBlock(
+    id: string,
+    page: page,
+    session: ClientSession
+  ): Promise<page> {
     const { channelId, label, pageName, blocks } = page;
-
-    let session = await this.mongoTransaction.startTransaction();
-    try {
-      const result = await this.pageModel
-        .findOneAndUpdate(
-          { _id: id, channelId },
-          {
-            pageName: pageName,
-            label: label,
-            blocks: blocks,
-          },
-          { new: true }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const result = await this.pageModel
+      .findOneAndUpdate(
+        { _id: id, channelId },
+        {
+          pageName: pageName,
+          label: label,
+          blocks: blocks,
+        },
+        { new: true }
+      )
+      .session(session);
+    return result;
   }
 
   public async pageStatusUpdate(
     id: string,
     progressStatus: string
   ): Promise<page> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const result = await this.pageModel
-        .findByIdAndUpdate({ _id: id }, { progressStatus })
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const result = await this.pageModel.findByIdAndUpdate(
+      { _id: id },
+      { progressStatus }
+    );
+    return result;
   }
 
-  public async deletePage(id: string, channelId: number): Promise<object> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-    //   if(type ==="normal"){
-        const deletePage = await this.pageModel
-        .deleteOne({ _id: id })
-        .session(session);
-      await listService.deleteListPage(channelId, id);
-      await this.mongoTransaction.commitTransaction(session);
-      return deletePage;
-    // }else{
-    //   const templateInEditablePageDeleteOne = await this.pageModel
-    //     .deleteOne({ _id: id })
-    //     .session(session);
-    //     await this.mongoTransaction.commitTransaction(session);
-    //     return templateInEditablePageDeleteOne
-    // }
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+  public async deletePage(
+    id: string,
+    channelId: number,
+    session: ClientSession
+  ): Promise<object> {
+    const deletePage = await this.pageModel
+      .deleteOne({ _id: id })
+      .session(session);
+    await this.listService.deleteListPage(channelId, id, session);
+    return deletePage;
   }
 
   public async getMessage(roomId: string): Promise<any[]> {
@@ -238,5 +188,6 @@ export const pageService = new PageService(
   listModel,
   socketModel,
   mongoTransaction,
-  messageModel
+  messageModel,
+  listService
 );
