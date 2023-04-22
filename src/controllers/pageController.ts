@@ -68,23 +68,32 @@ export class PageController implements IPageController {
 
   createRoom: AsyncRequestHandler = async (req, res) => {
     const channel = req.body.channel;
-    const createPage = await pageService.createRoom(channel);
-    res.json(createPage);
+    const createRoomPageResult = await this.mongoTransaction.withTransaction(
+      async (session: ClientSession) => {
+        const createPage = await pageService.createRoom(channel, session);
+        return createPage;
+      }
+    );
+    res.json(createRoomPageResult);
   };
 
   pushBlock: AsyncRequestHandler = async (req, res) => {
     const { id, channel, label, blocks, pageName } = req.body;
+    const pushBlockResult = await this.mongoTransaction.withTransaction(
+      async (session: ClientSession) => {
+        const page: page = {
+          channelId: channel,
+          pageName: pageName,
+          label: label,
+          blocks: blocks,
+        };
 
-    const page: page = {
-      channelId: channel,
-      pageName: pageName,
-      label: label,
-      blocks: blocks,
-    };
+        const pushPage = await pageService.pushBlock(id, page, session);
+        return pushPage;
+      }
+    );
 
-    const pushPage = await pageService.pushBlock(id, page);
-
-    res.json(pushPage);
+    res.json(pushBlockResult);
   };
 
   editRoomName: AsyncRequestHandler = async (req, res) => {
@@ -116,7 +125,7 @@ export class PageController implements IPageController {
     } else {
       const deletePageResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
-          const deletePage = await pageService.deletePage(id, channel);
+          const deletePage = await pageService.deletePage(id, channel, session);
           return deletePage;
         }
       );

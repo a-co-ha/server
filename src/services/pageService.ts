@@ -1,7 +1,7 @@
 import { socketModel, socketModelType } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
-import { listService } from "./listService";
+import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { Message, messageModel } from "../model/message";
@@ -14,18 +14,21 @@ export class PageService {
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
   private messageModel: Message;
+  private listService: ListService;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
     socketModel: socketModelType,
     mongoTransaction: MongoTransaction,
-    messageModel: Message
+    messageModel: Message,
+    listService: ListService
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoTransaction = mongoTransaction;
     this.messageModel = messageModel;
+    this.listService = listService;
   }
 
   public async findPage(
@@ -44,14 +47,16 @@ export class PageService {
     type?: string,
     progressStatus?: string
   ): Promise<any> {
-    // const session = await this.mongoTransaction.startTransaction();
     const blocks: block = {
       blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
     };
+<<<<<<< HEAD
     // try {
+=======
+>>>>>>> 07d79c0093448d76969ebb46919cd64fc6af5d22
     const page = await this.pageModel.create(
       [
         {
@@ -64,6 +69,7 @@ export class PageService {
       { session }
     );
     if (!type) {
+<<<<<<< HEAD
       await this.pushListPage(channelId, page[0]);
     }
     // await this.mongoTransaction.commitTransaction(session);
@@ -75,44 +81,33 @@ export class PageService {
     // } finally {
     //   session.endSession();
     // }
+=======
+      await this.pushListPage(channelId, page[0], session);
+    }
+
+    return page[0];
+>>>>>>> 07d79c0093448d76969ebb46919cd64fc6af5d22
   }
 
-  public async createRoom(channelId: number): Promise<any> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const room = await this.socketModel.create([{ channelId }], { session });
-      await this.mongoTransaction.commitTransaction(session);
-      return this.createSocketPageList(channelId, room[0]);
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+  public async createRoom(
+    channelId: number,
+    session: ClientSession
+  ): Promise<any> {
+    const room = await this.socketModel.create([{ channelId }], { session });
+    return this.createSocketPageList(channelId, room[0]);
   }
 
   public async pushListPage(
     channelId: number,
-    page: any
+    page: any,
+    session: ClientSession
   ): Promise<ListInterface> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const list = await listModel.findOne({ channelId });
-      const listId = list._id;
-      const pushTemplateList = await this.listModel
-        .findByIdAndUpdate(
-          { _id: listId },
-          { $push: { EditablePage: { page } } }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return pushTemplateList;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const list = await listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate({ _id: listId }, { $push: { EditablePage: { page } } })
+      .session(session);
+    return pushTemplateList;
   }
 
   public async createSocketPageList(
@@ -138,6 +133,7 @@ export class PageService {
       session.endSession();
     }
   }
+<<<<<<< HEAD
   public async editRoomName(id: string, channel: number, pageName: string) {
     await this.socketModel.findOneAndUpdate(
       { _id: id, channelId: channel },
@@ -148,50 +144,41 @@ export class PageService {
     );
   }
   public async pushBlock(id: string, page: page): Promise<page> {
-    const { channelId, label, pageName, blocks } = page;
+=======
 
-    let session = await this.mongoTransaction.startTransaction();
-    try {
-      const result = await this.pageModel
-        .findOneAndUpdate(
-          { _id: id, channelId },
-          {
-            pageName: pageName,
-            label: label,
-            blocks: blocks,
-          },
-          { new: true }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+  public async pushBlock(
+    id: string,
+    page: page,
+    session: ClientSession
+  ): Promise<page> {
+>>>>>>> 07d79c0093448d76969ebb46919cd64fc6af5d22
+    const { channelId, label, pageName, blocks } = page;
+    const result = await this.pageModel
+      .findOneAndUpdate(
+        { _id: id, channelId },
+        {
+          pageName: pageName,
+          label: label,
+          blocks: blocks,
+        },
+        { new: true }
+      )
+      .session(session);
+    return result;
   }
 
   public async pageStatusUpdate(
     id: string,
     progressStatus: string
   ): Promise<page> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const result = await this.pageModel
-        .findByIdAndUpdate({ _id: id }, { progressStatus })
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return result;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const result = await this.pageModel.findByIdAndUpdate(
+      { _id: id },
+      { progressStatus }
+    );
+    return result;
   }
 
+<<<<<<< HEAD
   public async deletePage(id: string, channelId: number): Promise<object> {
     const session = await this.mongoTransaction.startTransaction();
     try {
@@ -215,6 +202,18 @@ export class PageService {
     } finally {
       session.endSession();
     }
+=======
+  public async deletePage(
+    id: string,
+    channelId: number,
+    session: ClientSession
+  ): Promise<object> {
+    const deletePage = await this.pageModel
+      .deleteOne({ _id: id })
+      .session(session);
+    await this.listService.deleteListPage(channelId, id, session);
+    return deletePage;
+>>>>>>> 07d79c0093448d76969ebb46919cd64fc6af5d22
   }
 
   public async getMessage(roomId: string): Promise<any[]> {
@@ -246,5 +245,6 @@ export const pageService = new PageService(
   listModel,
   socketModel,
   mongoTransaction,
-  messageModel
+  messageModel,
+  listService
 );

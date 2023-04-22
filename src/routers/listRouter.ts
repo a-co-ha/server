@@ -1,8 +1,22 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { listController } from "../controllers";
+import { DtoValidatorMiddleware } from "../middlewares";
+import { ListDto } from "../dto";
 export const listRouter = Router();
 
-listRouter.get("/", asyncHandler(listController.findList));
-listRouter.patch("/", asyncHandler(listController.updateList));
-listRouter.delete("/:id", asyncHandler(listController.deleteListOne));
+listRouter.get(
+  "/",
+  DtoValidatorMiddleware(ListDto),
+  asyncHandler(listController.findList)
+);
+listRouter.patch(
+  "/",
+  DtoValidatorMiddleware(ListDto),
+  asyncHandler(listController.updateList)
+);
+listRouter.delete(
+  "/:id",
+  DtoValidatorMiddleware(ListDto),
+  asyncHandler(listController.deleteListOne)
+);
