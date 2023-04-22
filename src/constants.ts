@@ -13,7 +13,7 @@ interface EndPointInterface {
   github: string;
   bookmark: string;
   image: string;
-  bookmarkList: string;
+  bookmarks: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -29,7 +29,7 @@ export const endPoint: EndPointInterface = {
   github: "/api/github",
   bookmark: "/api/bookmark",
   image: "/api/image",
-  bookmarkList: "/api/bookmarkList",
+  bookmarks: "/api/bookmarks",
 };
 
 export type AsyncRequestHandler = (
