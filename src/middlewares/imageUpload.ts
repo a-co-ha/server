@@ -19,7 +19,7 @@ const allowedExtensions = [".png", ".jpg", ".jpeg", ".bmp"];
 export const imageUpload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "acoha",
+    bucket: "a-coha",
     key: function (req, file, cb) {
       const extension = file.originalname.split(".").pop();
       if (allowedExtensions.includes("." + extension.toLowerCase())) {
