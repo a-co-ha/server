@@ -1,4 +1,3 @@
-import { bookmarkInfo } from "./../interface/index";
 /* eslint-disable no-var */
 import { UserAttributes } from "./../interface/userInterface";
 import { redisClient } from "./redisClient";

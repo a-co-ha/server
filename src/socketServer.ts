@@ -10,32 +10,27 @@ import redisCache from "./utils/redisCache";
 import { messageController } from "./controllers";
 import { logger } from "./utils/winston";
 import { Server as httpServer } from "http";
+import { MessageAttributes } from "./interface";
 interface SocketData {
-  sessionID: string;
-  userID: string;
+  sessionID?: string;
+  userID: number;
   name: string;
-  roomIds: string;
+  rooms: string[];
 }
 
-interface ServerToClientEvents {
-  noArg: () => void;
-  basicEmit: (a: number, b: string, c: Buffer) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
+interface UserData {
+  roomId: string;
+  userID: number;
+  name: number;
+  connected: boolean;
 }
 
-interface ClientToServerEvents {
-  hello: () => void;
-}
-
-interface InterServerEvents {
-  ping: () => void;
-}
 export class Socket {
   private io: Server;
   private currentSocket: { [key: string]: SocketIO } = {};
 
   constructor(server: httpServer) {
-    this.io = new Server(server, ioCorsOptions);
+    this.io = new Server<SocketData>(server, ioCorsOptions);
   }
 
   async config() {
@@ -49,73 +44,48 @@ export class Socket {
     );
   }
 
-  public async join(room: string, userID) {
-    const socket = this.currentSocket[userID];
-    if (socket) {
-      socket.join(room);
-      this.io.to(room).emit("user connected", {
-        userID: userID,
-        connected: "true",
-      });
+  public async join(socket: any) {
+    // DM 연결
+    socket.join(socket.userID);
+    // Room 연결
+    if (socket.roomIds) {
+      for (const room of socket.roomIds) {
+        socket.join(room);
+
+        // 커넥션했다고 알림
+        socket.broadcast.to(room).emit("NEW_MEMBER", {
+          roomId: room,
+          userID: socket.userID,
+          name: socket.name,
+          connected: true,
+        });
+      }
     }
   }
 
   public start() {
     this.io.on("connection", async (socket: any) => {
       try {
-        const sessionID = socket.handshake.headers.sessionid;
+        // const sessionID = socket.handshake.headers.sessionid;
 
-        // const sessionID = socket.handshake.auth.sessionID;
+        const sessionID = socket.handshake.auth.sessionID;
 
         await socketValidation(sessionID, socket);
 
         this.currentSocket[socket.userID] = socket;
 
-        // 내 세션확인
-        socket.emit("session", {
-          sessionID: socket.sessionID,
-          userID: socket.userID,
-          name: socket.name,
-          roomIds: socket.roomIds,
-        });
+        await this.join(socket);
+        await this.getUsers(socket);
+        await this.userInfo(socket);
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
         return;
       }
 
-      const users = await this.getUsers(socket.userID);
-      socket.emit("users", users);
-
-      if (socket.roomIds) {
-        // 채널 연결
-        for (const room of socket.roomIds) {
-          socket.join(room);
-
-          // 커넥션했다고 알림
-          socket.broadcast.to(room).emit("user connected", {
-            roomId: room,
-            userID: socket.userID,
-            name: socket.name,
-            connected: "true",
-          });
-        }
-      }
-
-      // DM 연결
-      socket.join(socket.userID);
-
-      // DM
-      socket.on("private message", async (data: any) => {
-        const { to } = data;
-        data.from = socket.userID;
-        const response = await messageController.createMessage(socket);
-        socket.to(to).to(socket.userID).emit("private message", response);
-      });
-
       // 특정 채널에 전체 메세지
       socket.on(
-        "message-send",
+        "SEND_MESSAGE",
         async ({ roomId, text }: { roomId: string; text: string }) => {
           const data = {
             from: socket.userID,
@@ -125,10 +95,21 @@ export class Socket {
             to: roomId,
           };
           const message = await messageController.createMessage(data);
-
-          socket.to(roomId).to(socket.userID).emit("message-receive", message);
+          socket.emit("RECEIVE_MESSAGE", message);
+          socket.to(roomId).emit("RECEIVE_MESSAGE", message);
         }
       );
+
+      // DM
+      socket.on("SEND_PRIVATE_MESSAGE", async (data: any) => {
+        const { to } = data;
+        data.from = socket.userID;
+        const response = await messageController.createMessage(socket);
+        socket
+          .to(to)
+          .to(socket.userID)
+          .emit("RECEIVE_PRIVATE_MESSAGE", response);
+      });
 
       // 북마크 등록
       socket.on(
@@ -150,10 +131,8 @@ export class Socket {
             userName: socket.name,
           };
           const createBookmark = await chatBookmarkService.createBookmark(data);
-          socket
-            .to(roomId)
-            .to(socket.userID)
-            .emit("NEW_BOOKMARK", createBookmark);
+          socket.emit("NEW_BOOKMARK", createBookmark);
+          socket.to(roomId).emit("NEW_BOOKMARK", createBookmark);
         }
       );
       // 연결 해제
@@ -165,11 +144,11 @@ export class Socket {
 
         if (isDisconnected) {
           for (const room of socket.roomIds) {
-            socket.broadcast.to(room).emit("user disconnected", {
+            socket.broadcast.to(room).emit("DISCONNECT_MEMBER", {
               roomId: room,
               userID: socket.userID,
               name: socket.name,
-              connected: "false",
+              connected: false,
             });
           }
         }
@@ -177,19 +156,34 @@ export class Socket {
     });
   }
 
-  private async getUsers(userID: number): Promise<any> {
-    const members = await userService.getChannelMembersID(userID);
+  private async userInfo(socket: any): Promise<void> {
+    const { sessionID, userID, name } = socket;
+    const rooms = Array.from(socket.rooms).slice(1).map(String);
+    const user = {
+      sessionID,
+      userID,
+      name,
+      rooms,
+    };
+
+    socket.emit("USER_INFO", user);
+  }
+
+  private async getUsers(socket: any): Promise<void> {
+    const members = await userService.getChannelMembersID(socket.userID);
     if (members.length !== 0) {
       const sessions = await redisCache.findMemberSessions(members);
 
-      return sessions.map((session) => {
-        const parsedSession = JSON.parse(session).user;
+      const users = sessions.map((session) => {
+        const { userId, name, img } = JSON.parse(session).user;
         return {
-          userID: parsedSession.userId,
-          name: parsedSession.name,
-          img: parsedSession.img,
+          userID: userId,
+          name,
+          img,
         };
       });
+
+      socket.emit("MEMBERS", users);
     }
   }
 }

@@ -21,6 +21,7 @@ export const socketValidation = async (sessionID: string, socket) => {
 
 const getChannels = async (userId: number) => {
   const getChannel = await userService.getUserWithChannels(userId);
+
   function isUser(user: userHasChannels | boolean): user is userHasChannels {
     return (user as userHasChannels).name !== undefined;
   }
