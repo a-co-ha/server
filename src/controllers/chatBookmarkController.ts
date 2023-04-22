@@ -3,44 +3,23 @@ import { chatBookmarkService } from "../services";
 import { AsyncRequestHandler } from "../constants";
 
 interface IChatBookmarkController {
-  createBookmark: AsyncRequestHandler;
   findBookmark: AsyncRequestHandler;
 }
 
 export class ChatBookmarkController implements IChatBookmarkController {
-  createBookmark: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const { bookmarkName, content } = req.body;
-    const { userId, name } = req.user;
-    const bookmarkInfo: bookmarkInfo = {
-      channelId,
-      bookmarkName,
-      content,
-      userId,
-      userName: name,
-    };
-
-    const bookmark = await chatBookmarkService.createBookmark(bookmarkInfo);
-    res.json(bookmark);
-  };
-
   findBookmark: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const findBookmark = await chatBookmarkService.findBookmark(id, channelId);
+    const id = req.params.bookmarkId;
+    const findBookmark = await chatBookmarkService.findBookmark(id);
     res.json(findBookmark);
   };
 
   updateBookmark: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
+    const id = req.params.bookmarkId;
+
     const { bookmarkName, content } = req.body;
     const { userId, name } = req.user;
     const bookmarkInfo: bookmarkInfo = {
-      channelId,
+      roomId: id,
       bookmarkName,
       content,
       userId,
@@ -54,14 +33,26 @@ export class ChatBookmarkController implements IChatBookmarkController {
   };
 
   deleteBookmark: AsyncRequestHandler = async (req, res) => {
-    const id = req.params.id;
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
-    const deleteBookmark = await chatBookmarkService.deleteBookmark(
-      id,
-      channelId
-    );
+    const id = req.params.bookmarkId;
+    const deleteBookmark = await chatBookmarkService.deleteBookmark(id);
     res.json(deleteBookmark);
+  };
+
+  getBookmarkList: AsyncRequestHandler = async (req, res) => {
+    const room = req.params.roomId;
+
+    const findBookmarkList = await chatBookmarkService.findBookmarkList(room);
+    res.json(findBookmarkList);
+  };
+
+  updateBookmarkList: AsyncRequestHandler = async (req, res) => {
+    const room = req.params.roomId;
+    const bookmark = req.body.bookmarkList;
+    const updateBookmarkList = await chatBookmarkService.updateBookmarkList(
+      room,
+      bookmark
+    );
+    res.json(updateBookmarkList);
   };
 }
 

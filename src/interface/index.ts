@@ -21,7 +21,12 @@ export interface page {
   categories?: string;
   session?: any;
 }
-
+export interface socketPage {
+  channelId?: number;
+  pageName?: string;
+  _id?: {};
+  session?: any;
+}
 export interface IPageModel {
   findPage(channelId: number, id: string, type?: string): Promise<page>;
   createPage(
@@ -54,6 +59,7 @@ export interface pageStatusUpdate {
 export interface list {
   channelId: number;
   EditablePage: page[];
+  SocketPage: socketPage[];
 }
 
 export interface ITemplateModel {
@@ -115,11 +121,11 @@ export interface IListModel {
   deleteListPage(channelId: number, id: string): Promise<ListInterface>;
 }
 export interface bookmarkInfo {
-  channelId: number;
   bookmarkName: string;
   content: string;
   userId: number;
   userName: string;
+  roomId: string;
 }
 export interface IChatBookmarkModel {
   createBookmark(bookmarkInfo: bookmarkInfo): Promise<bookmarkInfo>;

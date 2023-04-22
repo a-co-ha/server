@@ -96,6 +96,11 @@ export class PageController implements IPageController {
     res.json(pushBlockResult);
   };
 
+  editRoomName: AsyncRequestHandler = async (req, res) => {
+    const { id, channel, pageName } = req.body;
+    const result = await pageService.editRoomName(id, channel, pageName);
+    res.json(result);
+  };
   deletePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type, templateId } = req.body;
     if (type !== "normal") {

@@ -6,6 +6,8 @@ import { sequelize } from "./index";
 import { User } from "./user";
 
 export class ChannelUser extends Model<Channel_UserAttributes> {
+  declare channelId: number;
+  declare userId: number;
   public static associations: {
     hasUsers: Association<Channel, ChannelUser>;
     hasChannels: Association<Channel, ChannelUser>;
@@ -14,7 +16,7 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
     this.init(
       {
         userId: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.NUMBER,
           allowNull: false,
           field: "user_id",
         },

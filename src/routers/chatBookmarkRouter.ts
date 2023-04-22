@@ -1,16 +1,30 @@
-import express from "express";
+import { Router } from "express";
 import { asyncHandler } from "../utils";
 import { chatBookmarkController } from "../controllers";
 
-export const bookmarkRouter = express.Router();
+export const bookmarkRouter = Router();
 
-bookmarkRouter.post("/", asyncHandler(chatBookmarkController.createBookmark));
-bookmarkRouter.get("/:id", asyncHandler(chatBookmarkController.findBookmark));
+bookmarkRouter.get(
+  "/:bookmarkId",
+  asyncHandler(chatBookmarkController.findBookmark)
+);
+
 bookmarkRouter.patch(
-  "/:id",
+  "/:bookmarkId",
   asyncHandler(chatBookmarkController.updateBookmark)
 );
 bookmarkRouter.delete(
-  "/:id",
+  "/:bookmarkId",
   asyncHandler(chatBookmarkController.deleteBookmark)
+);
+
+export const bookmarkListRouter = Router();
+
+bookmarkListRouter.get(
+  "/:roomId",
+  asyncHandler(chatBookmarkController.getBookmarkList)
+);
+bookmarkListRouter.patch(
+  "/:roomId",
+  asyncHandler(chatBookmarkController.updateBookmarkList)
 );

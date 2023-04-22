@@ -5,9 +5,12 @@ import { User, userModel } from "../model/user";
 import { ChannelUser } from "../model/channelUser";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
+import { Op } from "sequelize";
+import { channelService, ChannelService } from "./channelService";
+import { sequelize } from "../model";
 
 export class UserService {
-  constructor(private user: User) {}
+  constructor(private user: User, private channelService: ChannelService) {}
   private tokenCreate = (
     isAccess: boolean,
     payload: UserAttributes
@@ -33,7 +36,19 @@ export class UserService {
     );
     return { token: { accessToken, refreshToken }, user, sessionID };
   }
+  public async getChannelMembersID(userId: number): Promise<number[]> {
+    const channelId = await this.channelService
+      .getChannels(userId)
+      .then((channels) => channels.map((channel) => channel.channelId));
 
+    return await ChannelUser.findAll({
+      where: {
+        channelId: { [Op.in]: channelId },
+      },
+      raw: true,
+      attributes: [[sequelize.literal("DISTINCT user_id"), "userId"]],
+    }).then((res) => res.map((res) => res.userId));
+  }
   public async getUserWithChannels(
     id: number
   ): Promise<userHasChannels | null> {
@@ -95,4 +110,4 @@ export class UserService {
   }
 }
 
-export const userService = new UserService(userModel);
+export const userService = new UserService(userModel, channelService);

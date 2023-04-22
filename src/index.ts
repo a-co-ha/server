@@ -94,7 +94,7 @@ export class AppServer {
     this.app.use(errorHandler);
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
     this.app.use(endPoint.image, imageRouter);
-    this.app.use(endPoint.bookmarkList, bookmarkListRouter);
+    this.app.use(endPoint.bookmarks, bookmarkListRouter);
   }
 }
 AppServer.start();

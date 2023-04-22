@@ -7,6 +7,7 @@ import { mongoTransaction, MongoTransaction } from "../db";
 import { Message, messageModel } from "../model/message";
 import { User } from "../model/user";
 import { ClientSession } from "mongoose";
+import { channel } from "diagnostics_channel";
 
 export class PageService {
   private pageModel: pageModelType;
@@ -76,7 +77,9 @@ export class PageService {
     session: ClientSession
   ): Promise<any> {
     const room = await this.socketModel.create([{ channelId }], { session });
-    return this.createSocketPageList(channelId, room[0]);
+    return await this.createSocketPageList(channelId, room[0]).then(() =>
+      this.listService.findList(channelId)
+    );
   }
 
   public async pushListPage(
@@ -114,6 +117,21 @@ export class PageService {
     } finally {
       session.endSession();
     }
+  }
+  public async editRoomName(
+    id: string,
+    channel: number,
+    pageName: string
+  ): Promise<ListInterface> {
+    return await this.socketModel
+      .findOneAndUpdate(
+        { _id: id, channelId: channel },
+        {
+          pageName: pageName,
+        },
+        { new: true }
+      )
+      .then(() => this.listService.findList(channel));
   }
 
   public async pushBlock(
@@ -167,7 +185,7 @@ export class PageService {
       },
       where: { roomId },
       attributes: {
-        exclude: ["id", "roomId"],
+        exclude: ["roomId"],
       },
       raw: true,
     });

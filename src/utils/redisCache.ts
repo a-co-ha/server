@@ -2,14 +2,11 @@
 import { UserAttributes } from "./../interface/userInterface";
 import { redisClient } from "./redisClient";
 
-// export const mapSession = ([userID, name, connected, img]) =>
-//   userID ? { userID, name, connected: connected === "true", img } : undefined;
-
 export default {
   async saveUserSession(userID: number, sessionID: string) {
     await redisClient.setEx(
       `user:${userID}`,
-      86400, // 60 * 60 * 24 seconds
+      86400,
       JSON.stringify({ sessionID })
     );
   },
@@ -22,7 +19,7 @@ export default {
     try {
       return JSON.parse(await redisClient.get(`session:${id}`)).user;
     } catch (e) {
-      throw new Error(`세션을 찾을 수 없습니다.`);
+      throw Error(`세션을 찾을 수 없습니다. sessionID : ${id}`);
     }
   },
 
@@ -34,37 +31,20 @@ export default {
       });
   },
 
-  findAllSessions: async (): Promise<any> => {
-    const keys = new Set();
+  findMemberSessions: async (userIDs: number[]): Promise<any> => {
+    const userKeys = userIDs.map((userID) => `user:${userID}`);
+    const sessionKeys = await redisClient.mGet(userKeys);
 
-    let nextIndex = 0;
-    do {
-      const { cursor, keys: results } = await redisClient.scan(nextIndex, {
-        MATCH: `session:*`,
-        COUNT: 100,
-      });
+    const sessionIDs = sessionKeys
+      .map((res) => (res ? JSON.parse(res).sessionID : null))
+      .filter((sessionID) => sessionID);
 
-      nextIndex = cursor;
+    const sessionPromises = sessionIDs.map((sessionID) =>
+      redisClient.get(`session:${sessionID}`)
+    );
+    const results = await Promise.all(sessionPromises);
 
-      results.forEach((s) => keys.add(s));
-    } while (nextIndex !== 0);
-
-    const commands = [];
-    keys.forEach((key) => {
-      commands.push(key);
-    });
-
-    var multi = redisClient.multi();
-
-    commands.forEach(async (command) => {
-      return multi.get(command);
-    });
-
-    const result = await new Promise((resolve, reject) => {
-      resolve(multi.EXEC());
-    });
-
-    return result;
+    return results.filter((result) => result !== null);
   },
 
   saveMessage: async (message) => {
@@ -78,7 +58,14 @@ export default {
       .expire(`messages:${message.to}`, 24 * 60 * 60)
       .exec();
   },
-
+  saveBookmark: async (bookmarkInfo) => {
+    bookmarkInfo.createAt = new Date();
+    await redisClient.setEx(
+      `bookMark:${bookmarkInfo.roomId}`,
+      86400,
+      JSON.stringify({ bookmarkInfo })
+    );
+  },
   delete: async (key) => {
     await redisClient.DEL(`session:${key}`);
   },
