@@ -1,16 +1,10 @@
-import { socketModel, socketModelType } from "./../model/index";
+import { socketModel, socketModelType } from "../model/index";
 import { ObjectId } from "mongodb";
-import {
-  chatBookmarkModel,
-  chatBookmarkModelType,
-  bookmarkListModel,
-} from "../model";
 import { IChatBookmarkModel, bookmarkInfo } from "../interface";
-import { bookmarkListService } from "./bookmarkListService";
 import redisCache from "../utils/redisCache";
 import { logger } from "../utils/winston";
 
-class ChatBookmarkService implements IChatBookmarkModel {
+class BookmarkService implements IChatBookmarkModel {
   constructor(private socketModel: socketModelType) {}
 
   async createBookmark(bookmarkInfo: bookmarkInfo): Promise<any> {
@@ -85,4 +79,4 @@ class ChatBookmarkService implements IChatBookmarkModel {
   }
 }
 
-export const chatBookmarkService = new ChatBookmarkService(socketModel);
+export const bookmarkService = new BookmarkService(socketModel);

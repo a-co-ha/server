@@ -1,7 +1,8 @@
 import axios from "axios";
-import { AsyncRequestHandler, githubHeader } from "../constants";
+import { githubHeader } from "../constants";
 import { Octokit } from "octokit";
 import { GITHUBAUTH } from "../config";
+import { AsyncRequestHandler } from "../utils";
 
 interface IGithubController {
   getOrg: AsyncRequestHandler;

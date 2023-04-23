@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { AsyncRequestHandler } from "../constants";
+
+export type AsyncRequestHandler = (
+  req: Request,
+  res: Response,
+  next?: NextFunction
+) => Promise<any>;
 
 export const asyncHandler = (asyncHandlerArgFunc: AsyncRequestHandler) => {
   return async (req: Request, res: Response, next: NextFunction) => {

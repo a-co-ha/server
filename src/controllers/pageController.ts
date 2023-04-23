@@ -1,6 +1,6 @@
 import { pageService, templateService } from "../services";
 import { page } from "../interface";
-import { AsyncRequestHandler } from "../constants";
+import { AsyncRequestHandler } from "../utils";
 import redisCache from "../utils/redisCache";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";

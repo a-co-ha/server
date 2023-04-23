@@ -1,6 +1,6 @@
 import { Channel } from "./../model/channel";
 import { mysqlTransaction } from "./../db/mysqlTransaction";
-import { AsyncRequestHandler } from "./../constants";
+import { AsyncRequestHandler } from "../utils";
 import { channelService, ChannelService } from "../services/channelService";
 import { channelJoinInterface } from "../interface";
 import { MysqlTransaction } from "../db/mysqlTransaction";

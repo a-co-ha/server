@@ -45,7 +45,7 @@ export class PageService {
   public async createPage(
     channelId: number,
     blockId: string,
-    session: ClientSession,
+    session?: ClientSession,
     type?: string,
     progressStatus?: string
   ): Promise<any> {
@@ -75,7 +75,7 @@ export class PageService {
 
   public async createRoom(
     channelId: number,
-    session: ClientSession
+    session?: ClientSession
   ): Promise<any> {
     const room = await this.socketModel.create([{ channelId }], { session });
     return await this.createSocketPageList(channelId, room[0], session).then(

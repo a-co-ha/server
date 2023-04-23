@@ -1,7 +1,7 @@
 import { MessageService, messageService } from "./../services/messageService";
 import { Message } from "./../model/message";
 import redisCache from "../utils/redisCache";
-import { AsyncRequestHandler } from "../constants";
+import { AsyncRequestHandler } from "../utils";
 
 interface IMessageController {
   createMessage: AsyncRequestHandler;

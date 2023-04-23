@@ -49,6 +49,7 @@ export class UserService {
       attributes: [[sequelize.literal("DISTINCT user_id"), "userId"]],
     }).then((res) => res.map((res) => res.userId));
   }
+
   public async getUserWithChannels(
     id: number
   ): Promise<userHasChannels | null> {

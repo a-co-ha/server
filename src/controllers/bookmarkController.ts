@@ -1,6 +1,6 @@
 import { bookmarkInfo } from "../interface";
-import { chatBookmarkService } from "../services";
-import { AsyncRequestHandler } from "../constants";
+import { bookmarkService } from "../services";
+import { AsyncRequestHandler } from "../utils";
 
 interface IChatBookmarkController {
   findBookmark: AsyncRequestHandler;
@@ -9,7 +9,7 @@ interface IChatBookmarkController {
 export class BookmarkController implements IChatBookmarkController {
   findBookmark: AsyncRequestHandler = async (req, res) => {
     const id = req.params.bookmarkId;
-    const findBookmark = await chatBookmarkService.findBookmark(id);
+    const findBookmark = await bookmarkService.findBookmark(id);
     res.json(findBookmark);
   };
 
@@ -25,7 +25,7 @@ export class BookmarkController implements IChatBookmarkController {
       userId,
       userName: name,
     };
-    const updateBookmark = await chatBookmarkService.updateBookmark(
+    const updateBookmark = await bookmarkService.updateBookmark(
       id,
       bookmarkInfo
     );
@@ -34,21 +34,21 @@ export class BookmarkController implements IChatBookmarkController {
 
   deleteBookmark: AsyncRequestHandler = async (req, res) => {
     const id = req.params.bookmarkId;
-    const deleteBookmark = await chatBookmarkService.deleteBookmark(id);
+    const deleteBookmark = await bookmarkService.deleteBookmark(id);
     res.json(deleteBookmark);
   };
 
   getBookmarkList: AsyncRequestHandler = async (req, res) => {
     const room = req.params.roomId;
 
-    const findBookmarkList = await chatBookmarkService.findBookmarkList(room);
+    const findBookmarkList = await bookmarkService.findBookmarkList(room);
     res.json(findBookmarkList);
   };
 
   updateBookmarkList: AsyncRequestHandler = async (req, res) => {
     const room = req.params.roomId;
     const bookmark = req.body.bookmarkList;
-    const updateBookmarkList = await chatBookmarkService.updateBookmarkList(
+    const updateBookmarkList = await bookmarkService.updateBookmarkList(
       room,
       bookmark
     );

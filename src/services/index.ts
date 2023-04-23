@@ -5,5 +5,4 @@ export * from "./channelService";
 export * from "./pageService";
 export * from "./templateNormalService";
 export * from "./listService";
-export * from "./chatBookmarkService";
-export * from "./bookmarkListService";
+export * from "./bookmarkService";

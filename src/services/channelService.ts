@@ -1,18 +1,13 @@
-import { mysqlTransaction, MysqlTransaction } from "./../db/mysqlTransaction";
 import { listModel, socketModel, socketModelType } from "./../model/index";
 import { ChannelAttributes, channelJoinInterface } from "./../interface/index";
 import { IChannelInfo } from "../interface";
-import { decode, ENCTYPE } from "../utils/decode";
+import { decode, ENCTYPE } from "../constants";
 import { Channel, channelModel } from "../model/channel";
 import { ChannelUser, channelUserModel } from "../model/channelUser";
 import { User, userModel } from "../model/user";
 import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
-import {
-  bookmarkListService,
-  BookmarkListService,
-} from "./bookmarkListService";
 
 export class ChannelService {
   constructor(
@@ -22,8 +17,7 @@ export class ChannelService {
     private listModel: listModelType,
     private listService: ListService,
     private pageService: PageService,
-    private socketModel: socketModelType,
-    private bookmarkListService: BookmarkListService // server: any
+    private socketModel: socketModelType
   ) {}
   public async create(
     t: any,
@@ -45,7 +39,7 @@ export class ChannelService {
     );
 
     await this.createSpace(newChannel.id, blockId);
-    await this.bookmarkListService.createList(newChannel.id);
+
     await this.userJoin(t, {
       userId,
       name,
@@ -230,7 +224,7 @@ export class ChannelService {
     await Channel.destroy({ where: { id: channelId }, transaction: t });
 
     await this.listService.deleteList(channelId);
-    await this.bookmarkListService.deleteBookmarkList(channelId);
+
     return channelId;
   }
 
@@ -284,6 +278,5 @@ export const channelService = new ChannelService(
   listModel,
   listService,
   pageService,
-  socketModel,
-  bookmarkListService
+  socketModel
 );

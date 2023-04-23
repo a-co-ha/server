@@ -1,4 +1,4 @@
-import { chatBookmarkService } from "../services/chatBookmarkService";
+import { bookmarkService } from "../services/bookmarkService";
 import { UserService, userService } from "../services/userService";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
@@ -96,9 +96,9 @@ export class Socket {
   public start() {
     this.io.on("connection", async (socket: any) => {
       try {
-        // const sessionID = socket.handshake.headers.sessionid;
+        const sessionID = socket.handshake.headers.sessionid;
 
-        const sessionID = socket.handshake.auth.sessionID;
+        // const sessionID = socket.handshake.auth.sessionID;
 
         await socketValidation(sessionID, socket);
 
@@ -165,7 +165,7 @@ export class Socket {
             userId: socket.userID,
             userName: socket.name,
           };
-          const createBookmark = await chatBookmarkService.createBookmark(data);
+          const createBookmark = await bookmarkService.createBookmark(data);
           socket.emit("NEW_BOOKMARK", createBookmark);
           socket.to(roomId).emit("NEW_BOOKMARK", createBookmark);
         }
