@@ -33,7 +33,7 @@ export class Message extends Model<MessageAttributes> {
           type: DataTypes.STRING(200),
           allowNull: true,
         },
-        text: {
+        content: {
           type: DataTypes.STRING(2000),
           allowNull: true,
         },

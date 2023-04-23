@@ -26,7 +26,7 @@ export const connectSocket = (sessionID): Promise<any> => {
 
       setTimeout(() => {
         socket.emit("SEND_MESSAGE", {
-          text: "132132132",
+          content: "14010410401401",
           roomId: "6443575dbcd860241c4cf186",
         });
       }, 5000);

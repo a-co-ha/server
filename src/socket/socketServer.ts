@@ -10,7 +10,6 @@ import redisCache from "../utils/redisCache";
 import { messageController } from "../controllers";
 import { logger } from "../utils/winston";
 import { Server as httpServer } from "http";
-import { MessageAttributes } from "../interface";
 
 interface SocketData {
   sessionID?: string;
@@ -121,12 +120,12 @@ export class Socket {
       // 특정 채널에 전체 메세지
       socket.on(
         "SEND_MESSAGE",
-        async ({ text, roomId }: { text: string; roomId: string }) => {
+        async ({ content, roomId }: { content: string; roomId: string }) => {
           const data = {
             userId: socket.userID,
             name: socket.name,
             img: socket.img,
-            text,
+            content,
             roomId,
           };
           const message = await messageController.createMessage(data);

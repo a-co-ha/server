@@ -151,7 +151,7 @@ export interface MessageAttributes {
   name: string;
   userId: string;
   img?: string;
-  text?: string;
+  content?: string;
   roomId: string;
   createdAt?: Date;
   updatedAt?: Date;

@@ -1,11 +1,9 @@
-import { SessionOptions } from "express-session";
 import { ErrorType, LogColor } from "./../constants";
 import { errorResponse } from "./../utils/errorResponse";
 import { UserService, userService } from "./../services/userService";
 import { AsyncRequestHandler } from "../constants";
 import { connectSocket } from "../utils/connectSocket";
 import redisCache from "../utils/redisCache";
-import { logger } from "../utils/winston";
 
 interface IUserController {
   login: AsyncRequestHandler;
@@ -39,7 +37,7 @@ export class UserController implements IUserController {
       req.sessionID
     );
 
-    await connectSocket(req.sessionID);
+    // await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
 
