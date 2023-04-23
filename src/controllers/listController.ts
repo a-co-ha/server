@@ -1,6 +1,12 @@
-import { templateService, pageService } from "../services";
+import { socketModel } from "./../model/index";
+import {
+  templateService,
+  pageService,
+  PageService,
+  BookmarkListService,
+} from "../services";
 import { AsyncRequestHandler } from "../constants";
-import { listService } from "../services/listService";
+import { ListService, listService } from "../services/listService";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 
@@ -11,29 +17,33 @@ interface IListController {
 }
 
 export class ListController implements IListController {
-  constructor(private mongoTransaction: MongoTransaction) {
+  constructor(
+    private mongoTransaction: MongoTransaction,
+    private pageService: PageService,
+    private listService: ListService
+  ) {
     this.mongoTransaction = mongoTransaction;
   }
   findList: AsyncRequestHandler = async (req, res) => {
     const { channel } = req.body;
-    const list = await listService.findList(channel);
+    const list = await this.listService.findList(channel);
     res.json(list);
   };
 
   //배열변경
   updateList: AsyncRequestHandler = async (req, res) => {
-    const { EditablePage, channel } = req.body;
-    const listArrUpateResult = await this.mongoTransaction.withTransaction(
+    const { EditablePage: editablePage, channel } = req.body;
+    const listArrUpdateResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
-        const list = await listService.updateList(
+        const list = await this.listService.updateList(
           channel,
-          EditablePage,
+          editablePage,
           session
         );
         return list;
       }
     );
-    res.json(listArrUpateResult);
+    res.json(listArrUpdateResult);
   };
 
   deleteListOne: AsyncRequestHandler = async (req, res) => {
@@ -46,7 +56,7 @@ export class ListController implements IListController {
     ) {
       await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
-          await pageService.deletePage(id, channel, session);
+          await this.pageService.deletePage(id, channel, session);
         }
       );
     }
@@ -57,8 +67,12 @@ export class ListController implements IListController {
         }
       );
     }
-    const list = await listService.findList(channel);
+    const list = await this.listService.findList(channel);
     res.json(list);
   };
 }
-export const listController = new ListController(mongoTransaction);
+export const listController = new ListController(
+  mongoTransaction,
+  pageService,
+  listService
+);

@@ -40,7 +40,8 @@ export class MessageService {
   public async getMessage(roomId: string): Promise<any[]> {
     const cachedMessages = await this.getCachedMessages(roomId);
     const length = cachedMessages.length;
-    if (length < 100) {
+
+    if (length !== 0 && length < 100) {
       const counts = 100 - length;
       const lastId = cachedMessages[0].id;
 
@@ -48,6 +49,7 @@ export class MessageService {
 
       return [...cachedMessages, ...restMessage];
     }
+
     return cachedMessages;
   }
 }

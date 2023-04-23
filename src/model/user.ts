@@ -1,5 +1,5 @@
 import { DataTypes, Model, Association } from "sequelize";
-import { sequelize } from "./index";
+import { sequelize } from "../db/sequelize";
 import { UserAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
 import { Sequelize } from "sequelize";
@@ -49,6 +49,7 @@ export class User extends Model<UserAttributes> {
         freezeTableName: true,
         timestamps: false,
         updatedAt: "updateTimestamp",
+        ...sequelize.options.define,
       }
     );
     // this.hasMany(ChannelUser, {

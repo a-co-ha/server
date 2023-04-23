@@ -6,5 +6,5 @@ export * from "./templateRouter";
 export * from "./channelRouter";
 export * from "./userRouter";
 export * from "./listRouter";
-export * from "./chatBookmarkRouter";
+export * from "./bookmarkRouter";
 export * from "./imageRouter";

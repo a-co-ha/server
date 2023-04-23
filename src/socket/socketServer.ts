@@ -80,6 +80,7 @@ export class Socket {
 
   private async getUsers(socket: any): Promise<void> {
     const members = await userService.getChannelMembersID(socket.userID);
+
     if (members.length !== 0) {
       const sessions = await redisCache.findMemberSessions(members);
 

@@ -1,8 +1,8 @@
 import { Sequelize, DataTypes, Model, Association } from "sequelize";
 import { MessageAttributes } from "../interface";
 import { Channel } from "./channel";
-import { ChannelUser } from "./channelUser";
-import { sequelize } from "./index";
+
+import { sequelize } from "../db/sequelize";
 import { User } from "./user";
 
 export class Message extends Model<MessageAttributes> {

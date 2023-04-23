@@ -6,7 +6,7 @@ interface IChatBookmarkController {
   findBookmark: AsyncRequestHandler;
 }
 
-export class ChatBookmarkController implements IChatBookmarkController {
+export class BookmarkController implements IChatBookmarkController {
   findBookmark: AsyncRequestHandler = async (req, res) => {
     const id = req.params.bookmarkId;
     const findBookmark = await chatBookmarkService.findBookmark(id);
@@ -56,4 +56,4 @@ export class ChatBookmarkController implements IChatBookmarkController {
   };
 }
 
-export const chatBookmarkController = new ChatBookmarkController();
+export const bookmarkController = new BookmarkController();

@@ -1,3 +1,4 @@
+import { connect, sequelize } from "./db/sequelize";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -23,7 +24,7 @@ import {
 } from "./middlewares";
 import { MongoAdapter, MySqlAdapter } from "./db";
 import { createServer } from "http";
-import { sequelize } from "./model";
+
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
@@ -42,6 +43,7 @@ export class AppServer {
     this.middleWare();
     new MySqlAdapter();
     new MongoAdapter();
+    await connect();
     this.routes();
   }
 
@@ -54,15 +56,7 @@ export class AppServer {
     await socket.config();
     socket.start();
     server.listen(port, async () => {
-      try {
-        await sequelize.authenticate().then(() => {
-          logger.info("sequelize connection success");
-        });
-        await sequelize.sync();
-        logger.info(`server listening at http://localhost:${port}`);
-      } catch (err) {
-        logger.error(err);
-      }
+      logger.info(`server listening at http://localhost:${port}`);
     });
   }
 
@@ -91,10 +85,10 @@ export class AppServer {
     this.app.use(endPoint.template, templateRouter);
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);
-    this.app.use(errorHandler);
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
     this.app.use(endPoint.image, imageRouter);
     this.app.use(endPoint.bookmarks, bookmarkListRouter);
+    this.app.use(errorHandler);
   }
 }
 AppServer.start();

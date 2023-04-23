@@ -1,7 +1,7 @@
 import { DataTypes, Model, Association, Sequelize } from "sequelize";
+import { sequelize } from "../db/sequelize";
 import { ChannelAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
-import { sequelize } from "./index";
 
 export class Channel extends Model<ChannelAttributes> {
   declare id: number;

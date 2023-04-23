@@ -1,6 +1,4 @@
 import { Model, model } from "mongoose";
-import { Sequelize } from "sequelize";
-import { config } from "../config";
 import { PageInterface, PageSchema } from "./schema/pageSchema";
 import { TemplateInterface, TemplateSchema } from "./schema/templateSchema";
 import {
@@ -59,14 +57,3 @@ export type listModelType = Model<ListInterface>;
 export type socketModelType = Model<SocketInterface>;
 export type chatBookmarkModelType = Model<ChatBookmarkInterface>;
 export type bookmarkListModelType = Model<BookmarkListInterface>;
-
-export const sequelize = new Sequelize(
-  config.development.database,
-  config.development.username,
-  config.development.password,
-  {
-    host: config.development.host,
-    dialect: "mysql",
-    timezone: "+09:00",
-  }
-);

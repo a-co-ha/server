@@ -19,7 +19,9 @@ export class MongoTransaction {
     session.endSession();
   }
 
-  async withTransaction<T>(fn: (session:ClientSession) => Promise<T>): Promise<T> {
+  async withTransaction<T>(
+    fn: (session: ClientSession) => Promise<T>
+  ): Promise<T> {
     const session = await this.startTransaction();
     try {
       const result = await fn(session);

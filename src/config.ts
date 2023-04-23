@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 
 import { SessionOptions } from "express-session";
-import { Sequelize } from "sequelize";
-import { LogColor } from "./constants";
+
 import RedisStore from "connect-redis";
 import { redisClient } from "./utils/redisClient";
+import { Dialect } from "sequelize";
 const envFound = dotenv.config();
 
 export const port = parseInt(process.env.PORT ?? "8080", 10);
@@ -28,7 +28,7 @@ export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT ?? "10035");
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
-
+export const dialect = process.env.TYPEORM_CONNECTION as Dialect;
 export const REDIS_TIME_TO_LIVE = parseInt(
   process.env.REDIS_TIME_TO_LIVE ?? "300"
 );
@@ -36,16 +36,7 @@ export const SESSION_SECRET = process.env.SESSION_SECRET;
 export const GITHUBAUTH = process.env.GITHUBAUTH;
 export const GITHUBACCESSURL = process.env.GITHUBACCESSURL;
 export const GITHUBUSERURL = process.env.GITHUBUSERURL;
-export const config = {
-  development: {
-    username: mysqlUser,
-    password: mysqlPassword,
-    database: mysqlDataBase,
-    host: mysqlHost,
-    port: mysqlPort,
-    dialect: process.env.TYPEORM_CONNECTION,
-  },
-};
+
 export const sessionConfig = {
   store: new RedisStore({
     client: redisClient,

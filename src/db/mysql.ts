@@ -1,4 +1,4 @@
-import mysql, { Pool, PoolConnection } from "mysql2";
+import mysql, { Pool } from "mysql2";
 import {
   mysqlPort,
   mysqlHost,

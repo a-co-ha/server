@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { jwtSecret } from "../config";
 import { Op } from "sequelize";
 import { channelService, ChannelService } from "./channelService";
-import { sequelize } from "../model";
+import { sequelize } from "../db/sequelize";
 
 export class UserService {
   constructor(private user: User, private channelService: ChannelService) {}

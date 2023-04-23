@@ -1,5 +1,5 @@
-import { sequelize } from "../model";
 import { Sequelize, Transaction as TransactionType } from "sequelize";
+import { sequelize } from "./sequelize";
 
 export class MysqlTransaction {
   constructor(

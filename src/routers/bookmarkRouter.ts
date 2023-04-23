@@ -1,30 +1,31 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils";
-import { chatBookmarkController } from "../controllers";
+import { bookmarkController } from "../controllers";
 
 export const bookmarkRouter = Router();
 
 bookmarkRouter.get(
   "/:bookmarkId",
-  asyncHandler(chatBookmarkController.findBookmark)
+  asyncHandler(bookmarkController.findBookmark)
 );
 
 bookmarkRouter.patch(
   "/:bookmarkId",
-  asyncHandler(chatBookmarkController.updateBookmark)
+  asyncHandler(bookmarkController.updateBookmark)
 );
 bookmarkRouter.delete(
   "/:bookmarkId",
-  asyncHandler(chatBookmarkController.deleteBookmark)
+  asyncHandler(bookmarkController.deleteBookmark)
 );
 
 export const bookmarkListRouter = Router();
 
 bookmarkListRouter.get(
   "/:roomId",
-  asyncHandler(chatBookmarkController.getBookmarkList)
+  asyncHandler(bookmarkController.getBookmarkList)
 );
+
 bookmarkListRouter.patch(
   "/:roomId",
-  asyncHandler(chatBookmarkController.updateBookmarkList)
+  asyncHandler(bookmarkController.updateBookmarkList)
 );

@@ -8,6 +8,7 @@ import { mongoTransaction, MongoTransaction } from "../db";
 import { User } from "../model/user";
 import { ClientSession } from "mongoose";
 import { channel } from "diagnostics_channel";
+import { ObjectId } from "mongodb";
 
 export class PageService {
   private pageModel: pageModelType;
@@ -77,8 +78,8 @@ export class PageService {
     session: ClientSession
   ): Promise<any> {
     const room = await this.socketModel.create([{ channelId }], { session });
-    return await this.createSocketPageList(channelId, room[0]).then(() =>
-      this.listService.findList(channelId)
+    return await this.createSocketPageList(channelId, room[0], session).then(
+      () => this.listService.findList(channelId)
     );
   }
 
@@ -97,26 +98,19 @@ export class PageService {
 
   public async createSocketPageList(
     channelId: number,
-    room: any
+    room: any,
+    session: ClientSession
   ): Promise<any> {
-    const session = await this.mongoTransaction.startTransaction();
-    try {
-      const list = await listModel.findOne({ channelId });
-      const listId = list._id;
-      const pushTemplateList = await this.listModel
-        .findByIdAndUpdate(
-          { _id: listId },
-          { $push: { SocketPage: { page: room } } }
-        )
-        .session(session);
-      await this.mongoTransaction.commitTransaction(session);
-      return pushTemplateList;
-    } catch (error) {
-      await this.mongoTransaction.abortTransaction(session);
-      throw error;
-    } finally {
-      session.endSession();
-    }
+    const list = await listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate(
+        { _id: listId },
+        { $push: { SocketPage: { page: room } } }
+      )
+      .session(session);
+
+    return pushTemplateList;
   }
   public async editRoomName(
     id: string,

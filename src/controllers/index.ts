@@ -5,6 +5,5 @@ export * from "./channelController";
 export * from "./messageController";
 export * from "./listController";
 export * from "./githubController";
-export * from "./chatBookmarkController";
+export * from "./bookmarkController";
 export * from "./imageController";
-export * from "./bookmarkListController";
