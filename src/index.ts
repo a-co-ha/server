@@ -27,7 +27,7 @@ import { sequelize } from "./model";
 import { InviteDto } from "./dto";
 import useSession from "./middlewares/useSession";
 import checkSession from "./middlewares/checkSession";
-import { Socket } from "./socketServer";
+import { Socket } from "./socket/socketServer";
 import { logger } from "./utils/winston";
 import { morganMiddleware } from "./middlewares/morgan";
 

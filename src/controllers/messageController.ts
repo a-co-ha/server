@@ -1,29 +1,28 @@
+import { MessageService, messageService } from "./../services/messageService";
 import { Message } from "./../model/message";
 import redisCache from "../utils/redisCache";
+import { AsyncRequestHandler } from "../constants";
 
 interface IMessageController {
-  createMessage: any;
+  createMessage: AsyncRequestHandler;
+  getMessage: AsyncRequestHandler;
 }
 export class MessageController implements IMessageController {
+  constructor(private messageService: MessageService) {}
   createMessage = async (data: any) => {
-    const { roomId, text, name, img, from } = data;
-
-    // redisCache.delete(`messageList:${channelId}`);
-    //  logger.info({ name, githubID, img, text, channelId });
-    const messageResponse = await Message.create({
-      name,
-      img,
-      text: text,
-      roomId,
-    });
-    const message = messageResponse.get({ plain: true });
-
-    message["userId"] = from;
+    const message = await Message.create(data).then((res) =>
+      res.get({ plain: true })
+    );
+    await redisCache.saveMessage(message);
     delete message.roomId;
-    await redisCache.saveMessage(data);
 
     return { message };
   };
+  getMessage: AsyncRequestHandler = async (req, res) => {
+    const roomId = req.params.id;
+    const messages = await this.messageService.getMessage(roomId);
+    res.json({ roomId, messages });
+  };
 }
 
-export const messageController = new MessageController();
+export const messageController = new MessageController(messageService);

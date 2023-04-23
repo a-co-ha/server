@@ -23,7 +23,7 @@ export default {
     }
   },
 
-  findMessagesForUser: async (roomId) => {
+  findMessages: async (roomId) => {
     return await redisClient
       .lRange(`messages:${roomId}`, 0, -1)
       .then((results) => {
@@ -47,7 +47,7 @@ export default {
     return results.filter((result) => result !== null);
   },
 
-  saveMessage: async (message) => {
+  savePrivateMessage: async (message) => {
     message.createAt = new Date();
     const value = JSON.stringify(message);
     await redisClient
@@ -58,8 +58,16 @@ export default {
       .expire(`messages:${message.to}`, 24 * 60 * 60)
       .exec();
   },
+
+  saveMessage: async ({ roomId, ...message }) => {
+    const value = JSON.stringify(message);
+    await redisClient
+      .multi()
+      .rPush(`messages:${roomId}`, value)
+      .expire(`messages:${roomId}`, 24 * 60 * 60)
+      .exec();
+  },
   saveBookmark: async (bookmarkInfo) => {
-    bookmarkInfo.createAt = new Date();
     await redisClient.setEx(
       `bookMark:${bookmarkInfo.roomId}`,
       86400,

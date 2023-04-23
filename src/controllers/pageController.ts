@@ -9,7 +9,6 @@ interface IPageController {
   createPage: AsyncRequestHandler;
   pushBlock: AsyncRequestHandler;
   createRoom: AsyncRequestHandler;
-  getChat: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
 }
@@ -131,27 +130,6 @@ export class PageController implements IPageController {
       );
       res.json(deletePageResult);
     }
-  };
-
-  getChat: AsyncRequestHandler = async (req, res) => {
-    const { userId } = req.user;
-    const roomId = req.params.id;
-
-    const messages = await pageService.getMessage(roomId);
-    // const messages = await redisCache.findMessagesForUser(roomId);
-    // const messagesPerUser = new Map();
-    // todo
-    // for (const message of messages) {
-    //   const { from, to } = message;
-    //   const otherUser = userId === from ? to : from;
-
-    //   if (messagesPerUser.has(otherUser)) {
-    //     messagesPerUser.get(otherUser).push(message);
-    //   } else {
-    //     messagesPerUser.set(otherUser, [message]);
-    //   }
-    // }
-    res.json({ roomId, messages });
   };
 }
 

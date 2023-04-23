@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { pageController } from "../controllers";
+import { messageController, pageController } from "../controllers";
 import { asyncHandler } from "../utils/asyncHandler";
 import { DtoValidatorMiddleware, loginRequired } from "../middlewares";
 import { PageDto } from "../dto";
@@ -23,7 +23,7 @@ pageRouter.post(
 pageRouter.get(
   "/room/:id",
   loginRequired,
-  asyncHandler(pageController.getChat)
+  asyncHandler(messageController.getMessage)
 );
 pageRouter.put(
   "/:id",

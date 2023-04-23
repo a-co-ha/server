@@ -3,7 +3,6 @@ import { mysqlTransaction } from "./../db/mysqlTransaction";
 import { AsyncRequestHandler } from "./../constants";
 import { channelService, ChannelService } from "../services/channelService";
 import { channelJoinInterface } from "../interface";
-import { Socket } from "../socketServer";
 import { MysqlTransaction } from "../db/mysqlTransaction";
 
 interface IChannelController {

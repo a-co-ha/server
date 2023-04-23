@@ -1,21 +1,36 @@
-import { chatBookmarkService } from "./services/chatBookmarkService";
-import { UserService, userService } from "./services/userService";
-import { ioCorsOptions } from "./config";
+import { chatBookmarkService } from "../services/chatBookmarkService";
+import { UserService, userService } from "../services/userService";
+import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
-import { createSocketAdapter } from "./utils/redisClient";
+import { createSocketAdapter } from "../utils/redisClient";
 import sharedSession from "express-socket.io-session";
-import useSession from "./middlewares/useSession";
-import { socketValidation } from "./middlewares";
-import redisCache from "./utils/redisCache";
-import { messageController } from "./controllers";
-import { logger } from "./utils/winston";
+import useSession from "../middlewares/useSession";
+import { imageUpload, socketValidation } from "../middlewares";
+import redisCache from "../utils/redisCache";
+import { messageController } from "../controllers";
+import { logger } from "../utils/winston";
 import { Server as httpServer } from "http";
-import { MessageAttributes } from "./interface";
+import { MessageAttributes } from "../interface";
+
 interface SocketData {
   sessionID?: string;
   userID: number;
   name: string;
   rooms: string[];
+}
+
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+interface InterServerEvents {
+  ping: () => void;
 }
 
 interface UserData {
@@ -27,7 +42,6 @@ interface UserData {
 
 export class Socket {
   private io: Server;
-  private currentSocket: { [key: string]: SocketIO } = {};
 
   constructor(server: httpServer) {
     this.io = new Server<SocketData>(server, ioCorsOptions);
@@ -44,15 +58,10 @@ export class Socket {
     );
   }
 
-  public async join(socket: any) {
-    // DM 연결
-    socket.join(socket.userID);
-    // Room 연결
-    if (socket.roomIds) {
-      for (const room of socket.roomIds) {
+  public async join(socket: any, roomIds: string[]) {
+    if (roomIds) {
+      for (const room of roomIds) {
         socket.join(room);
-
-        // 커넥션했다고 알림
         socket.broadcast.to(room).emit("NEW_MEMBER", {
           roomId: room,
           userID: socket.userID,
@@ -60,6 +69,27 @@ export class Socket {
           connected: true,
         });
       }
+    }
+  }
+
+  private async userInfo(socket: any): Promise<void> {
+    const { sessionID, userID, name } = socket;
+    const rooms = Array.from(socket.rooms).slice(1).map(String);
+    const user = { sessionID, userID, name, rooms };
+    socket.emit("USER_INFO", user);
+  }
+
+  private async getUsers(socket: any): Promise<void> {
+    const members = await userService.getChannelMembersID(socket.userID);
+    if (members.length !== 0) {
+      const sessions = await redisCache.findMemberSessions(members);
+
+      const users = sessions.map((session) => {
+        const { userId, name, img } = JSON.parse(session).user;
+        return { userID: userId, name, img };
+      });
+
+      socket.emit("MEMBERS", users);
     }
   }
 
@@ -72,9 +102,10 @@ export class Socket {
 
         await socketValidation(sessionID, socket);
 
-        this.currentSocket[socket.userID] = socket;
+        // DM 연결
+        socket.join(socket.userID);
 
-        await this.join(socket);
+        await this.join(socket, socket.roomIds);
         await this.getUsers(socket);
         await this.userInfo(socket);
       } catch (err: any) {
@@ -83,16 +114,20 @@ export class Socket {
         return;
       }
 
+      socket.on("JOIN_CHANNEL", async ({ roomIds }: { roomIds: string[] }) => {
+        await this.join(socket, roomIds);
+      });
+
       // 특정 채널에 전체 메세지
       socket.on(
         "SEND_MESSAGE",
-        async ({ roomId, text }: { roomId: string; text: string }) => {
+        async ({ text, roomId }: { text: string; roomId: string }) => {
           const data = {
-            from: socket.userID,
+            userId: socket.userID,
             name: socket.name,
             img: socket.img,
             text,
-            to: roomId,
+            roomId,
           };
           const message = await messageController.createMessage(data);
           socket.emit("RECEIVE_MESSAGE", message);
@@ -137,7 +172,6 @@ export class Socket {
       );
       // 연결 해제
       socket.on("disconnect", async () => {
-        delete this.currentSocket[socket.userID];
         const matchingSockets = await this.io.in(socket.userID).fetchSockets();
 
         const isDisconnected = matchingSockets.length === 0;
@@ -154,36 +188,5 @@ export class Socket {
         }
       });
     });
-  }
-
-  private async userInfo(socket: any): Promise<void> {
-    const { sessionID, userID, name } = socket;
-    const rooms = Array.from(socket.rooms).slice(1).map(String);
-    const user = {
-      sessionID,
-      userID,
-      name,
-      rooms,
-    };
-
-    socket.emit("USER_INFO", user);
-  }
-
-  private async getUsers(socket: any): Promise<void> {
-    const members = await userService.getChannelMembersID(socket.userID);
-    if (members.length !== 0) {
-      const sessions = await redisCache.findMemberSessions(members);
-
-      const users = sessions.map((session) => {
-        const { userId, name, img } = JSON.parse(session).user;
-        return {
-          userID: userId,
-          name,
-          img,
-        };
-      });
-
-      socket.emit("MEMBERS", users);
-    }
   }
 }

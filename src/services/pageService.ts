@@ -4,7 +4,7 @@ import { IPageModel, block, page } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
-import { Message, messageModel } from "../model/message";
+
 import { User } from "../model/user";
 import { ClientSession } from "mongoose";
 import { channel } from "diagnostics_channel";
@@ -14,21 +14,21 @@ export class PageService {
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
-  private messageModel: Message;
+
   private listService: ListService;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
     socketModel: socketModelType,
     mongoTransaction: MongoTransaction,
-    messageModel: Message,
+
     listService: ListService
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoTransaction = mongoTransaction;
-    this.messageModel = messageModel;
+
     this.listService = listService;
   }
 
@@ -176,29 +176,6 @@ export class PageService {
     await this.listService.deleteListPage(channelId, id, session);
     return deletePage;
   }
-
-  public async getMessage(roomId: string): Promise<any[]> {
-    const messages: any = await Message.findAll({
-      include: {
-        model: User,
-        attributes: ["userId"],
-      },
-      where: { roomId },
-      attributes: {
-        exclude: ["roomId"],
-      },
-      raw: true,
-    });
-
-    const modifiedMessages = messages.map((message) => {
-      const modifiedMessage = { ...message };
-      modifiedMessage.userId = message["user.userId"];
-      delete modifiedMessage["user.userId"];
-      return modifiedMessage;
-    });
-
-    return modifiedMessages;
-  }
 }
 
 export const pageService = new PageService(
@@ -206,6 +183,6 @@ export const pageService = new PageService(
   listModel,
   socketModel,
   mongoTransaction,
-  messageModel,
+
   listService
 );

@@ -6,6 +6,8 @@ import { sequelize } from "./index";
 import { User } from "./user";
 
 export class Message extends Model<MessageAttributes> {
+  declare id: number;
+  declare roomId: string;
   public static associations: {
     belongToChannel: Association<Channel, Message>;
     belongToUser: Association<User, Message>;
@@ -22,6 +24,10 @@ export class Message extends Model<MessageAttributes> {
         name: {
           type: DataTypes.STRING(45),
           allowNull: false,
+        },
+        userId: {
+          type: DataTypes.NUMBER,
+          field: "user_id",
         },
         img: {
           type: DataTypes.STRING(200),

@@ -2,13 +2,12 @@ import io from "socket.io-client";
 import { port } from "../config";
 import { logger } from "./winston";
 
-export const connectSocket = (sessionID, userID): Promise<any> => {
+export const connectSocket = (sessionID): Promise<any> => {
   return new Promise((resolve, reject) => {
     const socket = io(`http://localhost:${port}`, {
       withCredentials: true,
       auth: {
         sessionID,
-        userID,
       },
     });
 
@@ -19,22 +18,20 @@ export const connectSocket = (sessionID, userID): Promise<any> => {
     socket.on("connect_error", (error) => {
       reject(error);
     });
-    socket.on("users", (data) => {
-      logger.warn(` users ${JSON.stringify(data)}`);
+    socket.on("RECEIVE_MESSAGE", (data) => {
+      logger.warn(`RECEIVE_MESSAGE ${JSON.stringify(data)}`);
     });
-    socket.on("message-receive", (data) => {
-      logger.warn(` message-receive ${JSON.stringify(data)}`);
-    });
-    socket.on("session", (data) => {
+    socket.on("USER_INFO", (data) => {
       logger.warn(`session ${JSON.stringify(data)}`);
-      // setTimeout(() => {
-      //   socket.emit("message-send", {
-      //     roomId: data?.roomIds[0],
-      //     text: "444444",
-      //   });
-      // }, 10000);
+
+      setTimeout(() => {
+        socket.emit("SEND_MESSAGE", {
+          text: "132132132",
+          roomId: "6443575dbcd860241c4cf186",
+        });
+      }, 5000);
     });
-    socket.on("user connected", (data) => {
+    socket.on("NEW_MEMBER", (data) => {
       logger.warn(`user connected ${JSON.stringify(data)}`);
     });
 

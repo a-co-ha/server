@@ -39,7 +39,7 @@ export class UserController implements IUserController {
       req.sessionID
     );
 
-    // await connectSocket(req.sessionID, result.user.userId);
+    await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
 
