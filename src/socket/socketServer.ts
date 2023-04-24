@@ -66,7 +66,7 @@ export class Socket {
           socket.handshake.auth.sessionID || socket.handshake.headers.sessionid;
 
         if (!sessionID) {
-          throw new Error("Session ID not found");
+          throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
         await socketValidation(sessionID, socket);
@@ -174,6 +174,10 @@ export class Socket {
           connected: true,
         });
       }
+      logger.info(
+        "[1] 채팅방 조인",
+        `user : ${socket.name}, sessionID : ${socket.sessionID}, rooms: ${socket.rooms}`
+      );
     }
   }
 
@@ -181,7 +185,12 @@ export class Socket {
     const { sessionID, userID, name } = socket;
     const rooms = Array.from(socket.rooms).slice(1).map(String);
     const user = { sessionID, userID, name, rooms };
+
     socket.emit("USER_INFO", user);
+    logger.info(
+      "[3] 소켓 접속완료 ",
+      `user : ${socket.name}, sessionID : ${socket.sessionID}, rooms: ${socket.rooms}`
+    );
   }
 
   private async getUsers(socket: any): Promise<void> {
@@ -196,6 +205,8 @@ export class Socket {
       });
 
       socket.emit("MEMBERS", users);
+
+      logger.info("[2] 현재 접속자", `user : ${JSON.stringify(users)}`);
     }
   }
 }

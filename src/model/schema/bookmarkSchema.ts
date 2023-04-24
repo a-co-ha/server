@@ -1,4 +1,3 @@
-import moment from "moment-timezone";
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
@@ -7,7 +6,7 @@ export interface BookmarkInterface {
   content: string;
   userId: number;
   name: string;
-  createdAt: string;
+  createdAt?: string;
   updatedAt: string;
   roomId: string;
 }

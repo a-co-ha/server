@@ -1,4 +1,4 @@
-import { LogColor, ErrorType } from "../constants";
+import { ErrorType } from "../constants";
 import { ErrorRequestHandler } from "express";
 import { errorResponse } from "../utils";
 import { logger } from "../utils/winston";

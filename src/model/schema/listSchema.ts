@@ -1,4 +1,3 @@
-import { bookmarkInfo } from "./../../interface/index";
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";

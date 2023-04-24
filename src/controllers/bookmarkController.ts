@@ -1,6 +1,7 @@
-import { bookmarkInfo } from "../interface";
+import moment from "moment-timezone";
+import { BookmarkInterface } from "../model/schema/bookmarkSchema";
 import { bookmarkService } from "../services";
-import { AsyncRequestHandler } from "../utils";
+import { AsyncRequestHandler, getCurrentDate } from "../utils";
 
 interface IChatBookmarkController {
   findBookmark: AsyncRequestHandler;
@@ -9,21 +10,22 @@ interface IChatBookmarkController {
 export class BookmarkController implements IChatBookmarkController {
   findBookmark: AsyncRequestHandler = async (req, res) => {
     const id = req.params.bookmarkId;
-    const findBookmark = await bookmarkService.findBookmark(id);
-    res.json(findBookmark);
+    const bookmarkList = await bookmarkService.findBookmark(id);
+    res.json(...bookmarkList);
   };
 
   updateBookmark: AsyncRequestHandler = async (req, res) => {
     const id = req.params.bookmarkId;
-
+    const updatedAt = moment(getCurrentDate()).format("YYYY-MM-DD HH:mm:ss");
     const { bookmarkName, content } = req.body;
     const { userId, name } = req.user;
-    const bookmarkInfo: bookmarkInfo = {
+    const bookmarkInfo: BookmarkInterface = {
       roomId: id,
       bookmarkName,
       content,
       userId,
-      userName: name,
+      name,
+      updatedAt,
     };
     const updateBookmark = await bookmarkService.updateBookmark(
       id,
