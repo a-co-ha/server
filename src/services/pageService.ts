@@ -1,4 +1,4 @@
-import { socketModel, socketModelType } from "./../model/index";
+import { socketModel, socketModelType, templateModelType,templateModel } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { ListService, listService } from "./listService";
@@ -15,13 +15,15 @@ export class PageService {
   private mongoTransaction: MongoTransaction;
   private messageModel: Message;
   private listService: ListService;
+  private templateModel:templateModelType
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
     socketModel: socketModelType,
     mongoTransaction: MongoTransaction,
     messageModel: Message,
-    listService: ListService
+    listService: ListService,
+    templateModel:templateModelType
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
@@ -29,6 +31,7 @@ export class PageService {
     this.mongoTransaction = mongoTransaction;
     this.messageModel = messageModel;
     this.listService = listService;
+    this.templateModel = templateModel
   }
 
   public async findPage(
@@ -181,6 +184,18 @@ export class PageService {
 
     return modifiedMessages;
   }
+
+
+  public async pageTemplateSearch(channelId:number,searchTerms:string) :Promise<any>{
+    const search = await pageModel.find({channelId},{ $or: [
+      { pageName: { $regex: new RegExp(searchTerms) } },
+      { "blocks.html": { $regex: new RegExp(searchTerms)} }
+    ]})
+    console.log(search);
+    
+  }
+
+
 }
 
 export const pageService = new PageService(
@@ -189,5 +204,6 @@ export const pageService = new PageService(
   socketModel,
   mongoTransaction,
   messageModel,
-  listService
+  listService,
+  templateModel
 );

@@ -47,28 +47,9 @@ class TemplateService {
     type: string,
     session: ClientSession
   ): Promise<template> {
-    // const session = await this.mongoTransaction.startTransaction();
-    // const blocks: block = {
-    //   blockId: blockId,
-    //   tag: "p",
-    //   html: "",
-    //   imgUrl: "",
-    // };
     const pageType = "progress-page";
     const progressStatus = "todo";
-    // try{
-    //   const pages = await this.pageModel.create(
-    //     [
-    //       {
-    //         channelId,
-    //         blocks,
-    //         pageType,
-    //         progressStatus,
-    //       },
-    //     ],
-    //     { session }
-    //   );
-
+  
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
@@ -88,13 +69,8 @@ class TemplateService {
       { session }
     );
     await this.createListTemplate(channelId, template[0]);
-    // await this.mongoTransaction.commitTransaction(session);
     return template[0];
-    // }catch (error) {
-    //   throw error;
-    // } finally {
-    //   session.endSession();
-    // }
+   
   }
 
   public async createListTemplate(
@@ -107,7 +83,6 @@ class TemplateService {
       { _id: listId },
       { $push: { EditablePage: { template } } }
     );
-
     return pushTemplateList;
   }
   public async findTemplate(
@@ -155,8 +130,6 @@ class TemplateService {
         .findByIdAndUpdate({ _id: id }, { $push: { pages } })
         .session(session)
         .then(async () => {
-          console.log(await this.findTemplate(channelId, id, session));
-
           return await this.findTemplate(channelId, id, session);
         });
     }

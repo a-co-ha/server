@@ -148,6 +148,13 @@ export class PageController implements IPageController {
     // }
     res.json({ roomId, messages });
   };
+
+  pageTemplateSearch:AsyncRequestHandler =async (req,res) => {
+    const {searchTerms,channel} = req.body
+    const search = await pageService.pageTemplateSearch(channel,searchTerms)
+    res.json(search)
+  }
+
 }
 
 export const pageController = new PageController(mongoTransaction);
