@@ -21,7 +21,7 @@ class BookmarkService implements IChatBookmarkModel {
 
       await redisCache.saveBookmark(bookmarkInfo);
 
-      return bookmarkList.bookmarkList;
+      return bookmarkInfo;
     } catch (err: any) {
       logger.error(err.message);
       return;
