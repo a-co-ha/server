@@ -4315,6 +4315,7 @@ __metadata:
     jsonwebtoken: ^8.5.1
     koa-session2: babel
     lint-staged: ^13.1.0
+    moment-timezone: ^0.5.43
     mongoclient: ^1.0.3
     mongodb: ^5.2.0
     mongoose: ^6.7.2
@@ -8748,7 +8749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.35":
+"moment-timezone@npm:^0.5.35, moment-timezone@npm:^0.5.43":
   version: 0.5.43
   resolution: "moment-timezone@npm:0.5.43"
   dependencies:

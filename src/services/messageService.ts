@@ -6,6 +6,7 @@ export class MessageService {
   private async getCachedMessages(roomId: string): Promise<any[]> {
     return await redisCache.findMessages(roomId);
   }
+
   private async getRestMessage(
     roomId: string,
     counts: number,
@@ -39,11 +40,12 @@ export class MessageService {
   }
   public async getMessage(roomId: string): Promise<any[]> {
     const cachedMessages = await this.getCachedMessages(roomId);
+
     const length = cachedMessages.length;
 
     if (length !== 0 && length < 100) {
       const counts = 100 - length;
-      const lastId = cachedMessages[0].id;
+      const lastId = cachedMessages[length - 1].id;
 
       const restMessage = await this.getRestMessage(roomId, counts, lastId);
 

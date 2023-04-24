@@ -10,6 +10,8 @@ import redisCache from "../utils/redisCache";
 import { messageController } from "../controllers";
 import { logger } from "../utils/winston";
 import { Server as httpServer } from "http";
+import { getCurrentDate } from "../utils";
+import moment from "moment-timezone";
 
 interface SocketData {
   sessionID?: string;
@@ -57,48 +59,15 @@ export class Socket {
     );
   }
 
-  public async join(socket: any, roomIds: string[]) {
-    if (roomIds) {
-      for (const room of roomIds) {
-        socket.join(room);
-        socket.broadcast.to(room).emit("NEW_MEMBER", {
-          roomId: room,
-          userID: socket.userID,
-          name: socket.name,
-          connected: true,
-        });
-      }
-    }
-  }
-
-  private async userInfo(socket: any): Promise<void> {
-    const { sessionID, userID, name } = socket;
-    const rooms = Array.from(socket.rooms).slice(1).map(String);
-    const user = { sessionID, userID, name, rooms };
-    socket.emit("USER_INFO", user);
-  }
-
-  private async getUsers(socket: any): Promise<void> {
-    const members = await userService.getChannelMembersID(socket.userID);
-
-    if (members.length !== 0) {
-      const sessions = await redisCache.findMemberSessions(members);
-
-      const users = sessions.map((session) => {
-        const { userId, name, img } = JSON.parse(session).user;
-        return { userID: userId, name, img };
-      });
-
-      socket.emit("MEMBERS", users);
-    }
-  }
-
   public start() {
     this.io.on("connection", async (socket: any) => {
       try {
-        const sessionID = socket.handshake.headers.sessionid;
+        const sessionID =
+          socket.handshake.auth.sessionID || socket.handshake.headers.sessionid;
 
-        // const sessionID = socket.handshake.auth.sessionID;
+        if (!sessionID) {
+          throw new Error("Session ID not found");
+        }
 
         await socketValidation(sessionID, socket);
 
@@ -158,12 +127,16 @@ export class Socket {
           content: string;
           roomId: string;
         }) => {
+          const date = moment(getCurrentDate()).format("YYYY-MM-DD HH:mm:ss");
+
           const data = {
             bookmarkName,
             content,
             roomId,
             userId: socket.userID,
-            userName: socket.name,
+            name: socket.name,
+            createdAt: date,
+            updatedAt: date,
           };
           const createBookmark = await bookmarkService.createBookmark(data);
           socket.emit("NEW_BOOKMARK", createBookmark);
@@ -188,5 +161,41 @@ export class Socket {
         }
       });
     });
+  }
+
+  public async join(socket: any, roomIds: string[]) {
+    if (roomIds) {
+      for (const room of roomIds) {
+        socket.join(room);
+        socket.broadcast.to(room).emit("NEW_MEMBER", {
+          roomId: room,
+          userID: socket.userID,
+          name: socket.name,
+          connected: true,
+        });
+      }
+    }
+  }
+
+  private async userInfo(socket: any): Promise<void> {
+    const { sessionID, userID, name } = socket;
+    const rooms = Array.from(socket.rooms).slice(1).map(String);
+    const user = { sessionID, userID, name, rooms };
+    socket.emit("USER_INFO", user);
+  }
+
+  private async getUsers(socket: any): Promise<void> {
+    const members = await userService.getChannelMembersID(socket.userID);
+
+    if (members.length !== 0) {
+      const sessions = await redisCache.findMemberSessions(members);
+
+      const users = sessions.map((session) => {
+        const { userId, name, img } = JSON.parse(session).user;
+        return { userID: userId, name, img };
+      });
+
+      socket.emit("MEMBERS", users);
+    }
   }
 }

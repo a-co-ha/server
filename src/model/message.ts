@@ -1,7 +1,7 @@
 import { Sequelize, DataTypes, Model, Association } from "sequelize";
 import { MessageAttributes } from "../interface";
 import { Channel } from "./channel";
-
+import moment from "moment-timezone";
 import { sequelize } from "../db/sequelize";
 import { User } from "./user";
 
@@ -53,8 +53,15 @@ export class Message extends Model<MessageAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: true,
-        createdAt: true,
+        createdAt: "createdAt",
         updatedAt: false,
+        getterMethods: {
+          createdAt() {
+            return moment(this.getDataValue("createdAt"))
+              .tz("Asia/Seoul")
+              .format("YYYY-MM-DD HH:mm:ss");
+          },
+        },
       }
     );
     this.belongsTo(User, { foreignKey: "name", targetKey: "name" });

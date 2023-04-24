@@ -15,7 +15,7 @@ export const sequelize = new Sequelize(
   {
     host: mysqlHost,
     dialect,
-    timezone: "+09:00",
+    timezone: "Asia/Seoul",
   }
 );
 

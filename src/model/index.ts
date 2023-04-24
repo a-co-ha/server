@@ -7,14 +7,8 @@ import {
   SocketInterface,
   socketSchema,
 } from "./schema/listSchema";
-import {
-  ChatBookmarkSchema,
-  ChatBookmarkInterface,
-} from "./schema/chatBookmarkSchema";
-import {
-  BookmarkListInterface,
-  bookmarkListSchema,
-} from "./schema/bookmarkListSchema";
+import { BookmarkSchema, BookmarkInterface } from "./schema/bookmarkSchema";
+
 interface ModelIdentifierInterface {
   page: string;
   template: string;
@@ -42,18 +36,13 @@ export const socketModel = model<SocketInterface>(
   modelIdentifier.socket,
   socketSchema
 );
-export const chatBookmarkModel = model<ChatBookmarkInterface>(
+export const chatBookmarkModel = model<BookmarkInterface>(
   modelIdentifier.chatBookmark,
-  ChatBookmarkSchema
-);
-export const bookmarkListModel = model<BookmarkListInterface>(
-  modelIdentifier.bookmarkList,
-  bookmarkListSchema
+  BookmarkSchema
 );
 
 export type pageModelType = Model<PageInterface>;
 export type templateModelType = Model<TemplateInterface>;
 export type listModelType = Model<ListInterface>;
 export type socketModelType = Model<SocketInterface>;
-export type chatBookmarkModelType = Model<ChatBookmarkInterface>;
-export type bookmarkListModelType = Model<BookmarkListInterface>;
+export type chatBookmarkModelType = Model<BookmarkInterface>;

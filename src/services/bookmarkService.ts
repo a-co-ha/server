@@ -1,14 +1,17 @@
-import { socketModel, socketModelType } from "../model/index";
 import { ObjectId } from "mongodb";
-import { IChatBookmarkModel, bookmarkInfo } from "../interface";
+import { socketModel, socketModelType } from "../model";
+import { IChatBookmarkModel } from "../interface";
+import { logger, getCurrentDate } from "../utils";
+import { BookmarkInterface } from "../model/schema/bookmarkSchema";
 import redisCache from "../utils/redisCache";
-import { logger } from "../utils/winston";
+import moment from "moment-timezone";
 
 class BookmarkService implements IChatBookmarkModel {
   constructor(private socketModel: socketModelType) {}
 
-  async createBookmark(bookmarkInfo: bookmarkInfo): Promise<any> {
+  async createBookmark(bookmarkInfo: BookmarkInterface): Promise<any> {
     const { roomId } = bookmarkInfo;
+
     try {
       const bookmarkList = await socketModel.findOneAndUpdate(
         { _id: roomId },
@@ -36,8 +39,11 @@ class BookmarkService implements IChatBookmarkModel {
       },
     ]);
   }
-  async updateBookmark(id: string, bookmarkInfo: bookmarkInfo): Promise<any> {
-    const { bookmarkName, content, userId, userName } = bookmarkInfo;
+  async updateBookmark(
+    id: string,
+    bookmarkInfo: BookmarkInterface
+  ): Promise<any> {
+    const { bookmarkName, content, userId, name } = bookmarkInfo;
     return await socketModel.updateMany(
       {
         "bookmarkList._id": new ObjectId(id),
@@ -47,7 +53,7 @@ class BookmarkService implements IChatBookmarkModel {
           "bookmarkList.$.bookmarkName": bookmarkName,
           "bookmarkList.$.content": content,
           "bookmarkList.$.userId": userId,
-          "bookmarkList.$.userName": userName,
+          "bookmarkList.$.name": name,
         },
       }
     );
@@ -68,7 +74,7 @@ class BookmarkService implements IChatBookmarkModel {
   }
   async updateBookmarkList(
     roomId: string,
-    bookmark: bookmarkInfo[]
+    bookmark: BookmarkInterface[]
   ): Promise<any> {
     return await this.socketModel
       .findOneAndUpdate(

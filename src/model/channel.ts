@@ -41,7 +41,6 @@ export class Channel extends Model<ChannelAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: false,
-        updatedAt: "updateTimestamp",
       }
     );
 

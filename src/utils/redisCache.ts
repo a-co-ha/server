@@ -27,7 +27,7 @@ export default {
     return await redisClient
       .lRange(`messages:${roomId}`, 0, -1)
       .then((results) => {
-        return results.map((result) => JSON.parse(result));
+        return results.map((result) => JSON.parse(result)).reverse();
       });
   },
 

@@ -43,7 +43,6 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: false,
-        updatedAt: "updateTimestamp",
       }
     );
     // Channel 모델과 연결

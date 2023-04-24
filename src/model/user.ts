@@ -48,8 +48,6 @@ export class User extends Model<UserAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: false,
-        updatedAt: "updateTimestamp",
-        ...sequelize.options.define,
       }
     );
     // this.hasMany(ChannelUser, {

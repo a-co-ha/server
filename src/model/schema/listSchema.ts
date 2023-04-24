@@ -2,10 +2,7 @@ import { bookmarkInfo } from "./../../interface/index";
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
-import {
-  ChatBookmarkInterface,
-  ChatBookmarkSchema,
-} from "./chatBookmarkSchema";
+import { BookmarkInterface, BookmarkSchema } from "./bookmarkSchema";
 
 const Schema = mongoose.Schema;
 export interface SocketInterface {
@@ -13,7 +10,7 @@ export interface SocketInterface {
   pageName: string;
   type: string;
   categories: string;
-  bookmarkList: ChatBookmarkInterface;
+  bookmarkList: BookmarkInterface;
 }
 export const socketSchema = new Schema<SocketInterface>(
   {
@@ -27,7 +24,7 @@ export const socketSchema = new Schema<SocketInterface>(
     },
     bookmarkList: [
       {
-        type: ChatBookmarkSchema,
+        type: BookmarkSchema,
       },
     ],
   },

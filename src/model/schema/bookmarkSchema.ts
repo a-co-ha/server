@@ -1,14 +1,18 @@
+import moment from "moment-timezone";
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-export interface ChatBookmarkInterface {
+export interface BookmarkInterface {
   bookmarkName: string;
   content: string;
   userId: number;
   name: string;
+  createdAt: string;
+  updatedAt: string;
+  roomId: string;
 }
 
-export const ChatBookmarkSchema = new Schema<ChatBookmarkInterface>(
+export const BookmarkSchema = new Schema<BookmarkInterface>(
   {
     bookmarkName: {
       type: String,
@@ -27,8 +31,14 @@ export const ChatBookmarkSchema = new Schema<ChatBookmarkInterface>(
       type: String,
       required: true,
     },
+    createdAt: {
+      type: String,
+    },
+    updatedAt: {
+      type: String,
+    },
   },
   {
-    timestamps: true,
+    timestamps: false,
   }
 );

@@ -13,6 +13,7 @@ export class MessageController implements IMessageController {
     const message = await Message.create(data).then((res) =>
       res.get({ plain: true })
     );
+
     await redisCache.saveMessage(message);
     delete message.roomId;
 
