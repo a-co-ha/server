@@ -1,10 +1,10 @@
 import { Op } from "sequelize";
 import { User } from "../model/user";
-import redisCache from "../utils/redisCache";
+import { RedisHandler } from "../utils";
 import { Message } from "./../model/message";
 export class MessageService {
   private async getCachedMessages(roomId: string): Promise<any[]> {
-    return await redisCache.findMessages(roomId);
+    return await RedisHandler.findMessages(roomId);
   }
 
   private async getRestMessage(

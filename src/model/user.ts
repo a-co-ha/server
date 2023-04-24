@@ -1,8 +1,8 @@
 import { DataTypes, Model, Association } from "sequelize";
 import { sequelize } from "../db/sequelize";
-import { UserAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
 import { Sequelize } from "sequelize";
+import { UserAttributes } from "../interface";
 
 export class User extends Model<UserAttributes> {
   declare refreshToken: string;

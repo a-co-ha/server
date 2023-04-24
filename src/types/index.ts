@@ -2,7 +2,6 @@
 import { UserAttributes } from "../interface/userInterface";
 import "express-session";
 import "express";
-import { Request, Response, NextFunction } from "express";
 
 declare global {
   namespace Express {
@@ -14,6 +13,7 @@ declare global {
 
 declare module "express-session" {
   interface SessionData {
+    sessionID: string;
     userId?: number;
     auth?: boolean;
     user?: UserAttributes;

@@ -1,6 +1,6 @@
 import { MessageService, messageService } from "./../services/messageService";
 import { Message } from "./../model/message";
-import redisCache from "../utils/redisCache";
+import { RedisHandler } from "../utils";
 import { AsyncRequestHandler } from "../utils";
 
 interface IMessageController {
@@ -14,7 +14,7 @@ export class MessageController implements IMessageController {
       res.get({ plain: true })
     );
 
-    await redisCache.saveMessage(message);
+    await RedisHandler.saveMessage(message);
     delete message.roomId;
 
     return { message };

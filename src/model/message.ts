@@ -4,6 +4,7 @@ import { Channel } from "./channel";
 import moment from "moment-timezone";
 import { sequelize } from "../db/sequelize";
 import { User } from "./user";
+import { dateFormat } from "../constants";
 
 export class Message extends Model<MessageAttributes> {
   declare id: number;
@@ -59,7 +60,7 @@ export class Message extends Model<MessageAttributes> {
           createdAt() {
             return moment(this.getDataValue("createdAt"))
               .tz("Asia/Seoul")
-              .format("YYYY-MM-DD HH:mm:ss");
+              .format(dateFormat);
           },
         },
       }

@@ -1,44 +1,27 @@
-import { bookmarkService } from "../services/bookmarkService";
-import { UserService, userService } from "../services/userService";
+import { BookmarkInterface } from "./../interface/bookmarkInterface";
+import { UserService, userService, bookmarkService } from "../services";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
-import { createSocketAdapter } from "../utils/redisClient";
 import sharedSession from "express-socket.io-session";
-import useSession from "../middlewares/useSession";
+import { useSession } from "../middlewares";
 import { imageUpload, socketValidation } from "../middlewares";
-import redisCache from "../utils/redisCache";
+import {
+  RedisHandler,
+  logger,
+  getCurrentDate,
+  createSocketAdapter,
+} from "../utils";
 import { messageController } from "../controllers";
-import { logger } from "../utils/winston";
 import { Server as httpServer } from "http";
-import { getCurrentDate } from "../utils";
 import moment from "moment-timezone";
+import { dateFormat } from "../constants";
+import { Message, PrivateMessage } from "../interface/messageInterface";
 
 interface SocketData {
   sessionID?: string;
   userID: number;
   name: string;
   rooms: string[];
-}
-
-interface ServerToClientEvents {
-  noArg: () => void;
-  basicEmit: (a: number, b: string, c: Buffer) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
-}
-
-interface ClientToServerEvents {
-  hello: () => void;
-}
-
-interface InterServerEvents {
-  ping: () => void;
-}
-
-interface UserData {
-  roomId: string;
-  userID: number;
-  name: number;
-  connected: boolean;
 }
 
 export class Socket {
@@ -91,7 +74,7 @@ export class Socket {
       socket.on(
         "SEND_MESSAGE",
         async ({ content, roomId }: { content: string; roomId: string }) => {
-          const data = {
+          const data: Message = {
             userId: socket.userID,
             name: socket.name,
             img: socket.img,
@@ -105,10 +88,10 @@ export class Socket {
       );
 
       // DM
-      socket.on("SEND_PRIVATE_MESSAGE", async (data: any) => {
+      socket.on("SEND_PRIVATE_MESSAGE", async (data: PrivateMessage) => {
         const { to } = data;
         data.from = socket.userID;
-        const response = await messageController.createMessage(socket);
+        const response = await messageController.createMessage(data);
         socket
           .to(to)
           .to(socket.userID)
@@ -127,9 +110,9 @@ export class Socket {
           content: string;
           roomId: string;
         }) => {
-          const date = moment(getCurrentDate()).format("YYYY-MM-DD HH:mm:ss");
+          const date = moment(getCurrentDate()).format(dateFormat);
 
-          const data = {
+          const data: BookmarkInterface = {
             bookmarkName,
             content,
             roomId,
@@ -168,15 +151,14 @@ export class Socket {
       for (const room of roomIds) {
         socket.join(room);
         socket.broadcast.to(room).emit("NEW_MEMBER", {
-          roomId: room,
           userID: socket.userID,
           name: socket.name,
-          connected: true,
+          img: socket.img,
         });
       }
+
       logger.info(
-        "[1] 채팅방 조인",
-        `user : ${socket.name}, sessionID : ${socket.sessionID}, rooms: ${socket.rooms}`
+        `[1] 채팅방 조인 user : ${socket.name}, sessionID : ${socket.sessionID}`
       );
     }
   }
@@ -188,8 +170,10 @@ export class Socket {
 
     socket.emit("USER_INFO", user);
     logger.info(
-      "[3] 소켓 접속완료 ",
-      `user : ${socket.name}, sessionID : ${socket.sessionID}, rooms: ${socket.rooms}`
+      `[3] 소켓 접속완료 
+      user : ${socket.name}, sessionID : ${
+        socket.sessionID
+      }, rooms: ${JSON.stringify(socket.roomIds)}`
     );
   }
 
@@ -197,7 +181,7 @@ export class Socket {
     const members = await userService.getChannelMembersID(socket.userID);
 
     if (members.length !== 0) {
-      const sessions = await redisCache.findMemberSessions(members);
+      const sessions = await RedisHandler.findMemberSessions(members);
 
       const users = sessions.map((session) => {
         const { userId, name, img } = JSON.parse(session).user;
@@ -206,7 +190,7 @@ export class Socket {
 
       socket.emit("MEMBERS", users);
 
-      logger.info("[2] 현재 접속자", `user : ${JSON.stringify(users)}`);
+      logger.info(`[2] 현재 접속자 user : ${JSON.stringify(users)}`);
     }
   }
 }

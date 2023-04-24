@@ -1,15 +1,6 @@
 import mongoose from "mongoose";
+import { BookmarkInterface } from "../../interface";
 const Schema = mongoose.Schema;
-
-export interface BookmarkInterface {
-  bookmarkName: string;
-  content: string;
-  userId: number;
-  name: string;
-  createdAt?: string;
-  updatedAt: string;
-  roomId: string;
-}
 
 export const BookmarkSchema = new Schema<BookmarkInterface>(
   {

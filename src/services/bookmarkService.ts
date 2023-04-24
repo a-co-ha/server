@@ -1,37 +1,48 @@
 import { ObjectId } from "mongodb";
 import { socketModel, socketModelType } from "../model";
 import { IChatBookmarkModel } from "../interface";
-import { logger, getCurrentDate } from "../utils";
-import { BookmarkInterface } from "../model/schema/bookmarkSchema";
-import redisCache from "../utils/redisCache";
-import moment from "moment-timezone";
+import { logger, RedisHandler } from "../utils";
+import { BookmarkInterface } from "../interface/bookmarkInterface";
 
-class BookmarkService implements IChatBookmarkModel {
+export class BookmarkService implements IChatBookmarkModel {
   constructor(private socketModel: socketModelType) {}
 
-  async createBookmark(bookmarkInfo: BookmarkInterface): Promise<any> {
+  async createBookmark(
+    bookmarkInfo: BookmarkInterface
+  ): Promise<BookmarkInterface> {
     const { roomId } = bookmarkInfo;
-
     try {
-      const bookmarkList = await socketModel.findOneAndUpdate(
-        { _id: roomId },
+      const updatedBookmarkList = await socketModel.findOneAndUpdate(
+        { _id: new ObjectId(roomId) },
         { $push: { bookmarkList: bookmarkInfo } }
       );
 
-      if (!bookmarkList) {
+      if (!updatedBookmarkList) {
         throw Error("채널이 없습니다.");
       }
 
-      await redisCache.saveBookmark(bookmarkInfo);
+      await RedisHandler.saveBookmark(bookmarkInfo);
+      const list = await this.findBookmarkByRoomId(roomId);
 
-      return bookmarkInfo;
+      return list.bookmarkList[list.bookmarkList.length - 1];
     } catch (err: any) {
       logger.error(err.message);
-      return;
+      throw err;
     }
   }
 
-  async findBookmark(id: string): Promise<any> {
+  async findBookmarkByRoomId(
+    id: string
+  ): Promise<{ bookmarkList: BookmarkInterface[] }> {
+    return await socketModel.findById(
+      {
+        _id: new ObjectId(id),
+      },
+      { bookmarkList: 1 }
+    );
+  }
+
+  async findBookmarkByBookmarkId(id: string): Promise<any> {
     return await socketModel.aggregate([
       { $unwind: "$bookmarkList" },
       {
@@ -39,6 +50,7 @@ class BookmarkService implements IChatBookmarkModel {
       },
     ]);
   }
+
   async updateBookmark(
     id: string,
     bookmarkInfo: BookmarkInterface
@@ -61,7 +73,9 @@ class BookmarkService implements IChatBookmarkModel {
 
   async deleteBookmark(id: string): Promise<any> {
     return await socketModel.updateOne(
-      {},
+      {
+        "bookmarkList._id": new ObjectId(id),
+      },
       { $pull: { bookmarkList: { _id: new ObjectId(id) } } }
     );
   }

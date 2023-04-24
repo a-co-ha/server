@@ -1,5 +1,15 @@
+import { AsyncRequestHandler } from "../utils";
 import { UserAttributes } from "./userInterface";
 
+export interface IChannelController {
+  create: AsyncRequestHandler;
+  join: AsyncRequestHandler;
+  channelImagUpdate: AsyncRequestHandler;
+  channelNameUpdate: AsyncRequestHandler;
+  delete: AsyncRequestHandler;
+  channelExit: AsyncRequestHandler;
+  getUsers: AsyncRequestHandler;
+}
 export interface ChannelAttributes extends UserAttributes {
   id?: number;
   channelName: string;

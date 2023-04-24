@@ -1,3 +1,5 @@
+import { AsyncRequestHandler } from "../utils";
+
 export interface User {
   userId?: number;
   name?: string;
@@ -5,16 +7,26 @@ export interface User {
   githubURL?: string;
   img?: string;
 }
-
 export interface UserAttributes extends User {
   refreshToken?: string;
 }
+
+export interface UserLoginInterface {
+  user: User;
+  token: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  sessionID: string;
+}
+export interface IUserController {
+  login: AsyncRequestHandler;
+  get: AsyncRequestHandler;
+  tokenRefresh: AsyncRequestHandler;
+  logout: AsyncRequestHandler;
+}
+
 export interface IUserModel {
   save(user: UserAttributes): Promise<any>;
   get(user: UserAttributes): Promise<any>;
-}
-
-export interface userToken {
-  token: { accessToken?: string; refreshToken?: string };
-  user: User;
 }

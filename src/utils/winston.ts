@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import winston from "winston";
 import winstonDaily from "winston-daily-rotate-file";
+import { dateFormat } from "../constants";
 
 const { combine, timestamp, printf, colorize } = winston.format;
 dotenv.config();
@@ -13,7 +14,7 @@ const logFormat = printf((info) => {
 export const logger = winston.createLogger({
   format: combine(
     timestamp({
-      format: "YY-MM-DD HH:mm:ss ",
+      format: dateFormat,
     }),
     logFormat
   ),

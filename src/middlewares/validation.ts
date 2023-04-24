@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
 import { plainToClass, plainToInstance } from "class-transformer";
-import { validateOrReject, ValidationError, validate } from "class-validator";
+import { validateOrReject, ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
 
 const validateDTO = async (dto: any) => {

@@ -1,3 +1,4 @@
+import { mysqlTransaction, MysqlTransaction } from "./../db/mysqlTransaction";
 import axios from "axios";
 import {
   GITHUBACCESSURL,
@@ -67,7 +68,9 @@ export const githubLogin = async (req, res, next) => {
       const isGuest = await userService.getUserWithChannels(id);
 
       if (!isGuest) {
-        await userService.insert(user);
+        await mysqlTransaction.execute(async (t) => {
+          await userService.insert(t, user);
+        });
       }
 
       req.user = user;

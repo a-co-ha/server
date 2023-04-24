@@ -1,8 +1,13 @@
-import { connect, sequelize } from "./db/sequelize";
 import express from "express";
 import cors from "cors";
+import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import { corsOptions, port, SESSION_SECRET } from "./config";
+import { endPoint } from "./constants";
+import { MongoAdapter, MySqlAdapter, connect } from "./db";
+import { InviteDto, BookMarkDto } from "./dto";
+import { Socket } from "./socket/socketServer";
+import { logger } from "./utils";
 import {
   channelRouter,
   githubRouter,
@@ -16,21 +21,14 @@ import {
   imageRouter,
   bookmarkListRouter,
 } from "./routers";
-import { endPoint } from "./constants";
 import {
   loginRequired,
   errorHandler,
+  useSession,
+  morganMiddleware,
   DtoValidatorMiddleware,
+  SessionStore,
 } from "./middlewares";
-import { MongoAdapter, MySqlAdapter } from "./db";
-import { createServer } from "http";
-
-import { InviteDto } from "./dto";
-import useSession from "./middlewares/useSession";
-import checkSession from "./middlewares/checkSession";
-import { Socket } from "./socket/socketServer";
-import { logger } from "./utils/winston";
-import { morganMiddleware } from "./middlewares/morgan";
 
 export class AppServer {
   app: express.Application;
@@ -67,7 +65,7 @@ export class AppServer {
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser(SESSION_SECRET));
     this.app.use(useSession());
-    this.app.use(checkSession());
+    this.app.use(SessionStore.checkSession());
   }
 
   private routes() {
@@ -86,8 +84,8 @@ export class AppServer {
     this.app.use(endPoint.list, listRouter);
     this.app.use(endPoint.github, githubRouter);
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
+    this.app.use(endPoint.bookmarks, loginRequired, bookmarkListRouter);
     this.app.use(endPoint.image, imageRouter);
-    this.app.use(endPoint.bookmarks, bookmarkListRouter);
     this.app.use(errorHandler);
   }
 }

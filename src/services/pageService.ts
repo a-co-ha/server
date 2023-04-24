@@ -4,12 +4,7 @@ import { IPageModel, block, page } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
-
-import { User } from "../model/user";
 import { ClientSession } from "mongoose";
-import { channel } from "diagnostics_channel";
-import { ObjectId } from "mongodb";
-
 export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
@@ -177,6 +172,5 @@ export const pageService = new PageService(
   listModel,
   socketModel,
   mongoTransaction,
-
   listService
 );

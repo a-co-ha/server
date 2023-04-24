@@ -1,19 +1,9 @@
 import { Channel } from "./../model/channel";
-import { mysqlTransaction } from "./../db/mysqlTransaction";
+import { mysqlTransaction, MysqlTransaction } from "./../db";
 import { AsyncRequestHandler } from "../utils";
-import { channelService, ChannelService } from "../services/channelService";
-import { channelJoinInterface } from "../interface";
-import { MysqlTransaction } from "../db/mysqlTransaction";
+import { channelService, ChannelService } from "../services";
+import { channelJoinInterface, IChannelController } from "../interface";
 
-interface IChannelController {
-  create: AsyncRequestHandler;
-  join: AsyncRequestHandler;
-  channelImagUpdate: AsyncRequestHandler;
-  channelNameUpdate: AsyncRequestHandler;
-  delete: AsyncRequestHandler;
-  channelExit: AsyncRequestHandler;
-  getUsers: AsyncRequestHandler;
-}
 export class ChannelController implements IChannelController {
   constructor(
     private channelService: ChannelService,

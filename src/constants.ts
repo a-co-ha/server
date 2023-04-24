@@ -59,3 +59,8 @@ export const enum ENCTYPE {
   BASE64 = "base64",
   UTF8 = "utf-8",
 }
+export const dateFormat = "YY-MM-DD HH:mm:ss";
+
+export const enum REDIS_TTL {
+  DAY = 86400,
+}

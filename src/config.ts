@@ -1,11 +1,9 @@
 import dotenv from "dotenv";
-
 import { SessionOptions } from "express-session";
-
 import RedisStore from "connect-redis";
 import { redisClient } from "./utils/redisClient";
 import { Dialect } from "sequelize";
-const envFound = dotenv.config();
+dotenv.config();
 
 export const port = parseInt(process.env.PORT ?? "8080", 10);
 export const mongoDBUri = process.env.DB_MONGO || "not found";

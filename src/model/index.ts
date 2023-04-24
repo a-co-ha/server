@@ -7,7 +7,8 @@ import {
   SocketInterface,
   socketSchema,
 } from "./schema/listSchema";
-import { BookmarkSchema, BookmarkInterface } from "./schema/bookmarkSchema";
+import { BookmarkSchema } from "./schema/bookmarkSchema";
+import { BookmarkInterface } from "../interface";
 
 interface ModelIdentifierInterface {
   page: string;

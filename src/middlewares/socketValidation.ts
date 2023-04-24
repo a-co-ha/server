@@ -1,33 +1,29 @@
 import { channelService } from "../services/channelService";
 import { userService } from "../services";
-import redisCache from "../utils/redisCache";
+import { RedisHandler } from "../utils";
 import { userHasChannels } from "../interface";
 
-export const wrap = (middleware) => (socket, next) =>
-  middleware(socket.request, socket.request.res || {}, next);
+export const isUser = (
+  user: userHasChannels | boolean
+): user is userHasChannels => {
+  return (user as userHasChannels).name !== undefined;
+};
 
 export const socketValidation = async (sessionID: string, socket) => {
-  try {
-    const sessionInfo = await redisCache.findSession(sessionID);
-    socket.roomIds = await getChannels(sessionInfo.userId);
-    socket.sessionID = sessionID;
-    socket.userID = sessionInfo.userId;
-    socket.name = sessionInfo.name;
-    socket.img = sessionInfo.img;
-  } catch (err: any) {
-    throw Error(err.message);
-  }
+  const sessionInfo = await RedisHandler.findSession(sessionID);
+  socket.roomIds = await getChannels(sessionInfo.userId);
+  socket.sessionID = sessionID;
+  socket.userID = sessionInfo.userId;
+  socket.name = sessionInfo.name;
+  socket.img = sessionInfo.img;
 };
 
 const getChannels = async (userId: number) => {
   const getChannel = await userService.getUserWithChannels(userId);
 
-  function isUser(user: userHasChannels | boolean): user is userHasChannels {
-    return (user as userHasChannels).name !== undefined;
-  }
   if (isUser(getChannel)) {
-    const channels = getChannel.channels.map(async (i) => {
-      const { id } = i;
+    const channels = getChannel.channels.map(async (channel) => {
+      const { id } = channel;
 
       return await channelService.getRooms(id);
     });

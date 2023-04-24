@@ -1,4 +1,8 @@
-import { ChannelAttributes, userHasChannels } from "./../interface/index";
+import {
+  ChannelAttributes,
+  userHasChannels,
+  UserLoginInterface,
+} from "./../interface";
 import { Channel } from "./../model/channel";
 import { UserAttributes } from "../interface";
 import { User, userModel } from "../model/user";
@@ -16,11 +20,15 @@ export class UserService {
     payload: UserAttributes
   ): string => {
     return jwt.sign(payload, jwtSecret, {
-      expiresIn: isAccess ? "1h" : "24h",
+      expiresIn: isAccess ? "1h" : "14d",
     });
   };
 
-  public async login(user: UserAttributes, sessionID: string): Promise<any> {
+  public async login(
+    transaction: any,
+    user: UserAttributes,
+    sessionID: string
+  ): Promise<UserLoginInterface> {
     const accessToken = this.tokenCreate(true, user);
     const refreshToken = this.tokenCreate(false, user);
 
@@ -32,6 +40,7 @@ export class UserService {
         where: {
           userId: user.userId,
         },
+        transaction,
       }
     );
     return { token: { accessToken, refreshToken }, user, sessionID };
@@ -89,8 +98,8 @@ export class UserService {
     };
   }
 
-  public async insert(user: UserAttributes): Promise<void> {
-    await User.create(user);
+  public async insert(transaction: any, user: UserAttributes): Promise<void> {
+    await User.create(user, transaction);
   }
 
   public async expandAccToken(
