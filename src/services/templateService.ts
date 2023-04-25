@@ -18,7 +18,7 @@ import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 
-class TemplateService {
+export class TemplateService {
   private templateModel: templateModelType;
   private listModel: listModelType;
   private pageService: PageService;
@@ -47,27 +47,8 @@ class TemplateService {
     type: string,
     session: ClientSession
   ): Promise<template> {
-    // const session = await this.mongoTransaction.startTransaction();
-    // const blocks: block = {
-    //   blockId: blockId,
-    //   tag: "p",
-    //   html: "",
-    //   imgUrl: "",
-    // };
     const pageType = "progress-page";
     const progressStatus = "todo";
-    // try{
-    //   const pages = await this.pageModel.create(
-    //     [
-    //       {
-    //         channelId,
-    //         blocks,
-    //         pageType,
-    //         progressStatus,
-    //       },
-    //     ],
-    //     { session }
-    //   );
 
     const pages = await this.pageService.createPage(
       channelId,
@@ -87,14 +68,14 @@ class TemplateService {
       ],
       { session }
     );
+    console.log(template);
+    const pageParentTemplate = await this.pageModel
+      .findByIdAndUpdate({ _id: pages._id }, { parentTemplate: template[0].id })
+      .session(session);
+    console.log(pageParentTemplate);
+
     await this.createListTemplate(channelId, template[0]);
-    // await this.mongoTransaction.commitTransaction(session);
     return template[0];
-    // }catch (error) {
-    //   throw error;
-    // } finally {
-    //   session.endSession();
-    // }
   }
 
   public async createListTemplate(
@@ -107,7 +88,6 @@ class TemplateService {
       { _id: listId },
       { $push: { EditablePage: { template } } }
     );
-
     return pushTemplateList;
   }
   public async findTemplate(
@@ -155,8 +135,6 @@ class TemplateService {
         .findByIdAndUpdate({ _id: id }, { $push: { pages } })
         .session(session)
         .then(async () => {
-          console.log(await this.findTemplate(channelId, id, session));
-
           return await this.findTemplate(channelId, id, session);
         });
     }

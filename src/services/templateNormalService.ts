@@ -1,14 +1,21 @@
 import { pageModel, templateModel, templateModelType } from "../model";
 import { PageService, pageService } from "./pageService";
+import { templateService, TemplateService } from "./templateService";
 import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
 import { ClientSession } from "mongoose";
 
 class TemplateNormalService {
   private templateModel: templateModelType;
   private pageService: PageService;
-  constructor(templateModel: templateModelType, pageService: PageService) {
+  private templateService: TemplateService;
+  constructor(
+    templateModel: templateModelType,
+    pageService: PageService,
+    templateService: TemplateService
+  ) {
     this.templateModel = templateModel;
     this.pageService = pageService;
+    this.templateService = templateService;
   }
 
   public async createTemplate(
@@ -33,6 +40,10 @@ class TemplateNormalService {
         },
       ],
       { session }
+    );
+    await this.templateService.createListTemplate(
+      channelId,
+      createNormalTemplate[0]
     );
     return createNormalTemplate[0];
   }
@@ -101,5 +112,6 @@ class TemplateNormalService {
 
 export const templateNormalService = new TemplateNormalService(
   templateModel,
-  pageService
+  pageService,
+  templateService
 );

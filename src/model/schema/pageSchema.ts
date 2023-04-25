@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { TemplateInterface } from "./templateSchema";
 const Schema = mongoose.Schema;
 
 export interface PageInterface {
@@ -17,6 +18,7 @@ export interface PageInterface {
   type: string;
   progressStatus: string;
   categories: string;
+  parentTemplate: TemplateInterface;
 }
 
 export const PageSchema = new Schema<PageInterface>(
@@ -63,6 +65,11 @@ export const PageSchema = new Schema<PageInterface>(
     categories: {
       type: String,
       default: "page",
+    },
+    parentTemplate: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "template",
+      default: null,
     },
   },
   {
