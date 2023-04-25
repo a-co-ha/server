@@ -10,6 +10,7 @@ interface IPageController {
   createRoom: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
+  pageTemplateSearch: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
@@ -130,6 +131,12 @@ export class PageController implements IPageController {
       );
       res.json(deletePageResult);
     }
+  };
+
+  pageTemplateSearch: AsyncRequestHandler = async (req, res) => {
+    const { search, channel } = req.body;
+    const searchResult = await pageService.pageTemplateSearch(channel, search);
+    res.json(searchResult);
   };
 }
 
