@@ -43,7 +43,8 @@ class TemplateNormalService {
     );
     await this.templateService.createListTemplate(
       channelId,
-      createNormalTemplate[0]
+      createNormalTemplate[0],
+      session
     );
     return createNormalTemplate[0];
   }
