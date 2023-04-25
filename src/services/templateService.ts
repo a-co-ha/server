@@ -74,20 +74,23 @@ export class TemplateService {
       .session(session);
     console.log(pageParentTemplate);
 
-    await this.createListTemplate(channelId, template[0]);
+    await this.createListTemplate(channelId, template[0], session);
     return template[0];
   }
 
   public async createListTemplate(
     channelId: number,
-    template: template
+    template: template,
+    session: ClientSession
   ): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
-    const pushTemplateList = await this.listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { EditablePage: { template } } }
-    );
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate(
+        { _id: listId },
+        { $push: { EditablePage: { template } } }
+      )
+      .session(session);
     return pushTemplateList;
   }
   public async findTemplate(
