@@ -43,6 +43,11 @@ export class PageDto {
   @IsOptional()
   public pageName: string;
 
+
+  @IsString()
+  @IsOptional()
+  public search:string
+
   @IsNumber()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))

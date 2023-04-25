@@ -1,4 +1,9 @@
-import { socketModel, socketModelType, templateModelType,templateModel } from "./../model/index";
+import {
+  socketModel,
+  socketModelType,
+  templateModelType,
+  templateModel,
+} from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { IPageModel, block, page } from "../interface";
 import { ListService, listService } from "./listService";
@@ -15,7 +20,7 @@ export class PageService {
   private mongoTransaction: MongoTransaction;
   private messageModel: Message;
   private listService: ListService;
-  private templateModel:templateModelType
+  private templateModel: templateModelType;
   constructor(
     pageModel: pageModelType,
     listModel: listModelType,
@@ -23,7 +28,7 @@ export class PageService {
     mongoTransaction: MongoTransaction,
     messageModel: Message,
     listService: ListService,
-    templateModel:templateModelType
+    templateModel: templateModelType
   ) {
     this.pageModel = pageModel;
     this.listModel = listModel;
@@ -31,7 +36,7 @@ export class PageService {
     this.mongoTransaction = mongoTransaction;
     this.messageModel = messageModel;
     this.listService = listService;
-    this.templateModel = templateModel
+    this.templateModel = templateModel;
   }
 
   public async findPage(
@@ -39,7 +44,12 @@ export class PageService {
     id: string,
     type?: string
   ): Promise<page> {
-    const result = await this.pageModel.findOne({ _id: id, channelId, type });
+    const result = await (
+      await this.pageModel.findOne({ _id: id, channelId, type })
+    ).populate({
+      path: "parentTemplate",
+      select: "pageName",
+    });
     return result;
   }
 
@@ -56,6 +66,7 @@ export class PageService {
       html: "",
       imgUrl: "",
     };
+
     const page = await this.pageModel.create(
       [
         {
@@ -185,17 +196,46 @@ export class PageService {
     return modifiedMessages;
   }
 
+  public async pageTemplateSearch(
+    channelId: number,
+    searchTerms: string
+  ): Promise<any> {
+    const searchRegex = new RegExp(searchTerms, "i");
+    const searchPage = await this.pageModel
+      .find(
+        {
+          channelId,
+          $or: [
+            { pageName: { $regex: searchRegex } },
+            { blocks: { $elemMatch: { html: { $regex: searchRegex } } } },
+          ],
+        },
+        {
+          id: 1,
+          pageName: 1,
+          "blocks.html": 1,
+          type: 1,
+          parentTemplate: 1,
+          label: 1,
+        }
+      )
+      .populate({
+        path: "parentTemplate",
+        select: "pageName",
+      });
 
-  public async pageTemplateSearch(channelId:number,searchTerms:string) :Promise<any>{
-    const search = await pageModel.find({channelId},{ $or: [
-      { pageName: { $regex: new RegExp(searchTerms) } },
-      { "blocks.html": { $regex: new RegExp(searchTerms)} }
-    ]})
-    console.log(search);
-    
+    const searchTemplate = await this.templateModel.find({
+      channelId,
+      $or: [{ pageName: { $regex: searchRegex } }],
+    });
+
+    const searchResult = {
+      page: searchPage,
+      template: searchTemplate,
+    };
+
+    return searchResult;
   }
-
-
 }
 
 export const pageService = new PageService(

@@ -18,7 +18,7 @@ import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 
-class TemplateService {
+export class TemplateService {
   private templateModel: templateModelType;
   private listModel: listModelType;
   private pageService: PageService;
@@ -49,7 +49,7 @@ class TemplateService {
   ): Promise<template> {
     const pageType = "progress-page";
     const progressStatus = "todo";
-  
+
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
@@ -68,9 +68,14 @@ class TemplateService {
       ],
       { session }
     );
+    console.log(template);
+    const pageParentTemplate = await this.pageModel
+      .findByIdAndUpdate({ _id: pages._id }, { parentTemplate: template[0].id })
+      .session(session);
+    console.log(pageParentTemplate);
+
     await this.createListTemplate(channelId, template[0]);
     return template[0];
-   
   }
 
   public async createListTemplate(
