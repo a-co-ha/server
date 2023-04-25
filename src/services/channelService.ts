@@ -8,6 +8,7 @@ import { User, userModel } from "../model/user";
 import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
+import { logger } from "../utils";
 
 export class ChannelService {
   constructor(
@@ -261,12 +262,14 @@ export class ChannelService {
       },
       raw: true,
     });
+    logger.warn(`currentUsers ${ users}`);
 
     const usersWithAdminInfo = users.map((user) => {
       const isAdmin = user["user.user_id"] === userId;
       return { ...user, admin: isAdmin };
     });
 
+    logger.warn(`usersInfo ${ usersWithAdminInfo}`);
     return usersWithAdminInfo;
   }
 }
