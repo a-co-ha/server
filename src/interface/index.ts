@@ -2,6 +2,7 @@ export * from "./channelInterface";
 import { ListInterface } from "../model/schema/listSchema";
 import { BookmarkInterface } from "./bookmarkInterface";
 export * from "./userInterface";
+export * from "./messageInterface";
 export interface block {
   blockId?: string;
   tag: string;

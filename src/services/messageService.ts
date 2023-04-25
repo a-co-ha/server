@@ -45,11 +45,11 @@ export class MessageService {
 
     if (length !== 0 && length < 100) {
       const counts = 100 - length;
-      const lastId = cachedMessages[length - 1].id;
+      const lastId = cachedMessages[0].id;
 
       const restMessage = await this.getRestMessage(roomId, counts, lastId);
 
-      return [...cachedMessages, ...restMessage];
+      return [...restMessage, ...cachedMessages];
     }
 
     return cachedMessages;

@@ -1,8 +1,7 @@
 import { BookmarkInterface } from "./../interface/bookmarkInterface";
 import { SessionData } from "express-session";
 import { REDIS_TTL } from "../constants";
-import { Message, MessageAttributes, PrivateMessage } from "../interface";
-import { User } from "../interface/userInterface";
+import { User, Message, MessageAttributes, PrivateMessage } from "../interface";
 import { redisClient } from "./redisClient";
 
 class RedisHelper {
@@ -49,7 +48,7 @@ export class RedisHandler {
     const key = `${RedisHandler.MESSAGE_PREFIX}${roomId}`;
     const results = await redisClient.lRange(key, 0, -1);
 
-    return results.map((result) => JSON.parse(result)).reverse();
+    return results.map((result) => JSON.parse(result));
   }
 
   static async findMemberSessions(userIDs: number[]): Promise<string[]> {

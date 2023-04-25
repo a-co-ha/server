@@ -6,7 +6,7 @@ export interface MessageAttributes extends Message {
 
 export interface Message extends User {
   content?: string;
-  roomId: string;
+  roomId?: string | number;
   createdAt?: Date;
   updatedAt?: Date;
 }

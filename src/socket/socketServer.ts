@@ -87,17 +87,6 @@ export class Socket {
         }
       );
 
-      // DM
-      socket.on("SEND_PRIVATE_MESSAGE", async (data: PrivateMessage) => {
-        const { to } = data;
-        data.from = socket.userID;
-        const response = await messageController.createMessage(data);
-        socket
-          .to(to)
-          .to(socket.userID)
-          .emit("RECEIVE_PRIVATE_MESSAGE", response);
-      });
-
       // 북마크 등록
       socket.on(
         "SET_BOOKMARK",
