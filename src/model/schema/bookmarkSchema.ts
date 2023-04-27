@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { BookmarkInterface } from "../../interface";
+import { BookmarkInterface } from "../../interface/bookmarkInterface";
 const Schema = mongoose.Schema;
 
 export const BookmarkSchema = new Schema<BookmarkInterface>(

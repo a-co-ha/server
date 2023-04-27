@@ -1,8 +1,8 @@
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
-import { BookmarkInterface, BookmarkSchema } from "./bookmarkSchema";
-
+import { BookmarkSchema } from "./bookmarkSchema";
+import { BookmarkInterface } from "../../interface/bookmarkInterface";
 const Schema = mongoose.Schema;
 export interface SocketInterface {
   channelId: number;

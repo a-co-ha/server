@@ -87,9 +87,11 @@ export class PageService {
     session?: ClientSession
   ): Promise<any> {
     const room = await this.socketModel.create([{ channelId }], { session });
-    return await this.createSocketPageList(channelId, room[0], session).then(
-      () => this.listService.findList(channelId)
-    );
+    await this.createSocketPageList(channelId, room[0], session);
+    return room[0];
+    // .then(
+    //   () => this.listService.findList(channelId)
+    // );
   }
 
   public async pushListPage(
@@ -197,7 +199,7 @@ export class PageService {
         {
           id: 1,
           pageName: 1,
-          "blocks.html": 1,
+          blocks: { $elemMatch: { html: { $regex: searchRegex } } },
           type: 1,
           parentTemplate: 1,
           label: 1,
@@ -208,14 +210,21 @@ export class PageService {
         select: "pageName",
       });
 
-    const searchTemplate = await this.templateModel.find({
-      channelId,
-      $or: [{ pageName: { $regex: searchRegex } }],
-    });
+    const searchTemplate = await this.templateModel.find(
+      {
+        channelId,
+        $or: [{ pageName: { $regex: searchRegex } }],
+      },
+      {
+        id: 1,
+        pageName: 1,
+        type: 1,
+      }
+    );
 
     const searchResult = {
-      page: searchPage,
-      template: searchTemplate,
+      EditablePage: searchPage,
+      Template: searchTemplate,
     };
 
     return searchResult;
