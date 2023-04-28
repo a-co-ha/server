@@ -9,6 +9,7 @@ interface ITemplateController {
   updateTemplate: AsyncRequestHandler;
   deleteTemplate: AsyncRequestHandler;
   percentageProgress: AsyncRequestHandler;
+  channelAllProgressTemplatePercent: AsyncRequestHandler;
 }
 
 export class TemplateController implements ITemplateController {
@@ -139,6 +140,14 @@ export class TemplateController implements ITemplateController {
     const { id } = req.body;
     const percentageProgress = await templateService.percentageProgress(id);
     res.json(percentageProgress);
+  };
+
+  channelAllProgressTemplatePercent: AsyncRequestHandler = async (req, res) => {
+    const { channel } = req.body;
+
+    const channelAllProgressTemplatePercent =
+      await templateService.channelAllProgressTemplatePercent(channel);
+    res.json(channelAllProgressTemplatePercent);
   };
 }
 

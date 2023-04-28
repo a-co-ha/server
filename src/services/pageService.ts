@@ -5,7 +5,8 @@ import {
   templateModel,
 } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
-import { IPageModel, block, page, templateInfo } from "../interface";
+import { templateInfo } from "../interface/templateInterface";
+import { block, page } from "../interface/pageInterface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
@@ -54,7 +55,7 @@ export class PageService {
   public async createPage(
     channelId: number,
     blockId: string,
-    session: ClientSession,
+    session?: ClientSession,
     templateInfo?: templateInfo
   ): Promise<any> {
     const blocks: block = {

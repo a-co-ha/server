@@ -1,5 +1,5 @@
 import { pageService, templateService } from "../services";
-import { page } from "../interface";
+import { page } from "../interface/pageInterface";
 import { AsyncRequestHandler, RedisHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";

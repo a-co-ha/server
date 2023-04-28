@@ -8,12 +8,14 @@ import {
 } from "../model";
 import { PageService, pageService } from "./pageService";
 import {
-  ITemplateModel,
   template,
   pageStatusUpdate,
-  block,
   templateInfo,
-} from "../interface";
+  progressPercentage,
+  progressPercentageArray,
+} from "../interface/templateInterface";
+
+import { block } from "../interface/pageInterface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
@@ -218,7 +220,7 @@ export class TemplateService {
     return deleteTemplate;
   }
 
-  async percentageProgress(id: string): Promise<object> {
+  async percentageProgress(id: string): Promise<progressPercentage> {
     const progress = await templateModel.findOne({ _id: id }).populate({
       path: "pages",
       select: "progressStatus",
@@ -240,6 +242,40 @@ export class TemplateService {
       percentage,
     };
     return progressPercentage;
+  }
+
+  async channelAllProgressTemplatePercent(
+    channelId: number
+  ): Promise<progressPercentage[]> {
+    const type = "template-progress";
+    const channelAllProgressTemplate = await this.templateModel.find(
+      {
+        channelId,
+        type,
+      },
+      {
+        id: 1,
+        pageName: 1,
+      }
+    );
+
+    const progressTemplatePercentageArray = channelAllProgressTemplate.map(
+      async (i) => {
+        const id = i.id;
+
+        const percentage = await this.percentageProgress(id);
+        const percentageProgress: progressPercentageArray = {
+          _id: id,
+          pageName: i.pageName,
+          percentage: percentage.percentage,
+        };
+        return percentageProgress;
+      }
+    );
+
+    const resultArray = await Promise.all(progressTemplatePercentageArray);
+
+    return resultArray;
   }
 }
 

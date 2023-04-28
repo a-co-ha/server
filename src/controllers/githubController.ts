@@ -3,6 +3,7 @@ import { githubHeader } from "../constants";
 import { Octokit } from "octokit";
 import { GITHUBAUTH } from "../config";
 import { AsyncRequestHandler } from "../utils";
+import { channelService } from "../services";
 
 interface IGithubController {
   getOrg: AsyncRequestHandler;
@@ -14,6 +15,8 @@ export class GithubController implements IGithubController {
     const octokit = new Octokit({
       auth: GITHUBAUTH,
     });
+    const channel = req.query.channel as string;
+    const channelId = parseInt(channel);
     const { org } = req.body;
     const result = await octokit.request("GET /orgs/{org}", {
       org,
@@ -32,7 +35,7 @@ export class GithubController implements IGithubController {
       const repos = response.data.map((i) => {
         return { name: i.name, url: i.url };
       });
-
+      channelService.channelOrgAdd(channelId, orgName);
       res.json({ orgName, orgUrl, orgImg, desc, repos });
     });
   };

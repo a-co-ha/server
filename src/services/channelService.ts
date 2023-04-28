@@ -269,8 +269,18 @@ export class ChannelService {
       return { ...user, admin: isAdmin };
     });
 
-    logger.warn(`usersInfo ${ JSON.stringify(usersWithAdminInfo)}`);
+    logger.warn(`usersInfo ${JSON.stringify(usersWithAdminInfo)}`);
     return usersWithAdminInfo;
+  }
+
+  public async channelOrgAdd(
+    channelId: number,
+    orgGithubName: string
+  ): Promise<any> {
+    return await Channel.update(
+      { orgGithubName },
+      { where: { id: channelId } }
+    );
   }
 }
 

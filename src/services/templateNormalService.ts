@@ -7,11 +7,10 @@ import {
 import { PageService, pageService } from "./pageService";
 import { templateService, TemplateService } from "./templateService";
 import {
-  ITemplateNormalModel,
   template,
   pageStatusUpdate,
   templateInfo,
-} from "../interface";
+} from "../interface/templateInterface";
 import { ClientSession } from "mongoose";
 
 class TemplateNormalService {

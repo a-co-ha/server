@@ -7,6 +7,7 @@ export class Channel extends Model<ChannelAttributes> {
   declare id: number;
   declare channelName: string;
   declare userId: number;
+  declare orgGithubName: string;
   public static associations: {
     channelHasManyUsers: Association<Channel, ChannelUser>;
   };
@@ -33,6 +34,11 @@ export class Channel extends Model<ChannelAttributes> {
           type: DataTypes.STRING(200),
           defaultValue: "",
           field: "c_img",
+        },
+        orgGithubName: {
+          type: DataTypes.STRING(200),
+          defaultValue: "",
+          field: "org_name",
         },
       },
       {
