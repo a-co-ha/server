@@ -12,6 +12,7 @@ import {
   template,
   pageStatusUpdate,
   block,
+  templateInfo,
 } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
@@ -50,12 +51,16 @@ export class TemplateService {
     const pageType = "progress-page";
     const progressStatus = "todo";
 
+    const templateInfo: templateInfo = {
+      pageType,
+      progressStatus,
+    };
+
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
       session,
-      pageType,
-      progressStatus
+      templateInfo
     );
 
     const template = await this.templateModel.create(
@@ -117,21 +122,25 @@ export class TemplateService {
   ): Promise<template> {
     const template = await this.findTemplate(channelId, id, session);
 
-    let pageType = "";
     const templateType = template.type;
-    const parentTemplate = template.id;
     if (templateType === "template-progress") {
       if (!progressStatus) {
         throw new Error("progressStatus를 입력하세요");
       }
-      pageType = "progress-page";
+
+      const pageType = "progress-page";
+
+      const templateInfo: templateInfo = {
+        pageType,
+        parentTemplate: template.id,
+        progressStatus,
+      };
+
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
         session,
-        pageType,
-        progressStatus,
-        parentTemplate
+        templateInfo
       );
 
       return await this.templateModel

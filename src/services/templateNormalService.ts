@@ -6,7 +6,12 @@ import {
 } from "../model";
 import { PageService, pageService } from "./pageService";
 import { templateService, TemplateService } from "./templateService";
-import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
+import {
+  ITemplateNormalModel,
+  template,
+  pageStatusUpdate,
+  templateInfo,
+} from "../interface";
 import { ClientSession } from "mongoose";
 
 class TemplateNormalService {
@@ -33,11 +38,15 @@ class TemplateNormalService {
     session: ClientSession
   ): Promise<template> {
     const pageType = "normal-page";
+    const templateInfo: templateInfo = {
+      pageType,
+    };
+
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
       session,
-      pageType
+      templateInfo
     );
     const createNormalTemplate = await this.templateModel.create(
       [
@@ -92,19 +101,19 @@ class TemplateNormalService {
     session: ClientSession
   ): Promise<template> {
     const template = await this.findTemplate(channelId, id, session, type);
-    let pageType = "";
-
+    const pageType = "normal-page";
     const templateType = template.type;
-    const parentTemplate = template.id;
 
     if (templateType === "template-normal") {
-      pageType = "normal-page";
+      const templateInfo: templateInfo = {
+        pageType,
+        parentTemplate: template.id,
+      };
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
         session,
-        pageType,
-        parentTemplate
+        templateInfo
       );
 
       return this.templateModel

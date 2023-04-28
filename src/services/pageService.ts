@@ -5,7 +5,7 @@ import {
   templateModel,
 } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
-import { IPageModel, block, page } from "../interface";
+import { IPageModel, block, page, templateInfo } from "../interface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
@@ -54,10 +54,8 @@ export class PageService {
   public async createPage(
     channelId: number,
     blockId: string,
-    session?: ClientSession,
-    type?: string,
-    parentTemplate?: string,
-    progressStatus?: string
+    session: ClientSession,
+    templateInfo?: templateInfo
   ): Promise<any> {
     const blocks: block = {
       blockId: blockId,
@@ -65,20 +63,34 @@ export class PageService {
       html: "",
       imgUrl: "",
     };
+    if (templateInfo) {
+      const { pageType, parentTemplate, progressStatus } = templateInfo;
+      const page = await this.pageModel.create(
+        [
+          {
+            channelId,
+            blocks,
+            type: pageType,
+            progressStatus,
+            parentTemplate,
+          },
+        ],
+        { session }
+      );
+      return page[0];
+    }
 
     const page = await this.pageModel.create(
       [
         {
           channelId,
           blocks,
-          type,
-          progressStatus,
-          parentTemplate,
         },
       ],
       { session }
     );
-    if (!type) {
+
+    if (!templateInfo) {
       await this.pushListPage(channelId, page[0], session);
     }
 

@@ -55,6 +55,13 @@ export interface template {
   pages: {};
   type?: string;
 }
+
+export interface templateInfo {
+  pageType: string;
+  parentTemplate?: string;
+  progressStatus?: string;
+}
+
 export interface pageStatusUpdate {
   _id: string;
   progressStatus?: string;
