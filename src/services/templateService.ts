@@ -68,11 +68,9 @@ export class TemplateService {
       ],
       { session }
     );
-    console.log(template);
     const pageParentTemplate = await this.pageModel
       .findByIdAndUpdate({ _id: pages._id }, { parentTemplate: template[0].id })
       .session(session);
-    console.log(pageParentTemplate);
 
     await this.createListTemplate(channelId, template[0], session);
     return template[0];
@@ -118,9 +116,10 @@ export class TemplateService {
     progressStatus?: string
   ): Promise<template> {
     const template = await this.findTemplate(channelId, id, session);
+
     let pageType = "";
     const templateType = template.type;
-
+    const parentTemplate = template.id;
     if (templateType === "template-progress") {
       if (!progressStatus) {
         throw new Error("progressStatus를 입력하세요");
@@ -131,7 +130,8 @@ export class TemplateService {
         blockId,
         session,
         pageType,
-        progressStatus
+        progressStatus,
+        parentTemplate
       );
 
       return await this.templateModel
@@ -169,20 +169,31 @@ export class TemplateService {
   }
 
   public async templateInEditablePageDeleteOne(
-    templateId: string,
     editablePageId: string,
     channelId: number,
     type: string,
     session: ClientSession
   ): Promise<any> {
+    const findTemplatePage = await this.pageModel
+      .findOne({ _id: editablePageId, channelId })
+      .populate({
+        path: "parentTemplate",
+        select: "pageName",
+      });
+
+    const templateId = findTemplatePage.parentTemplate.id;
+
     return await this.templateModel
       .findByIdAndUpdate(
         { _id: templateId },
         { $pull: { pages: editablePageId } }
       )
       .then(async () => {
-        this.pageModel.deleteOne({ _id: editablePageId, channel: channelId });
-        return this.findTemplate(channelId, templateId, session);
+        await this.pageModel.deleteOne({
+          _id: editablePageId,
+          channel: channelId,
+        });
+        return await this.findTemplate(channelId, templateId, session);
       });
   }
 

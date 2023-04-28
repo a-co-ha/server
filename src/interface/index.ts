@@ -49,6 +49,7 @@ export interface pages {
   status?: string;
 }
 export interface template {
+  id?: string;
   channelId: number;
   pageName?: string;
   pages: {};

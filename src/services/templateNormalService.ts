@@ -1,4 +1,9 @@
-import { pageModel, templateModel, templateModelType } from "../model";
+import {
+  pageModel,
+  pageModelType,
+  templateModel,
+  templateModelType,
+} from "../model";
 import { PageService, pageService } from "./pageService";
 import { templateService, TemplateService } from "./templateService";
 import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
@@ -8,14 +13,17 @@ class TemplateNormalService {
   private templateModel: templateModelType;
   private pageService: PageService;
   private templateService: TemplateService;
+  private pageModel: pageModelType;
   constructor(
     templateModel: templateModelType,
     pageService: PageService,
-    templateService: TemplateService
+    templateService: TemplateService,
+    pageModel: pageModelType
   ) {
     this.templateModel = templateModel;
     this.pageService = pageService;
     this.templateService = templateService;
+    this.pageModel = pageModel;
   }
 
   public async createTemplate(
@@ -41,6 +49,17 @@ class TemplateNormalService {
       ],
       { session }
     );
+
+    const pageParentTemplate = await this.pageModel
+      .findByIdAndUpdate(
+        {
+          _id: pages._id,
+        },
+        { parentTemplate: createNormalTemplate[0].id }
+      )
+      .session(session);
+    console.log(pageParentTemplate);
+
     await this.templateService.createListTemplate(
       channelId,
       createNormalTemplate[0],
@@ -76,13 +95,16 @@ class TemplateNormalService {
     let pageType = "";
 
     const templateType = template.type;
+    const parentTemplate = template.id;
+
     if (templateType === "template-normal") {
       pageType = "normal-page";
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
         session,
-        pageType
+        pageType,
+        parentTemplate
       );
 
       return this.templateModel
@@ -114,5 +136,6 @@ class TemplateNormalService {
 export const templateNormalService = new TemplateNormalService(
   templateModel,
   pageService,
-  templateService
+  templateService,
+  pageModel
 );

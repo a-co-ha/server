@@ -41,12 +41,13 @@ export class PageService {
     id: string,
     type?: string
   ): Promise<page> {
-    const result = await (
-      await this.pageModel.findOne({ _id: id, channelId, type })
-    ).populate({
-      path: "parentTemplate",
-      select: "pageName",
-    });
+    const result = await this.pageModel
+      .findOne({ _id: id, channelId, type })
+      .populate({
+        path: "parentTemplate",
+        select: "pageName",
+      });
+
     return result;
   }
 
@@ -55,6 +56,7 @@ export class PageService {
     blockId: string,
     session?: ClientSession,
     type?: string,
+    parentTemplate?: string,
     progressStatus?: string
   ): Promise<any> {
     const blocks: block = {
@@ -71,6 +73,7 @@ export class PageService {
           blocks,
           type,
           progressStatus,
+          parentTemplate,
         },
       ],
       { session }

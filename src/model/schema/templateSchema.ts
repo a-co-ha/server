@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 export interface TemplateInterface {
+  id?: string;
   channelId: number;
   pageName: string;
   pages: PageInterface[];

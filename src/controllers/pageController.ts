@@ -102,17 +102,13 @@ export class PageController implements IPageController {
   };
 
   deletePage: AsyncRequestHandler = async (req, res) => {
-    const { id, channel, type, templateId } = req.body;
+    const { id, channel, type } = req.body;
     if (type !== "normal") {
       const templateInEditablePageResult =
         await this.mongoTransaction.withTransaction(
           async (session: ClientSession) => {
-            if (!templateId) {
-              throw new Error("template id 를 일력하세요.");
-            }
             const templateInEditablePage =
               await templateService.templateInEditablePageDeleteOne(
-                templateId,
                 id,
                 channel,
                 type,
