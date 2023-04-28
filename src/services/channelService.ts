@@ -262,14 +262,14 @@ export class ChannelService {
       },
       raw: true,
     });
-    logger.warn(`currentUsers ${ users}`);
+    logger.warn(`currentUsers ${JSON.stringify(users)}`);
 
     const usersWithAdminInfo = users.map((user) => {
       const isAdmin = user["user.user_id"] === userId;
       return { ...user, admin: isAdmin };
     });
 
-    logger.warn(`usersInfo ${ usersWithAdminInfo}`);
+    logger.warn(`usersInfo ${ JSON.stringify(usersWithAdminInfo)}`);
     return usersWithAdminInfo;
   }
 }
