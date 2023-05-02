@@ -12,12 +12,12 @@ export interface IChannelController {
 }
 export interface ChannelAttributes extends UserAttributes {
   id?: number;
-  channelName: string;
+  channelName?: string;
   channelImg?: string;
 }
 export interface Channel_UserAttributes extends ChannelAttributes {
   id?: number;
-  channelId: number;
+  channelId?: number;
 }
 
 export interface IChannelInfo {

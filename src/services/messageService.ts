@@ -1,3 +1,4 @@
+import { redisClient } from "./../utils/redisClient";
 import { Op } from "sequelize";
 import { User } from "../model/user";
 import { RedisHandler } from "../utils";
@@ -7,10 +8,10 @@ export class MessageService {
     return await RedisHandler.findMessages(roomId);
   }
 
-  private async getRestMessage(
+  public async getRestMessage(
     roomId: string,
     counts: number,
-    lastId: number
+    lastId: string
   ): Promise<any[]> {
     const messages: any = await Message.findAll({
       include: {
@@ -38,10 +39,12 @@ export class MessageService {
 
     return modifiedMessages;
   }
-  public async getMessage(roomId: string): Promise<any[]> {
+
+  public async getMessage(roomId: string, userId: number): Promise<any[]> {
     const cachedMessages = await this.getCachedMessages(roomId);
 
     const length = cachedMessages.length;
+    // await this.readMessage(roomId, userId, cachedMessages[length - 1]);
 
     if (length !== 0 && length < 100) {
       const counts = 100 - length;
@@ -55,4 +58,5 @@ export class MessageService {
     return cachedMessages;
   }
 }
+
 export const messageService = new MessageService();

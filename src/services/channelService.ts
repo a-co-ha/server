@@ -1,5 +1,10 @@
+import { UserOfRoom } from "./../interface/socketInterface";
 import { listModel, socketModel, socketModelType } from "./../model/index";
-import { ChannelAttributes, channelJoinInterface } from "./../interface/index";
+import {
+  ChannelAttributes,
+  channelJoinInterface,
+  Room,
+} from "./../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../constants";
 import { Channel, channelModel } from "../model/channel";
@@ -50,8 +55,20 @@ export class ChannelService {
     return newChannel;
   }
 
-  public async getRooms(channelId: number): Promise<any> {
-    return await this.socketModel.find({ channelId }, { _id: 1 });
+  public async getRooms(channelId: number): Promise<Room[]> {
+    const users = (await channelService.usersOfChannel(channelId)).map(
+      (user) => user.userId
+    );
+
+    const results = await this.socketModel.find({ channelId }, { _id: 1 });
+    const result = results.map((room) => {
+      const id = room._id.toString();
+      const readUser = users;
+      const unreadCount = 0;
+
+      return { id, readUser, unreadCount };
+    });
+    return result;
   }
 
   private async createSpace(channelId: number, blockId: string): Promise<void> {
@@ -252,6 +269,12 @@ export class ChannelService {
       attributes: ["userId"],
     });
 
+    const users = await this.usersOfChannel(channelId);
+
+    return await this.isAdmin(users, userId);
+  }
+
+  public usersOfChannel = async (channelId: number) => {
     const users = await ChannelUser.findAll({
       where: { channelId },
       include: {
@@ -262,13 +285,15 @@ export class ChannelService {
       raw: true,
     });
 
-    const usersWithAdminInfo = users.map((user) => {
-      const isAdmin = user["user.user_id"] === userId;
+    return users;
+  };
+
+  private isAdmin = async (users: ChannelUser[], admin: number) => {
+    return users.map((user) => {
+      const isAdmin = user["user.user_id"] === admin;
       return { ...user, admin: isAdmin };
     });
-
-    return usersWithAdminInfo;
-  }
+  };
 }
 
 export const channelService = new ChannelService(

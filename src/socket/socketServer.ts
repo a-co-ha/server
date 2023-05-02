@@ -1,10 +1,16 @@
+import { messageService } from "./../services/messageService";
 import { BookmarkInterface } from "./../interface/bookmarkInterface";
-import { UserService, userService, bookmarkService } from "../services";
+import {
+  UserService,
+  userService,
+  bookmarkService,
+  channelService,
+} from "../services";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
 import sharedSession from "express-socket.io-session";
 import { useSession } from "../middlewares";
-import { imageUpload, socketValidation } from "../middlewares";
+import { socketValidation } from "../middlewares";
 import {
   RedisHandler,
   logger,
@@ -15,14 +21,8 @@ import { messageController } from "../controllers";
 import { Server as httpServer } from "http";
 import moment from "moment-timezone";
 import { dateFormat } from "../constants";
-import { Message, PrivateMessage } from "../interface/messageInterface";
-
-interface SocketData {
-  sessionID?: string;
-  userID: number;
-  name: string;
-  rooms: string[];
-}
+import { Message } from "../interface/messageInterface";
+import { Room, SocketData } from "../interface";
 
 export class Socket {
   private io: Server;
@@ -66,9 +66,15 @@ export class Socket {
         return;
       }
 
-      socket.on("JOIN_CHANNEL", async ({ roomIds }: { roomIds: string[] }) => {
-        await this.join(socket, roomIds);
-      });
+      await this.messageStatus(socket);
+
+      socket.on(
+        "JOIN_CHANNEL",
+        async ({ channelId }: { channelId: number }) => {
+          const newRooms = await channelService.getRooms(channelId);
+          await this.join(socket, newRooms);
+        }
+      );
 
       // 특정 채널에 전체 메세지
       socket.on(
@@ -80,12 +86,45 @@ export class Socket {
             img: socket.img,
             content,
             roomId,
+            readUser: socket.roomIds[0].readUser,
           };
+
           const message = await messageController.createMessage(data);
-          socket.emit("RECEIVE_MESSAGE", message);
+
+          await socket.emit("RECEIVE_MESSAGE", message);
           socket.to(roomId).emit("RECEIVE_MESSAGE", message);
         }
       );
+
+      socket.on("READ_MESSAGE", async ({ roomId }: { roomId: string }) => {
+        const cachedMessages = await RedisHandler.findMessages(roomId);
+
+        const length = cachedMessages.length;
+        let messages = [];
+        if (length !== 0 && length < 20) {
+          const counts = 100 - length;
+          const lastId = cachedMessages[0].id;
+
+          const restMessage = await messageService.getRestMessage(
+            roomId,
+            counts,
+            lastId
+          );
+
+          messages = [...restMessage, ...cachedMessages];
+        }
+
+        await RedisHandler.setLastMessagePerRoom(
+          roomId,
+          socket.userID,
+          cachedMessages[length - 1].id
+        );
+        await RedisHandler.resetRead(roomId, socket.userID);
+
+        messages = cachedMessages;
+        socket.emit("READ_MESSAGE", messages);
+        socket.to(roomId).emit("READ_MESSAGE", messages);
+      });
 
       // 북마크 등록
       socket.on(
@@ -115,6 +154,7 @@ export class Socket {
           socket.to(roomId).emit("NEW_BOOKMARK", createBookmark);
         }
       );
+
       // 연결 해제
       socket.on("disconnect", async () => {
         const matchingSockets = await this.io.in(socket.userID).fetchSockets();
@@ -123,8 +163,8 @@ export class Socket {
 
         if (isDisconnected) {
           for (const room of socket.roomIds) {
-            socket.broadcast.to(room).emit("DISCONNECT_MEMBER", {
-              roomId: room,
+            socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
+              roomId: room.id,
               userID: socket.userID,
               name: socket.name,
               connected: false,
@@ -134,11 +174,22 @@ export class Socket {
       });
     });
   }
+  public async messageStatus(socket: any) {
+    const { roomIds, userID } = socket;
 
-  public async join(socket: any, roomIds: string[]) {
+    const result = await Promise.all(
+      roomIds.map((room) => {
+        return RedisHandler.getRoomReadCount(room.id, userID);
+      })
+    );
+    socket.emit("MESSAGE_STATUS", result);
+    return result;
+  }
+
+  public async join(socket: any, roomIds: Room[]) {
     if (roomIds) {
       for (const room of roomIds) {
-        socket.join(room);
+        socket.join(room.id);
         socket.broadcast.to(room).emit("NEW_MEMBER", {
           userID: socket.userID,
           name: socket.name,
@@ -147,7 +198,9 @@ export class Socket {
       }
 
       logger.info(
-        `[1] 채팅방 조인 user : ${socket.name}, sessionID : ${socket.sessionID}`
+        `[1] 채팅방 조인 user : ${socket.name}, sessionID : ${
+          socket.sessionID
+        }, rooms : ${JSON.stringify(socket.roomIds)}`
       );
     }
   }
@@ -160,9 +213,7 @@ export class Socket {
     socket.emit("USER_INFO", user);
     logger.info(
       `[3] 소켓 접속완료 
-      user : ${socket.name}, sessionID : ${
-        socket.sessionID
-      }, rooms: ${JSON.stringify(socket.roomIds)}`
+      user : ${socket.name}, sessionID : ${socket.sessionID}`
     );
   }
 

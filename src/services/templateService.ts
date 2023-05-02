@@ -155,8 +155,6 @@ class TemplateService {
         .findByIdAndUpdate({ _id: id }, { $push: { pages } })
         .session(session)
         .then(async () => {
-          console.log(await this.findTemplate(channelId, id, session));
-
           return await this.findTemplate(channelId, id, session);
         });
     }

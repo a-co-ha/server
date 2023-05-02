@@ -59,7 +59,6 @@ export class ListService {
       },
       { EditablePage: { $elemMatch: { page: id } } }
     );
-    console.log(list.EditablePage[0]._id);
 
     const listPageId = list.EditablePage[0]._id;
     const deleteList = await this.listModel
@@ -77,8 +76,6 @@ export class ListService {
     id: string,
     session: ClientSession
   ): Promise<ListInterface> {
-    console.log(id);
-
     const list = await this.listModel.findOne(
       { channelId },
       { EditablePage: { $elemMatch: { template: id } } }

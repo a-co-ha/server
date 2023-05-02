@@ -11,6 +11,7 @@ export const isUser = (
 
 export const socketValidation = async (sessionID: string, socket) => {
   const sessionInfo = await RedisHandler.findSession(sessionID);
+
   socket.roomIds = await getChannels(sessionInfo.userId);
   socket.sessionID = sessionID;
   socket.userID = sessionInfo.userId;
@@ -18,22 +19,18 @@ export const socketValidation = async (sessionID: string, socket) => {
   socket.img = sessionInfo.img;
 };
 
-const getChannels = async (userId: number) => {
+const getChannels = async (userId: number): Promise<any> => {
   const getChannel = await userService.getUserWithChannels(userId);
 
   if (isUser(getChannel)) {
-    const channels = getChannel.channels.map(async (channel) => {
-      const { id } = channel;
+    const channels = await Promise.all(
+      getChannel.channels.map(async (channel) => {
+        const { id } = channel;
 
-      return await channelService.getRooms(id);
-    });
-
-    return await Promise.all(channels).then((results) => {
-      return results.flatMap((room) => {
-        return room.map((obj) => {
-          return obj._id.toString();
-        });
-      });
-    });
+        return await channelService.getRooms(id);
+      })
+    );
+    return channels.flat();
   }
+  throw Error("채널 접속 실패");
 };

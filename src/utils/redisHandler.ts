@@ -15,6 +15,7 @@ export class RedisHandler {
   static SESSION_PREFIX = "session:";
   static MESSAGE_PREFIX = "messages:";
   static BOOKMARK_PREFIX = "bookMark:";
+  static ROOM_PREFIX = "rooms:";
 
   static async saveUserSession(
     userID: number,
@@ -107,6 +108,35 @@ export class RedisHandler {
   static async delete(key: string): Promise<void> {
     const sessionKey = `${RedisHandler.SESSION_PREFIX}${key}`;
     await redisClient.del(sessionKey);
+  }
+
+  static async setLastMessagePerRoom(
+    roomId: string,
+    userId: number,
+    messageId: string,
+    members?: number[]
+  ): Promise<void> {
+    const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
+    await redisClient.hSet(key, `lastReadMessageId:${userId}`, messageId);
+
+    if (members) {
+      members.map((member) => {
+        redisClient.hSet(key, `isRead:${member}`, "false");
+      });
+    }
+  }
+
+  static async resetRead(roomId: string, userId: number) {
+    const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
+    await redisClient.hSet(key, `isRead:${userId}`, "true");
+  }
+
+  static async getRoomReadCount(roomId: string, userId: number) {
+    const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
+    const message = await redisClient.hGet(key, `lastReadMessageId:${userId}`);
+    const isRead = await redisClient.hGet(key, `isRead:${userId}`);
+
+    return { roomId, userId, isRead };
   }
 }
 

@@ -1,7 +1,9 @@
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
-import { BookmarkInterface, BookmarkSchema } from "./bookmarkSchema";
+import { BookmarkSchema } from "./bookmarkSchema";
+import { BookmarkInterface } from "../../interface/bookmarkInterface";
+import { ChannelUser } from "../channelUser";
 
 const Schema = mongoose.Schema;
 export interface SocketInterface {
@@ -10,6 +12,8 @@ export interface SocketInterface {
   type: string;
   categories: string;
   bookmarkList: BookmarkInterface;
+  readUser: number[];
+  unreadCount: number;
 }
 export const socketSchema = new Schema<SocketInterface>(
   {

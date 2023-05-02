@@ -9,6 +9,7 @@ export interface Message extends User {
   roomId?: string | number;
   createdAt?: Date;
   updatedAt?: Date;
+  readUser: number[];
 }
 
 export interface PrivateMessage {

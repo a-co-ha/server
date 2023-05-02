@@ -15,13 +15,22 @@ export class MessageController implements IMessageController {
     );
 
     await RedisHandler.saveMessage(message);
+    await RedisHandler.setLastMessagePerRoom(
+      data.roomId,
+      data.userId,
+      message.id,
+      data.readUser
+    );
+    await RedisHandler.resetRead(data.roomId, data.userId);
     delete message.roomId;
 
     return { message };
   };
+
   getMessage: AsyncRequestHandler = async (req, res) => {
     const roomId = req.params.id;
-    const messages = await this.messageService.getMessage(roomId);
+    const { userId } = req.body;
+    const messages = await this.messageService.getMessage(roomId, userId);
     res.json({ roomId, messages });
   };
 }

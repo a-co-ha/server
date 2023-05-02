@@ -7,6 +7,7 @@ export interface User {
   githubURL?: string;
   img?: string;
 }
+
 export interface UserAttributes extends User {
   refreshToken?: string;
 }
