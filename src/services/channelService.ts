@@ -13,6 +13,7 @@ import { User, userModel } from "../model/user";
 import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
+import { logger } from "../utils";
 
 export class ChannelService {
   constructor(
@@ -284,6 +285,7 @@ export class ChannelService {
       },
       raw: true,
     });
+    logger.warn(`currentUsers ${JSON.stringify(users)}`);
 
     return users;
   };
@@ -294,6 +296,16 @@ export class ChannelService {
       return { ...user, admin: isAdmin };
     });
   };
+
+  public async channelOrgAdd(
+    channelId: number,
+    orgGithubName: string
+  ): Promise<any> {
+    return await Channel.update(
+      { orgGithubName },
+      { where: { id: channelId } }
+    );
+  }
 }
 
 export const channelService = new ChannelService(

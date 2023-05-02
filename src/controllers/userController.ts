@@ -1,6 +1,6 @@
 import { mysqlTransaction } from "./../db/mysqlTransaction";
 import { UserService, userService } from "./../services/userService";
-import { AsyncRequestHandler, RedisHandler } from "../utils";
+import { AsyncRequestHandler, logger, RedisHandler } from "../utils";
 import { IUserController, UserLoginInterface } from "../interface";
 import { SessionStore } from "../middlewares";
 import { MysqlTransaction } from "../db";
@@ -35,6 +35,7 @@ export class UserController implements IUserController {
   };
 
   public get: AsyncRequestHandler = async (req, res) => {
+    logger.warn(req.user);
     const { userId } = req.user;
 
     const result = await this.userService.getUserWithChannels(userId);

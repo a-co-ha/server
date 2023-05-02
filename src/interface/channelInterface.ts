@@ -14,6 +14,7 @@ export interface ChannelAttributes extends UserAttributes {
   id?: number;
   channelName?: string;
   channelImg?: string;
+  orgGithubName?: string;
 }
 export interface Channel_UserAttributes extends ChannelAttributes {
   id?: number;

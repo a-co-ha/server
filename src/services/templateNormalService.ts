@@ -1,14 +1,33 @@
-import { pageModel, templateModel, templateModelType } from "../model";
+import {
+  pageModel,
+  pageModelType,
+  templateModel,
+  templateModelType,
+} from "../model";
 import { PageService, pageService } from "./pageService";
-import { ITemplateNormalModel, template, pageStatusUpdate } from "../interface";
+import { templateService, TemplateService } from "./templateService";
+import {
+  template,
+  pageStatusUpdate,
+  templateInfo,
+} from "../interface/templateInterface";
 import { ClientSession } from "mongoose";
 
 class TemplateNormalService {
   private templateModel: templateModelType;
   private pageService: PageService;
-  constructor(templateModel: templateModelType, pageService: PageService) {
+  private templateService: TemplateService;
+  private pageModel: pageModelType;
+  constructor(
+    templateModel: templateModelType,
+    pageService: PageService,
+    templateService: TemplateService,
+    pageModel: pageModelType
+  ) {
     this.templateModel = templateModel;
     this.pageService = pageService;
+    this.templateService = templateService;
+    this.pageModel = pageModel;
   }
 
   public async createTemplate(
@@ -18,11 +37,15 @@ class TemplateNormalService {
     session: ClientSession
   ): Promise<template> {
     const pageType = "normal-page";
+    const templateInfo: templateInfo = {
+      pageType,
+    };
+
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
       session,
-      pageType
+      templateInfo
     );
     const createNormalTemplate = await this.templateModel.create(
       [
@@ -33,6 +56,22 @@ class TemplateNormalService {
         },
       ],
       { session }
+    );
+
+    const pageParentTemplate = await this.pageModel
+      .findByIdAndUpdate(
+        {
+          _id: pages._id,
+        },
+        { parentTemplate: createNormalTemplate[0].id }
+      )
+      .session(session);
+    console.log(pageParentTemplate);
+
+    await this.templateService.createListTemplate(
+      channelId,
+      createNormalTemplate[0],
+      session
     );
     return createNormalTemplate[0];
   }
@@ -61,16 +100,19 @@ class TemplateNormalService {
     session: ClientSession
   ): Promise<template> {
     const template = await this.findTemplate(channelId, id, session, type);
-    let pageType = "";
-
+    const pageType = "normal-page";
     const templateType = template.type;
+
     if (templateType === "template-normal") {
-      pageType = "normal-page";
+      const templateInfo: templateInfo = {
+        pageType,
+        parentTemplate: template.id,
+      };
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
         session,
-        pageType
+        templateInfo
       );
 
       return this.templateModel
@@ -101,5 +143,7 @@ class TemplateNormalService {
 
 export const templateNormalService = new TemplateNormalService(
   templateModel,
-  pageService
+  pageService,
+  templateService,
+  pageModel
 );

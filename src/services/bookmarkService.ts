@@ -1,10 +1,9 @@
 import { ObjectId } from "mongodb";
 import { socketModel, socketModelType } from "../model";
-import { IChatBookmarkModel } from "../interface";
 import { logger, RedisHandler } from "../utils";
 import { BookmarkInterface } from "../interface/bookmarkInterface";
 
-export class BookmarkService implements IChatBookmarkModel {
+export class BookmarkService {
   constructor(private socketModel: socketModelType) {}
 
   async createBookmark(

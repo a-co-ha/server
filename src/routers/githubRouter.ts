@@ -4,10 +4,10 @@ import { githubController, userController } from "../controllers";
 import { asyncHandler } from "../utils";
 
 export const githubRouter = express.Router();
-githubRouter.get("/org", asyncHandler(githubController.getOrg));
-githubRouter.get("/org/events", asyncHandler(githubController.getEvents));
-githubRouter.get("/org/issue", asyncHandler(githubController.getIssue));
-githubRouter.get(
+githubRouter.post("/org", asyncHandler(githubController.getOrg));
+githubRouter.post("/org/events", asyncHandler(githubController.getEvents));
+githubRouter.post("/org/issue", asyncHandler(githubController.getIssue));
+githubRouter.post(
   "/org/issue/comments",
   asyncHandler(githubController.getIssueDetail)
 );

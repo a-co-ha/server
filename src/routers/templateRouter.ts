@@ -32,3 +32,9 @@ templateRouter.get(
   DtoValidatorMiddleware(TemplateDto),
   asyncHandler(templateController.percentageProgress)
 );
+
+templateRouter.get(
+  "/percentage/group/:channel",
+  DtoValidatorMiddleware(TemplateDto),
+  asyncHandler(templateController.channelAllProgressTemplatePercent)
+);

@@ -5,7 +5,7 @@ import {
   pageModelType,
   templateModelType,
 } from "../model";
-import { list, template } from "../interface";
+import { list } from "../interface/listInterface";
 import { ListInterface } from "../model/schema/listSchema";
 import { templateModel } from "../model/index";
 import { ClientSession } from "mongoose";

@@ -40,3 +40,10 @@ pageRouter.delete(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.deletePage)
 );
+
+
+pageRouter.get(
+  "/search/:channel",
+  DtoValidatorMiddleware(PageDto),
+  asyncHandler(pageController.pageTemplateSearch)
+);

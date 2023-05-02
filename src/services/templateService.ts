@@ -8,17 +8,20 @@ import {
 } from "../model";
 import { PageService, pageService } from "./pageService";
 import {
-  ITemplateModel,
   template,
   pageStatusUpdate,
-  block,
-} from "../interface";
+  templateInfo,
+  progressPercentage,
+  progressPercentageArray,
+} from "../interface/templateInterface";
+
+import { block } from "../interface/pageInterface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 
-class TemplateService {
+export class TemplateService {
   private templateModel: templateModelType;
   private listModel: listModelType;
   private pageService: PageService;
@@ -47,34 +50,19 @@ class TemplateService {
     type: string,
     session: ClientSession
   ): Promise<template> {
-    // const session = await this.mongoTransaction.startTransaction();
-    // const blocks: block = {
-    //   blockId: blockId,
-    //   tag: "p",
-    //   html: "",
-    //   imgUrl: "",
-    // };
     const pageType = "progress-page";
     const progressStatus = "todo";
-    // try{
-    //   const pages = await this.pageModel.create(
-    //     [
-    //       {
-    //         channelId,
-    //         blocks,
-    //         pageType,
-    //         progressStatus,
-    //       },
-    //     ],
-    //     { session }
-    //   );
+
+    const templateInfo: templateInfo = {
+      pageType,
+      progressStatus,
+    };
 
     const pages = await this.pageService.createPage(
       channelId,
       blockId,
       session,
-      pageType,
-      progressStatus
+      templateInfo
     );
 
     const template = await this.templateModel.create(
@@ -87,27 +75,27 @@ class TemplateService {
       ],
       { session }
     );
-    await this.createListTemplate(channelId, template[0]);
-    // await this.mongoTransaction.commitTransaction(session);
+    const pageParentTemplate = await this.pageModel
+      .findByIdAndUpdate({ _id: pages._id }, { parentTemplate: template[0].id })
+      .session(session);
+
+    await this.createListTemplate(channelId, template[0], session);
     return template[0];
-    // }catch (error) {
-    //   throw error;
-    // } finally {
-    //   session.endSession();
-    // }
   }
 
   public async createListTemplate(
     channelId: number,
-    template: template
+    template: template,
+    session: ClientSession
   ): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
-    const pushTemplateList = await this.listModel.findByIdAndUpdate(
-      { _id: listId },
-      { $push: { EditablePage: { template } } }
-    );
-
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate(
+        { _id: listId },
+        { $push: { EditablePage: { template } } }
+      )
+      .session(session);
     return pushTemplateList;
   }
   public async findTemplate(
@@ -135,20 +123,26 @@ class TemplateService {
     progressStatus?: string
   ): Promise<template> {
     const template = await this.findTemplate(channelId, id, session);
-    let pageType = "";
-    const templateType = template.type;
 
+    const templateType = template.type;
     if (templateType === "template-progress") {
       if (!progressStatus) {
         throw new Error("progressStatus를 입력하세요");
       }
-      pageType = "progress-page";
+
+      const pageType = "progress-page";
+
+      const templateInfo: templateInfo = {
+        pageType,
+        parentTemplate: template.id,
+        progressStatus,
+      };
+
       const pages = await this.pageService.createPage(
         channelId,
         blockId,
         session,
-        pageType,
-        progressStatus
+        templateInfo
       );
 
       return await this.templateModel
@@ -186,20 +180,31 @@ class TemplateService {
   }
 
   public async templateInEditablePageDeleteOne(
-    templateId: string,
     editablePageId: string,
     channelId: number,
     type: string,
     session: ClientSession
   ): Promise<any> {
+    const findTemplatePage = await this.pageModel
+      .findOne({ _id: editablePageId, channelId })
+      .populate({
+        path: "parentTemplate",
+        select: "pageName",
+      });
+
+    const templateId = findTemplatePage.parentTemplate.id;
+
     return await this.templateModel
       .findByIdAndUpdate(
         { _id: templateId },
         { $pull: { pages: editablePageId } }
       )
       .then(async () => {
-        this.pageModel.deleteOne({ _id: editablePageId, channel: channelId });
-        return this.findTemplate(channelId, templateId, session);
+        await this.pageModel.deleteOne({
+          _id: editablePageId,
+          channel: channelId,
+        });
+        return await this.findTemplate(channelId, templateId, session);
       });
   }
 
@@ -215,7 +220,7 @@ class TemplateService {
     return deleteTemplate;
   }
 
-  async percentageProgress(id: string): Promise<object> {
+  async percentageProgress(id: string): Promise<progressPercentage> {
     const progress = await templateModel.findOne({ _id: id }).populate({
       path: "pages",
       select: "progressStatus",
@@ -237,6 +242,40 @@ class TemplateService {
       percentage,
     };
     return progressPercentage;
+  }
+
+  async channelAllProgressTemplatePercent(
+    channelId: number
+  ): Promise<progressPercentage[]> {
+    const type = "template-progress";
+    const channelAllProgressTemplate = await this.templateModel.find(
+      {
+        channelId,
+        type,
+      },
+      {
+        id: 1,
+        pageName: 1,
+      }
+    );
+
+    const progressTemplatePercentageArray = channelAllProgressTemplate.map(
+      async (i) => {
+        const id = i.id;
+
+        const percentage = await this.percentageProgress(id);
+        const percentageProgress: progressPercentageArray = {
+          _id: id,
+          pageName: i.pageName,
+          percentage: percentage.percentage,
+        };
+        return percentageProgress;
+      }
+    );
+
+    const resultArray = await Promise.all(progressTemplatePercentageArray);
+
+    return resultArray;
   }
 }
 

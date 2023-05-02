@@ -1,5 +1,5 @@
 import { pageService, templateService } from "../services";
-import { page } from "../interface";
+import { page } from "../interface/pageInterface";
 import { AsyncRequestHandler, RedisHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
@@ -10,6 +10,7 @@ interface IPageController {
   createRoom: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
+  pageTemplateSearch: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
@@ -101,17 +102,13 @@ export class PageController implements IPageController {
   };
 
   deletePage: AsyncRequestHandler = async (req, res) => {
-    const { id, channel, type, templateId } = req.body;
+    const { id, channel, type } = req.body;
     if (type !== "normal") {
       const templateInEditablePageResult =
         await this.mongoTransaction.withTransaction(
           async (session: ClientSession) => {
-            if (!templateId) {
-              throw new Error("template id 를 일력하세요.");
-            }
             const templateInEditablePage =
               await templateService.templateInEditablePageDeleteOne(
-                templateId,
                 id,
                 channel,
                 type,
@@ -130,6 +127,12 @@ export class PageController implements IPageController {
       );
       res.json(deletePageResult);
     }
+  };
+
+  pageTemplateSearch: AsyncRequestHandler = async (req, res) => {
+    const { search, channel } = req.body;
+    const searchResult = await pageService.pageTemplateSearch(channel, search);
+    res.json(searchResult);
   };
 }
 
