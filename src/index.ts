@@ -1,3 +1,4 @@
+import { socketListener } from "./socket/socketListeners";
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -50,7 +51,7 @@ export class AppServer {
     const server = createServer(appServer.app);
     await appServer.config();
 
-    const socket = new Socket(server);
+    const socket = new Socket(server, socketListener);
     await socket.config();
     socket.start();
     server.listen(port, async () => {

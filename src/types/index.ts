@@ -2,6 +2,16 @@
 import { UserAttributes } from "../interface/userInterface";
 import "express-session";
 import "express";
+import { Room } from "../interface";
+
+declare module "socket.io" {
+  interface Socket {
+    userID: number;
+    name: string;
+    img: string;
+    roomIds: Room[];
+  }
+}
 
 declare global {
   namespace Express {

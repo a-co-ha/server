@@ -1203,6 +1203,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "npm:3.1.7"\
       ],\
       [\
+        "@types/events",\
+        "npm:3.0.0"\
+      ],\
+      [\
         "@types/express",\
         "npm:4.17.17"\
       ],\
@@ -4296,6 +4300,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/cookie-parser", "npm:1.4.3"],\
             ["@types/cors", "npm:2.8.13"],\
             ["@types/dotenv", "npm:8.2.0"],\
+            ["@types/events", "npm:3.0.0"],\
             ["@types/express", "npm:4.17.17"],\
             ["@types/express-serve-static-core", "npm:4.17.33"],\
             ["@types/express-session", "npm:1.17.7"],\
@@ -4343,6 +4348,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:8.8.0"],\
             ["eslint-plugin-prettier", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:4.2.1"],\
             ["eslint-plugin-react", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.32.2"],\
+            ["events", "npm:3.3.0"],\
             ["express", "npm:4.18.2"],\
             ["express-session", "npm:1.17.3"],\
             ["express-socket.io-session", "npm:1.3.5"],\
@@ -9395,6 +9401,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/events", [\
+        ["npm:3.0.0", {\
+          "packageLocation": "./.yarn/cache/@types-events-npm-3.0.0-2eee0ea973-9a424c2da2.zip/node_modules/@types/events/",\
+          "packageDependencies": [\
+            ["@types/events", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/express", [\
         ["npm:4.17.17", {\
           "packageLocation": "./.yarn/cache/@types-express-npm-4.17.17-46fe8173db-0196dacc27.zip/node_modules/@types/express/",\
@@ -10250,6 +10265,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/cookie-parser", "npm:1.4.3"],\
             ["@types/cors", "npm:2.8.13"],\
             ["@types/dotenv", "npm:8.2.0"],\
+            ["@types/events", "npm:3.0.0"],\
             ["@types/express", "npm:4.17.17"],\
             ["@types/express-serve-static-core", "npm:4.17.33"],\
             ["@types/express-session", "npm:1.17.7"],\
@@ -10297,6 +10313,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-config-prettier", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:8.8.0"],\
             ["eslint-plugin-prettier", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:4.2.1"],\
             ["eslint-plugin-react", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:7.32.2"],\
+            ["events", "npm:3.3.0"],\
             ["express", "npm:4.18.2"],\
             ["express-session", "npm:1.17.3"],\
             ["express-socket.io-session", "npm:1.3.5"],\

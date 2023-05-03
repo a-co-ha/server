@@ -1,3 +1,4 @@
+import { UserOfRoom } from "./socketInterface";
 import { User } from "./userInterface";
 
 export interface MessageAttributes extends Message {
@@ -9,7 +10,7 @@ export interface Message extends User {
   roomId?: string | number;
   createdAt?: Date;
   updatedAt?: Date;
-  readUser: number[];
+  readUser: number[] | UserOfRoom[];
 }
 
 export interface PrivateMessage {
