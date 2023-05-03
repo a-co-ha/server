@@ -65,6 +65,7 @@ export const ioCorsOptions = {
   allowUpgrades: true,
   cors: {
     origin: [
+      "https://admin.socket.io",
       "http://localhost:3001",
       "https://acoha.store",
       "https://acoha.site",

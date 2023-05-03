@@ -8,6 +8,7 @@ import { RedisHandler, logger, createSocketAdapter } from "../utils";
 import { Server as httpServer } from "http";
 import { Room, SocketData } from "../interface";
 import { SocketListener } from "./socketListeners";
+import { instrument } from "@socket.io/admin-ui";
 export class Socket {
   private io: Server;
   private connectedUsers: Map<number, SocketIO>;
@@ -26,6 +27,10 @@ export class Socket {
         autoSave: true,
       })
     );
+    instrument(this.io, {
+      auth: false,
+      mode: "development",
+    });
   }
 
   public start() {
