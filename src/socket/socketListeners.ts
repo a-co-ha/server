@@ -59,7 +59,7 @@ export class SocketListener {
 
         messages = [...restMessage, ...cachedMessages];
       }
-      console.log(cachedMessages);
+
       await RedisHandler.setLastMessagePerRoom(
         roomId,
         socket.userID

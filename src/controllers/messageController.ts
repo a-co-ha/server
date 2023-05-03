@@ -18,7 +18,7 @@ export class MessageController implements IMessageController {
     await RedisHandler.setLastMessagePerRoom(
       data.roomId,
       data.userId,
-      message.id,
+      // message.id,
       data.readUser
     );
     await RedisHandler.resetRead(data.roomId, data.userId);
