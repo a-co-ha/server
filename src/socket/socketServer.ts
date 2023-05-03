@@ -1,11 +1,6 @@
 import { messageService } from "./../services/messageService";
 import { BookmarkInterface } from "./../interface/bookmarkInterface";
-import {
-  UserService,
-  userService,
-  bookmarkService,
-  channelService,
-} from "../services";
+import { userService, bookmarkService, channelService } from "../services";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
 import sharedSession from "express-socket.io-session";
@@ -24,6 +19,7 @@ import { dateFormat } from "../constants";
 import { Message } from "../interface/messageInterface";
 import { Room, SocketData } from "../interface";
 
+const connectedUsers = new Map();
 export class Socket {
   private io: Server;
 
@@ -60,6 +56,7 @@ export class Socket {
         await this.join(socket, socket.roomIds);
         await this.getUsers(socket);
         await this.userInfo(socket);
+        connectedUsers.set(socket.userID, socket);
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
@@ -80,19 +77,34 @@ export class Socket {
       socket.on(
         "SEND_MESSAGE",
         async ({ content, roomId }: { content: string; roomId: string }) => {
+          const { readUser } = socket.roomIds[0];
           const data: Message = {
             userId: socket.userID,
             name: socket.name,
             img: socket.img,
             content,
             roomId,
-            readUser: socket.roomIds[0].readUser,
+            readUser,
           };
-
           const message = await messageController.createMessage(data);
 
-          await socket.emit("RECEIVE_MESSAGE", message);
+          socket.emit("RECEIVE_MESSAGE", message);
           socket.to(roomId).emit("RECEIVE_MESSAGE", message);
+
+          await Promise.all(
+            readUser.map(async (user) => {
+              if (user !== socket.userID) {
+                const recipientSocket = connectedUsers.get(user);
+                if (recipientSocket) {
+                  const status = await RedisHandler.getRoomReadCount(
+                    roomId,
+                    user
+                  );
+                  return recipientSocket.emit("UPDATE_STATUS", status);
+                }
+              }
+            })
+          );
         }
       );
 
@@ -122,8 +134,8 @@ export class Socket {
         await RedisHandler.resetRead(roomId, socket.userID);
 
         messages = cachedMessages;
+
         socket.emit("READ_MESSAGE", messages);
-        socket.to(roomId).emit("READ_MESSAGE", messages);
       });
 
       // 북마크 등록
