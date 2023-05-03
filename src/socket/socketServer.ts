@@ -48,6 +48,7 @@ export class Socket {
         await this.getUsers(socket);
         await this.userInfo(socket);
         await this.messageStatus(socket);
+        await this.myAlert(socket);
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
@@ -70,6 +71,9 @@ export class Socket {
       socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
 
       socket.on("SET_BOOKMARK", this.socketListener.setBookmark(socket));
+
+      socket.on("SET_ALERT", this.socketListener.setLabel(socket));
+      socket.on("READ_ALERT", this.socketListener.readLabel(socket));
 
       socket.on("disconnect", async () => {
         const matchingSockets = await this.io
@@ -148,4 +152,10 @@ export class Socket {
       logger.info(`[2] 현재 접속자 user : ${JSON.stringify(users)}`);
     }
   }
+
+  private myAlert = async (socket: SocketIO) => {
+    const res = await RedisHandler.getAlert(socket.userID);
+
+    socket.emit("ALERT", res);
+  };
 }

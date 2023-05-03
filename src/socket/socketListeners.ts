@@ -98,6 +98,21 @@ export class SocketListener {
       socket.emit("NEW_BOOKMARK", createBookmark);
       socket.to(roomId).emit("NEW_BOOKMARK", createBookmark);
     };
+
+  public setLabel = (socket: Socket) => async (content: any) => {
+    const { channelName, pageName, targetUserId, targetUserName } = content;
+    const subPageName = content?.subPageName;
+    const res = subPageName
+      ? `${channelName}의 ${pageName} - ${subPageName}에서 ${targetUserName}님을 태그했습니다. `
+      : `${channelName}의 ${pageName}에서 ${targetUserName}님을 태그했습니다. `;
+    await RedisHandler.setAlert(targetUserId);
+    socket.to(targetUserId).emit("GET_ALERT", res);
+  };
+  public readLabel = (socket: Socket) => async () => {
+    await RedisHandler.readAlert(socket.userID);
+    const res = await RedisHandler.getAlert(socket.userID);
+    socket.to(socket.userID.toString()).emit("GET_ALERT", res);
+  };
 }
 
 export const socketListener = new SocketListener();
