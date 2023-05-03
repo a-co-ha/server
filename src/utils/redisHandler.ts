@@ -132,11 +132,11 @@ export class RedisHandler {
   static async setLastMessagePerRoom(
     roomId: string,
     userId: number,
-    messageId: string,
+    // messageId: string,
     members?: number[]
   ): Promise<void> {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
-    await redisClient.hSet(key, `lastReadMessageId:${userId}`, messageId);
+    // await redisClient.hSet(key, `lastReadMessageId:${userId}`, messageId);
 
     if (members) {
       members.map((member) => {

@@ -1,4 +1,3 @@
-import { redisClient } from "./../utils/redisClient";
 import { Op } from "sequelize";
 import { User } from "../model/user";
 import { RedisHandler } from "../utils";

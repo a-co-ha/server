@@ -59,11 +59,11 @@ export class SocketListener {
 
         messages = [...restMessage, ...cachedMessages];
       }
-
+      console.log(cachedMessages);
       await RedisHandler.setLastMessagePerRoom(
         roomId,
-        socket.userID,
-        cachedMessages[length - 1].id
+        socket.userID
+        // cachedMessages[length - 1].id
       );
       await RedisHandler.resetRead(roomId, socket.userID);
 
