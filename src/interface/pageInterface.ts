@@ -1,3 +1,6 @@
+import { ClientSession } from "mongoose";
+import { parentTemplateInfo } from "./templateInterface";
+
 export interface block {
   blockId?: string;
   tag: string;
@@ -25,6 +28,25 @@ export interface socketPage {
   pageName?: string;
   _id?: {};
   session?: any;
+}
+
+export interface basicPageOrTemplateInfo {
+  channelId: number;
+  id?: string;
+  type?: string;
+  session?: ClientSession;
+}
+
+export interface createPageOrTemplateInfo extends basicPageOrTemplateInfo {
+  blockId: string;
+  parentTemplateInfo?: parentTemplateInfo;
+}
+
+export interface putPageOrSocketInList {
+  channelId: number;
+  page?: any;
+  room?: any;
+  session: ClientSession;
 }
 
 export interface IPageModel {

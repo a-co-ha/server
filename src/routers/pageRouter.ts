@@ -24,7 +24,7 @@ pageRouter.post(
 pageRouter.put(
   "/:id",
   DtoValidatorMiddleware(PageDto),
-  asyncHandler(pageController.pushBlock)
+  asyncHandler(pageController.putBlockInEditablePage)
 );
 pageRouter.put(
   "/room/:id",
@@ -40,5 +40,5 @@ pageRouter.delete(
 pageRouter.get(
   "/search/:channel",
   DtoValidatorMiddleware(PageDto),
-  asyncHandler(pageController.pageTemplateSearch)
+  asyncHandler(pageController.pageAndTemplateSearch)
 );

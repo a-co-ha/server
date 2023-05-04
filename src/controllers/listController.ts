@@ -3,6 +3,7 @@ import { AsyncRequestHandler } from "../utils";
 import { ListService, listService } from "../services/listService";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
+import { basicPageOrTemplateInfo } from "../interface/pageInterface";
 
 interface IListController {
   findList: AsyncRequestHandler;
@@ -50,7 +51,12 @@ export class ListController implements IListController {
     ) {
       await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
-          await this.pageService.deletePage(id, channel, session);
+          const deletePageInfo: basicPageOrTemplateInfo = {
+            id,
+            channelId: channel,
+            session,
+          };
+          await this.pageService.deletePage(deletePageInfo);
         }
       );
     }
