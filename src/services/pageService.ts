@@ -5,8 +5,14 @@ import {
   templateModel,
 } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
-import { templateInfo } from "../interface/templateInterface";
-import { block, page } from "../interface/pageInterface";
+import { parentTemplateInfo } from "../interface/templateInterface";
+import {
+  basicPageOrTemplateInfo,
+  block,
+  createPageOrTemplateInfo,
+  page,
+  putPageOrSocketInList,
+} from "../interface/pageInterface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
@@ -37,13 +43,12 @@ export class PageService {
     this.templateModel = templateModel;
   }
 
-  public async findPage(
-    channelId: number,
-    id: string,
-    type?: string
-  ): Promise<page> {
+  public async findPage(pageInfo: basicPageOrTemplateInfo): Promise<page> {
+    const { id, channelId, type, session } = pageInfo;
+
     const result = await this.pageModel
       .findOne({ _id: id, channelId, type })
+      .session(session)
       .populate({
         path: "parentTemplate",
         select: "pageName",
@@ -53,19 +58,17 @@ export class PageService {
   }
 
   public async createPage(
-    channelId: number,
-    blockId: string,
-    session?: ClientSession,
-    templateInfo?: templateInfo
+    createPageInfo: createPageOrTemplateInfo
   ): Promise<any> {
+    const { channelId, blockId, session, parentTemplateInfo } = createPageInfo;
     const blocks: block = {
       blockId: blockId,
       tag: "p",
       html: "",
       imgUrl: "",
     };
-    if (templateInfo) {
-      const { pageType, parentTemplate, progressStatus } = templateInfo;
+    if (parentTemplateInfo) {
+      const { pageType, parentTemplate, progressStatus } = parentTemplateInfo;
       const page = await this.pageModel.create(
         [
           {
@@ -91,8 +94,13 @@ export class PageService {
       { session }
     );
 
-    if (!templateInfo) {
-      await this.pushListPage(channelId, page[0], session);
+    if (!parentTemplateInfo) {
+      const putPageInListInfo: putPageOrSocketInList = {
+        channelId,
+        page: page[0],
+        session,
+      };
+      await this.putPageInList(putPageInListInfo);
     }
 
     return page[0];
@@ -103,41 +111,47 @@ export class PageService {
     session?: ClientSession
   ): Promise<any> {
     const room = await this.socketModel.create([{ channelId }], { session });
-    await this.createSocketPageList(channelId, room[0], session);
+    const putSocketInListInfo: putPageOrSocketInList = {
+      channelId,
+      room: room[0],
+      session,
+    };
+
+    await this.createSocketPageList(putSocketInListInfo);
     return room[0];
     // .then(
     //   () => this.listService.findList(channelId)
     // );
   }
 
-  public async pushListPage(
-    channelId: number,
-    page: any,
-    session: ClientSession
+  public async putPageInList(
+    putPageInListInfo: putPageOrSocketInList
   ): Promise<ListInterface> {
+    const { channelId, page, session } = putPageInListInfo;
+
     const list = await listModel.findOne({ channelId });
     const listId = list._id;
-    const pushTemplateList = await this.listModel
+    const pageInsideList = await this.listModel
       .findByIdAndUpdate({ _id: listId }, { $push: { EditablePage: { page } } })
       .session(session);
-    return pushTemplateList;
+    return pageInsideList;
   }
 
   public async createSocketPageList(
-    channelId: number,
-    room: any,
-    session: ClientSession
+    putSocketInList: putPageOrSocketInList
   ): Promise<any> {
+    const { channelId, room, session } = putSocketInList;
+
     const list = await listModel.findOne({ channelId });
     const listId = list._id;
-    const pushTemplateList = await this.listModel
+    const socketInsideList = await this.listModel
       .findByIdAndUpdate(
         { _id: listId },
         { $push: { SocketPage: { page: room } } }
       )
       .session(session);
 
-    return pushTemplateList;
+    return socketInsideList;
   }
   public async editRoomName(
     id: string,
@@ -155,7 +169,7 @@ export class PageService {
       .then(() => this.listService.findList(channel));
   }
 
-  public async pushBlock(
+  public async putBlockInEditablePage(
     id: string,
     page: page,
     session: ClientSession
@@ -186,11 +200,8 @@ export class PageService {
     return result;
   }
 
-  public async deletePage(
-    id: string,
-    channelId: number,
-    session: ClientSession
-  ): Promise<object> {
+  public async deletePage(pageInfo: basicPageOrTemplateInfo): Promise<object> {
+    const { id, channelId, session } = pageInfo;
     const deletePage = await this.pageModel
       .deleteOne({ _id: id })
       .session(session);
@@ -198,7 +209,7 @@ export class PageService {
     return deletePage;
   }
 
-  public async pageTemplateSearch(
+  public async pageAndTemplateSearch(
     channelId: number,
     searchTerms: string
   ): Promise<any> {

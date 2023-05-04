@@ -1,3 +1,6 @@
+import { ClientSession } from "mongoose";
+import { basicPageOrTemplateInfo } from "./pageInterface";
+
 export interface template {
   id?: string;
   channelId: number;
@@ -6,9 +9,14 @@ export interface template {
   type?: string;
 }
 
-export interface templateInfo {
+export interface parentTemplateInfo {
   pageType: string;
   parentTemplate?: string;
+  progressStatus?: string;
+}
+
+export interface putPageInTemplate extends basicPageOrTemplateInfo {
+  blockId: string;
   progressStatus?: string;
 }
 
@@ -19,6 +27,11 @@ export interface pageStatusUpdate {
 
 export interface progressPercentage {
   percentage: number;
+}
+
+export interface updateTemplateInfo extends basicPageOrTemplateInfo {
+  pageName: string;
+  pages: pageStatusUpdate[];
 }
 
 export interface progressPercentageArray extends progressPercentage {
