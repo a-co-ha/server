@@ -152,7 +152,7 @@ export class RedisHandler {
 
   static async getRoomReadCount(roomId: string, userId: number) {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
-    const message = await redisClient.hGet(key, `lastReadMessageId:${userId}`);
+    // const message = await redisClient.hGet(key, `lastReadMessageId:${userId}`);
     const isRead = await redisClient.hGet(key, `isRead:${userId}`);
 
     return { roomId, userId, isRead };

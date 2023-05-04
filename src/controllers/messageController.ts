@@ -5,7 +5,6 @@ import { AsyncRequestHandler } from "../utils";
 
 interface IMessageController {
   createMessage: AsyncRequestHandler;
-  getMessage: AsyncRequestHandler;
 }
 export class MessageController implements IMessageController {
   constructor(private messageService: MessageService) {}
@@ -25,13 +24,6 @@ export class MessageController implements IMessageController {
     delete message.roomId;
 
     return { message };
-  };
-
-  getMessage: AsyncRequestHandler = async (req, res) => {
-    const roomId = req.params.id;
-    const { userId } = req.body;
-    const messages = await this.messageService.getMessage(roomId, userId);
-    res.json({ roomId, messages });
   };
 }
 

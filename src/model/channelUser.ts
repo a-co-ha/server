@@ -45,7 +45,7 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
         timestamps: false,
       }
     );
-    // Channel 모델과 연결
+
     this.belongsTo(Channel);
     Channel.hasMany(ChannelUser, {
       sourceKey: "id",
@@ -53,7 +53,6 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
       as: "channelHasManyUsers",
     });
 
-    // User 모델과 연결
     this.belongsTo(User, { foreignKey: "userId" });
     User.hasMany(ChannelUser, {
       foreignKey: "user_id",
