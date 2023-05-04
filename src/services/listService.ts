@@ -59,7 +59,7 @@ export class ListService {
       },
       { EditablePage: { $elemMatch: { page: id } } }
     );
-    console.log(list.EditablePage[0]._id);
+    console.log(list);
 
     const listPageId = list.EditablePage[0]._id;
     const deleteList = await this.listModel

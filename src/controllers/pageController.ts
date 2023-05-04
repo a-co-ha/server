@@ -1,16 +1,24 @@
-import { pageService, templateService } from "../services";
-import { page } from "../interface/pageInterface";
+import {
+  pageService,
+  templateNormalService,
+  templateService,
+} from "../services";
+import {
+  basicPageOrTemplateInfo,
+  createPageOrTemplateInfo,
+  page,
+} from "../interface/pageInterface";
 import { AsyncRequestHandler, RedisHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
-  pushBlock: AsyncRequestHandler;
+  putBlockInEditablePage: AsyncRequestHandler;
   createRoom: AsyncRequestHandler;
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
-  pageTemplateSearch: AsyncRequestHandler;
+  pageAndTemplateSearch: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
@@ -25,24 +33,40 @@ export class PageController implements IPageController {
       type === "progress-page" ||
       type === "normal-page"
     ) {
-      const findPosteResult = await this.mongoTransaction.withTransaction(
-        async (session: ClientSession) => {
-          const findPost = await pageService.findPage(channel, id, type);
-          return findPost;
-        }
-      );
-      res.json(findPosteResult);
+      const findEditablePageResult =
+        await this.mongoTransaction.withTransaction(
+          async (session: ClientSession) => {
+            const pageInfo: basicPageOrTemplateInfo = {
+              channelId: channel,
+              id,
+              session,
+              type,
+            };
+
+            const findPost = await pageService.findPage(pageInfo);
+            return findPost;
+          }
+        );
+      res.json(findEditablePageResult);
     }
     if (type === "template-progress" || type === "template-normal") {
       const findProgressResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
-          const findProgress = await templateService.findTemplate(
-            channel,
+          const templateInfo: basicPageOrTemplateInfo = {
+            channelId: channel,
             id,
             session,
-            type
-          );
-          return findProgress;
+            type,
+          };
+          if (type === "template-progress") {
+            const findTemplateProgress =
+              await templateService.findTemplateProgress(templateInfo);
+            return findTemplateProgress;
+          } else {
+            const findTemplateNormal =
+              await templateNormalService.findTemplateNormal(templateInfo);
+            return findTemplateNormal;
+          }
         }
       );
 
@@ -54,11 +78,12 @@ export class PageController implements IPageController {
     const { blockId, channel } = req.body;
     const createPageResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
-        const createPage = await pageService.createPage(
-          channel,
+        const createPageInfo: createPageOrTemplateInfo = {
+          channelId: channel,
           blockId,
-          session
-        );
+          session,
+        };
+        const createPage = await pageService.createPage(createPageInfo);
         return createPage;
       }
     );
@@ -76,7 +101,7 @@ export class PageController implements IPageController {
     res.json(createRoomPageResult);
   };
 
-  pushBlock: AsyncRequestHandler = async (req, res) => {
+  putBlockInEditablePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, label, blocks, pageName } = req.body;
     const pushBlockResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
@@ -87,8 +112,12 @@ export class PageController implements IPageController {
           blocks: blocks,
         };
 
-        const pushPage = await pageService.pushBlock(id, page, session);
-        return pushPage;
+        const putBlockInEditablePage = await pageService.putBlockInEditablePage(
+          id,
+          page,
+          session
+        );
+        return putBlockInEditablePage;
       }
     );
 
@@ -107,21 +136,26 @@ export class PageController implements IPageController {
       const templateInEditablePageResult =
         await this.mongoTransaction.withTransaction(
           async (session: ClientSession) => {
-            const templateInEditablePage =
+            const templateInEditablePageDeleteOne =
               await templateService.templateInEditablePageDeleteOne(
                 id,
                 channel,
                 type,
                 session
               );
-            return templateInEditablePage;
+            return templateInEditablePageDeleteOne;
           }
         );
       res.json(templateInEditablePageResult);
     } else {
       const deletePageResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
-          const deletePage = await pageService.deletePage(id, channel, session);
+          const deletePageInfo: basicPageOrTemplateInfo = {
+            id,
+            channelId: channel,
+            session,
+          };
+          const deletePage = await pageService.deletePage(deletePageInfo);
           return deletePage;
         }
       );
@@ -129,9 +163,12 @@ export class PageController implements IPageController {
     }
   };
 
-  pageTemplateSearch: AsyncRequestHandler = async (req, res) => {
+  pageAndTemplateSearch: AsyncRequestHandler = async (req, res) => {
     const { search, channel } = req.body;
-    const searchResult = await pageService.pageTemplateSearch(channel, search);
+    const searchResult = await pageService.pageAndTemplateSearch(
+      channel,
+      search
+    );
     res.json(searchResult);
   };
 }

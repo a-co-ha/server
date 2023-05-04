@@ -9,6 +9,7 @@ import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
 import { logger } from "../utils";
+import { createPageOrTemplateInfo } from "../interface/pageInterface";
 
 export class ChannelService {
   constructor(
@@ -56,9 +57,14 @@ export class ChannelService {
   }
 
   private async createSpace(channelId: number, blockId: string): Promise<void> {
+    const createPageinfo: createPageOrTemplateInfo = {
+      channelId,
+      blockId,
+    };
+
     await this.listModel.create({ channelId });
     await this.pageService.createRoom(channelId);
-    await this.pageService.createPage(channelId, blockId);
+    await this.pageService.createPage(createPageinfo);
   }
 
   private async userJoin(

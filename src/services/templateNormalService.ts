@@ -9,9 +9,15 @@ import { templateService, TemplateService } from "./templateService";
 import {
   template,
   pageStatusUpdate,
-  templateInfo,
+  parentTemplateInfo,
+  putPageInTemplate,
+  updateTemplateInfo,
 } from "../interface/templateInterface";
 import { ClientSession } from "mongoose";
+import {
+  basicPageOrTemplateInfo,
+  createPageOrTemplateInfo,
+} from "../interface/pageInterface";
 
 class TemplateNormalService {
   private templateModel: templateModelType;
@@ -30,23 +36,27 @@ class TemplateNormalService {
     this.pageModel = pageModel;
   }
 
-  public async createTemplate(
-    channelId: number,
-    blockId: string,
-    type: string,
-    session: ClientSession
+  public async createTemplateNormal(
+    createTemplateNormalInfo: createPageOrTemplateInfo
+    // channelId: number,
+    // blockId: string,
+    // type: string,
+    // session: ClientSession
   ): Promise<template> {
+    const { channelId, blockId, type, session } = createTemplateNormalInfo;
+
     const pageType = "normal-page";
-    const templateInfo: templateInfo = {
+    const parentTemplateInfo: parentTemplateInfo = {
       pageType,
     };
-
-    const pages = await this.pageService.createPage(
+    const createPageInfo: createPageOrTemplateInfo = {
       channelId,
       blockId,
       session,
-      templateInfo
-    );
+      parentTemplateInfo,
+    };
+
+    const pages = await this.pageService.createPage(createPageInfo);
     const createNormalTemplate = await this.templateModel.create(
       [
         {
@@ -68,7 +78,7 @@ class TemplateNormalService {
       .session(session);
     console.log(pageParentTemplate);
 
-    await this.templateService.createListTemplate(
+    await this.templateService.putTemplateInList(
       channelId,
       createNormalTemplate[0],
       session
@@ -76,67 +86,73 @@ class TemplateNormalService {
     return createNormalTemplate[0];
   }
 
-  public async findTemplate(
-    channelId: number,
-    id: string,
-    session: ClientSession,
-    type?: string
+  public async findTemplateNormal(
+    templateInfo: basicPageOrTemplateInfo
   ): Promise<template> {
-    const templateNormal = this.templateModel
-      .findOne({ _id: id, type })
+    const { channelId, id, session, type } = templateInfo;
+
+    const findTemplateNormal = this.templateModel
+      .findOne({ _id: id, channelId, type })
       .populate({
         path: "pages",
         select: "pageName label type",
       })
       .session(session);
-    return await templateNormal.findOne({ channelId });
+    return findTemplateNormal;
   }
 
-  public async addTemplatePage(
-    channelId: number,
-    id: string,
-    blockId: string,
-    type: string,
-    session: ClientSession
+  public async putPageInTemplateNormal(
+    putPageInTemplate: putPageInTemplate
   ): Promise<template> {
-    const template = await this.findTemplate(channelId, id, session, type);
+    const { channelId, id, session, type, blockId } = putPageInTemplate;
+    const templateInfo: basicPageOrTemplateInfo = {
+      channelId,
+      id,
+      session,
+      type,
+    };
+    const findTemplateNormal = await this.findTemplateNormal(templateInfo);
     const pageType = "normal-page";
-    const templateType = template.type;
+    const templateType = findTemplateNormal.type;
 
     if (templateType === "template-normal") {
-      const templateInfo: templateInfo = {
+      const parentTemplateInfo: parentTemplateInfo = {
         pageType,
-        parentTemplate: template.id,
+        parentTemplate: findTemplateNormal.id,
       };
-      const pages = await this.pageService.createPage(
+      const createPageInfo: createPageOrTemplateInfo = {
         channelId,
         blockId,
         session,
-        templateInfo
-      );
+        parentTemplateInfo,
+      };
+      const pages = await this.pageService.createPage(createPageInfo);
 
       return this.templateModel
         .findOneAndUpdate({ _id: id }, { $push: { pages } })
         .session(session)
         .then(() => {
-          return this.findTemplate(channelId, id, session, type);
+          return this.findTemplateNormal(templateInfo);
         });
     }
   }
 
   public async updateTemplateNormal(
-    channelId: number,
-    id: string,
-    pageName: string,
-    pages: [pageStatusUpdate],
-    type: string,
-    session: ClientSession
+    updateTemplateInfo: updateTemplateInfo
   ): Promise<template> {
+    const { channelId, id, pageName, pages, type, session } =
+      updateTemplateInfo;
+    const templateInfo: basicPageOrTemplateInfo = {
+      channelId,
+      id,
+      session,
+      type,
+    };
     return await this.templateModel
       .findByIdAndUpdate({ _id: id }, { pageName, pages })
       .session(session)
       .then(() => {
-        return this.findTemplate(channelId, id, session, type);
+        return this.findTemplateNormal(templateInfo);
       });
   }
 }

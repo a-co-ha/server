@@ -14,7 +14,7 @@ templateRouter.post(
 templateRouter.patch(
   "/:id",
   DtoValidatorMiddleware(TemplateDto),
-  asyncHandler(templateController.addTemplatePage)
+  asyncHandler(templateController.putPageInTemplate)
 );
 templateRouter.patch(
   "/update/:id",

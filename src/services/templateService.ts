@@ -10,12 +10,18 @@ import { PageService, pageService } from "./pageService";
 import {
   template,
   pageStatusUpdate,
-  templateInfo,
+  parentTemplateInfo,
   progressPercentage,
   progressPercentageArray,
+  putPageInTemplate,
+  updateTemplateInfo,
 } from "../interface/templateInterface";
 
-import { block } from "../interface/pageInterface";
+import {
+  basicPageOrTemplateInfo,
+  block,
+  createPageOrTemplateInfo,
+} from "../interface/pageInterface";
 import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
@@ -44,28 +50,26 @@ export class TemplateService {
     this.pageModel = pageModel;
   }
 
-  public async createTemplate(
-    channelId: number,
-    blockId: string,
-    type: string,
-    session: ClientSession
+  public async createTemplateProgress(
+    createTemplateInfo: createPageOrTemplateInfo
   ): Promise<template> {
     const pageType = "progress-page";
     const progressStatus = "todo";
-
-    const templateInfo: templateInfo = {
+    const { channelId, blockId, type, session } = createTemplateInfo;
+    const parentTemplateInfo: parentTemplateInfo = {
       pageType,
       progressStatus,
     };
-
-    const pages = await this.pageService.createPage(
+    const createPageInfo: createPageOrTemplateInfo = {
       channelId,
       blockId,
       session,
-      templateInfo
-    );
+      parentTemplateInfo,
+    };
 
-    const template = await this.templateModel.create(
+    const pages = await this.pageService.createPage(createPageInfo);
+
+    const createTemplate = await this.templateModel.create(
       [
         {
           channelId,
@@ -75,15 +79,18 @@ export class TemplateService {
       ],
       { session }
     );
-    const pageParentTemplate = await this.pageModel
-      .findByIdAndUpdate({ _id: pages._id }, { parentTemplate: template[0].id })
+    await this.pageModel
+      .findByIdAndUpdate(
+        { _id: pages._id },
+        { parentTemplate: createTemplate[0].id }
+      )
       .session(session);
 
-    await this.createListTemplate(channelId, template[0], session);
-    return template[0];
+    await this.putTemplateInList(channelId, createTemplate[0], session);
+    return createTemplate[0];
   }
 
-  public async createListTemplate(
+  public async putTemplateInList(
     channelId: number,
     template: template,
     session: ClientSession
@@ -98,33 +105,35 @@ export class TemplateService {
       .session(session);
     return pushTemplateList;
   }
-  public async findTemplate(
-    channelId: number,
-    id: string,
-    session: ClientSession,
-    type?: string
+
+  public async findTemplateProgress(
+    templateInfo: basicPageOrTemplateInfo
   ): Promise<template> {
-    const progress = await this.templateModel
-      .findOne({ _id: id, channelId })
+    const { id, channelId, session, type } = templateInfo;
+    const findTemplateProgress = await this.templateModel
+      .findOne({ _id: id, channelId, type })
       .populate({
         path: "pages",
         select: "pageName label progressStatus type",
       })
       .session(session);
-    return progress;
+    return findTemplateProgress;
   }
 
-  public async addTemplatePage(
-    channelId: number,
-    id: string,
-    blockId: string,
-    type: string,
-    session: ClientSession,
-    progressStatus?: string
+  public async putPageInTemplateProgress(
+    putPageInTemplate: putPageInTemplate
   ): Promise<template> {
-    const template = await this.findTemplate(channelId, id, session);
+    const { channelId, id, session, type, blockId, progressStatus } =
+      putPageInTemplate;
+    const templateInfo: basicPageOrTemplateInfo = {
+      channelId,
+      id,
+      session,
+      type,
+    };
+    const findTemplateProgress = await this.findTemplateProgress(templateInfo);
 
-    const templateType = template.type;
+    const templateType = findTemplateProgress.type;
     if (templateType === "template-progress") {
       if (!progressStatus) {
         throw new Error("progressStatus를 입력하세요");
@@ -132,36 +141,42 @@ export class TemplateService {
 
       const pageType = "progress-page";
 
-      const templateInfo: templateInfo = {
+      const parentTemplateInfo: parentTemplateInfo = {
         pageType,
-        parentTemplate: template.id,
+        parentTemplate: findTemplateProgress.id,
         progressStatus,
       };
 
-      const pages = await this.pageService.createPage(
+      const createPageInfo: createPageOrTemplateInfo = {
         channelId,
         blockId,
         session,
-        templateInfo
-      );
+        parentTemplateInfo,
+      };
+
+      const pages = await this.pageService.createPage(createPageInfo);
 
       return await this.templateModel
         .findByIdAndUpdate({ _id: id }, { $push: { pages } })
         .session(session)
         .then(async () => {
-          return await this.findTemplate(channelId, id, session);
+          return await this.findTemplateProgress(templateInfo);
         });
     }
   }
 
   public async updateTemplateProgress(
-    channelId: number,
-    id: string,
-    pageName: string,
-    pages: pageStatusUpdate[],
-    type: string,
-    session: ClientSession
+    updateTemplateInfo: updateTemplateInfo
   ): Promise<template> {
+    const { channelId, id, pageName, pages, type, session } =
+      updateTemplateInfo;
+
+    const templateInfo: basicPageOrTemplateInfo = {
+      channelId,
+      id,
+      session,
+      type,
+    };
     if (pages) {
       pages.map((page) => {
         if (page.progressStatus) {
@@ -175,7 +190,7 @@ export class TemplateService {
     return await this.templateModel
       .findByIdAndUpdate({ _id: id, channelId }, { pageName, pages })
       .then(() => {
-        return this.findTemplate(channelId, id, session, type);
+        return this.findTemplateProgress(templateInfo);
       });
   }
 
@@ -193,6 +208,12 @@ export class TemplateService {
       });
 
     const templateId = findTemplatePage.parentTemplate.id;
+    const templateInfo: basicPageOrTemplateInfo = {
+      channelId,
+      id: templateId,
+      session,
+      type,
+    };
 
     return await this.templateModel
       .findByIdAndUpdate(
@@ -204,7 +225,7 @@ export class TemplateService {
           _id: editablePageId,
           channel: channelId,
         });
-        return await this.findTemplate(channelId, templateId, session);
+        return await this.findTemplateProgress(templateInfo);
       });
   }
 
