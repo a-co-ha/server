@@ -49,12 +49,6 @@ export class Channel extends Model<ChannelAttributes> {
         timestamps: false,
       }
     );
-
-    // this.hasMany(ChannelUser, {
-    //   sourceKey: "id",
-    //   foreignKey: "channelId",
-    //   as: "channelUsers",
-    // });
   }
 }
 

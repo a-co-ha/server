@@ -35,7 +35,6 @@ export class UserController implements IUserController {
   };
 
   public get: AsyncRequestHandler = async (req, res) => {
-    logger.warn(req.user);
     const { userId } = req.user;
 
     const result = await this.userService.getUserWithChannels(userId);

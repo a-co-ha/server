@@ -87,8 +87,8 @@ export class ChannelService {
       {
         userId,
         channelId: id,
-        name,
-        channelName,
+        // name,
+        // channelName,
       },
       { transaction }
     );
@@ -127,8 +127,9 @@ export class ChannelService {
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
     const channelInfo = await this.get(t, { admin, channelName });
-    if (await this.isInvited({ channelName, name })) {
-      throw Error(`${channelInfo.id}`);
+
+    if (await this.isInvited(userId, channelInfo.id)) {
+      throw Error(` ${channelInfo.id} `);
     }
 
     if (channelName === channelInfo.channelName) {
@@ -145,11 +146,11 @@ export class ChannelService {
     return { channelId: channelInfo.id, userId, channelName };
   }
 
-  private async isInvited({ channelName, name }): Promise<boolean> {
+  private async isInvited(userId, channelId): Promise<boolean> {
     const { count } = await ChannelUser.findAndCountAll({
       where: {
-        channelName,
-        name,
+        userId,
+        channelId,
       },
     });
 
