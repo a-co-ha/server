@@ -221,6 +221,7 @@ export class PageService {
           $or: [
             { pageName: { $regex: searchRegex } },
             { blocks: { $elemMatch: { html: { $regex: searchRegex } } } },
+            { label: { $elemMatch: { content: { $regex: searchRegex } } } },
           ],
         },
         {
@@ -255,6 +256,43 @@ export class PageService {
     };
 
     return searchResult;
+  }
+
+  //해야함
+  public async recentlyCreated(channelId: number): Promise<any> {
+    const recentlyCreatedpage = await this.pageModel
+      .find(
+        { channelId },
+        {
+          id: 1,
+          pageName: 1,
+          updatedAt: 1,
+          type: 1,
+        }
+      )
+      .sort({ updatedAt: -1 })
+      .limit(5);
+    const recentlyCreatedTemplate = await this.templateModel
+      .find(
+        { channelId },
+        {
+          id: 1,
+          pageName: 1,
+          updatedAt: 1,
+          type: 1,
+        }
+      )
+      .sort({ updatedAt: -1 })
+      .limit(5);
+
+    const recentlyCreated = [
+      ...recentlyCreatedpage,
+      ...recentlyCreatedTemplate,
+    ];
+    const recently = recentlyCreated
+      .sort((a: any, b: any) => b.updatedAt - a.updatedAt)
+      .slice(0, 5);
+    return recently;
   }
 }
 
