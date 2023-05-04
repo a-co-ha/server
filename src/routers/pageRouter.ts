@@ -42,3 +42,9 @@ pageRouter.get(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.pageAndTemplateSearch)
 );
+
+pageRouter.get(
+  "/recently/:channel",
+  DtoValidatorMiddleware(PageDto),
+  asyncHandler(pageController.recentlyCreated)
+);
