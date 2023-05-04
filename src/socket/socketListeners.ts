@@ -1,3 +1,5 @@
+import { pageService } from "./../services/pageService";
+import { channelService } from "./../services/channelService";
 import moment from "moment-timezone";
 import { Socket } from "socket.io";
 import { dateFormat } from "../constants";
@@ -100,8 +102,12 @@ export class SocketListener {
     };
 
   public setLabel = (socket: Socket) => async (content: any) => {
-    const { channelName, pageName, targetUserId, targetUserName } = content;
-    const subPageName = content?.subPageName;
+    const { channelId, pageId, targetUserId, targetUserName } = content;
+    const subPageName = content?.subPageId;
+
+    const { channelName } = await channelService.getChannelInfo(channelId);
+    const { pageName } = await pageService.findPageNameByPageId(pageId);
+
     const res = subPageName
       ? `${channelName}의 ${pageName} - ${subPageName}에서 ${targetUserName}님을 태그했습니다. `
       : `${channelName}의 ${pageName}에서 ${targetUserName}님을 태그했습니다. `;

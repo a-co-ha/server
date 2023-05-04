@@ -29,7 +29,6 @@ export class Socket {
     );
     instrument(this.io, {
       auth: false,
-      mode: "development",
     });
   }
 

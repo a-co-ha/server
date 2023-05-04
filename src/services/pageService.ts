@@ -5,7 +5,6 @@ import {
   templateModel,
 } from "./../model/index";
 import { listModel, listModelType, pageModel, pageModelType } from "../model";
-import { parentTemplateInfo } from "../interface/templateInterface";
 import {
   basicPageOrTemplateInfo,
   block,
@@ -17,12 +16,12 @@ import { ListService, listService } from "./listService";
 import { ListInterface } from "../model/schema/listSchema";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
+import { ObjectId } from "mongodb";
 export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
   private socketModel: socketModelType;
   private mongoTransaction: MongoTransaction;
-
   private listService: ListService;
   private templateModel: templateModelType;
   constructor(
@@ -30,7 +29,6 @@ export class PageService {
     listModel: listModelType,
     socketModel: socketModelType,
     mongoTransaction: MongoTransaction,
-
     listService: ListService,
     templateModel: templateModelType
   ) {
@@ -38,11 +36,18 @@ export class PageService {
     this.listModel = listModel;
     this.socketModel = socketModel;
     this.mongoTransaction = mongoTransaction;
-
     this.listService = listService;
     this.templateModel = templateModel;
   }
 
+  public async findPageNameByPageId(pageId: string): Promise<page> {
+    return await this.pageModel.findById(
+      {
+        _id: new ObjectId(pageId),
+      },
+      { pageName: 1 }
+    );
+  }
   public async findPage(pageInfo: basicPageOrTemplateInfo): Promise<page> {
     const { id, channelId, type, session } = pageInfo;
 

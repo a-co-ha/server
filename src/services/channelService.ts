@@ -1,10 +1,5 @@
-import { UserOfRoom } from "./../interface/socketInterface";
 import { listModel, socketModel, socketModelType } from "./../model/index";
-import {
-  ChannelAttributes,
-  channelJoinInterface,
-  Room,
-} from "./../interface/index";
+import { channelJoinInterface, Room } from "./../interface/index";
 import { IChannelInfo } from "../interface";
 import { decode, ENCTYPE } from "../constants";
 import { Channel, channelModel } from "../model/channel";
@@ -13,7 +8,6 @@ import { User, userModel } from "../model/user";
 import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
-import { logger } from "../utils";
 import { createPageOrTemplateInfo } from "../interface/pageInterface";
 
 export class ChannelService {
@@ -33,7 +27,7 @@ export class ChannelService {
   ): Promise<any> {
     const { admin, channelName, userId, name } = info;
 
-    const channelNameCheck = await this.get(t, info);
+    const channelNameCheck = await this.getChannelInfo(info, t);
     if (channelNameCheck) {
       throw Error("같은 이름의 채널이 이미 있습니다.");
     }
@@ -74,14 +68,14 @@ export class ChannelService {
   }
 
   private async createSpace(channelId: number, blockId: string): Promise<void> {
-    const createPageinfo: createPageOrTemplateInfo = {
+    const createPageInfo: createPageOrTemplateInfo = {
       channelId,
       blockId,
     };
 
     await this.listModel.create({ channelId });
     await this.pageService.createRoom(channelId);
-    await this.pageService.createPage(createPageinfo);
+    await this.pageService.createPage(createPageInfo);
   }
 
   private async userJoin(
@@ -101,10 +95,16 @@ export class ChannelService {
   }
 
   // 채널 주인과, 채널 이름으로 찾음
-  private async get(transaction: any, info: IChannelInfo): Promise<Channel> {
-    const { admin, channelName } = info;
+  public async getChannelInfo(
+    info: IChannelInfo,
+    transaction?: any
+  ): Promise<Channel> {
+    const where: { [key: string]: any } = {};
+    if (info?.admin) where.userId = info.admin;
+    if (info?.channelName) where.channelName = info.channelName;
+    if (info?.id) where.id = info.id;
     return await Channel.findOne({
-      where: { userId: admin, channelName },
+      where,
       raw: true,
       transaction,
     });
@@ -132,7 +132,7 @@ export class ChannelService {
     const admin = decode(adminCode as string, ENCTYPE.BASE64, ENCTYPE.UTF8);
     const channelName = decode(channelCode, ENCTYPE.BASE64, ENCTYPE.UTF8);
 
-    const channelInfo = await this.get(t, { admin, channelName });
+    const channelInfo = await this.getChannelInfo({ admin, channelName }, t);
     if (await this.isInvited({ channelName, name })) {
       throw Error(`${channelInfo.id}`);
     }
@@ -291,7 +291,6 @@ export class ChannelService {
       },
       raw: true,
     });
-    logger.warn(`currentUsers ${JSON.stringify(users)}`);
 
     return users;
   };
