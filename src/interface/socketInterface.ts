@@ -1,7 +1,6 @@
 export interface Room {
   id: string;
   readUser: UserOfRoom[] | number[];
-  unreadCount: number;
 }
 
 export interface UserOfRoom {

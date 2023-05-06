@@ -1,8 +1,12 @@
+import { UserOfRoom } from "./../interface/socketInterface";
 import { BookmarkInterface } from "./../interface/bookmarkInterface";
 import { SessionData } from "express-session";
 import { REDIS_TTL } from "../constants";
 import { User, Message, MessageAttributes, PrivateMessage } from "../interface";
 import { redisClient } from "./redisClient";
+import { logger } from "./winston";
+import { promisify } from "util";
+import { NIL } from "uuid";
 
 class RedisHelper {
   static async setWithExpiration(key: string, value: any, expiration: number) {
@@ -129,31 +133,29 @@ export class RedisHandler {
     return Boolean(value);
   }
 
-  static async setLastMessagePerRoom(
-    roomId: string,
-    userId: number,
-    // messageId: string,
-    members?: number[]
+  static async setReadMessagePerRoom(
+    roomId: string | number,
+    members: number[] | UserOfRoom[]
   ): Promise<void> {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
-    // await redisClient.hSet(key, `lastReadMessageId:${userId}`, messageId);
 
-    if (members) {
-      members.map((member) => {
-        redisClient.hSet(key, `isRead:${member}`, "false");
-      });
-    }
+    const hSetAsync = promisify(redisClient.hSet).bind(redisClient);
+    await Promise.all(
+      members.map(async (member) => {
+        return await hSetAsync(key, `isRead:${member}`, "false");
+      })
+    );
   }
 
-  static async resetRead(roomId: string, userId: number) {
+  static async resetRead(roomId: string | number, userId: number) {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
     await redisClient.hSet(key, `isRead:${userId}`, "true");
   }
 
-  static async getRoomReadCount(roomId: string, userId: number) {
+  static async getIsRead(roomId: string | number, userId: number) {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
-    // const message = await redisClient.hGet(key, `lastReadMessageId:${userId}`);
-    const isRead = await redisClient.hGet(key, `isRead:${userId}`);
+    const isRead =
+      (await redisClient.hGet(key, `isRead:${userId}`)) === null ? true : false;
 
     return { roomId, userId, isRead };
   }

@@ -24,6 +24,7 @@ export class MySqlAdapter {
       });
 
       logger.info("MySql Adapter Pool generated successfully");
+      connectSequelize();
     } catch (error) {
       logger.error("[mysql.connector][init][Error]: ", error);
       throw new Error("failed to initialized pool");

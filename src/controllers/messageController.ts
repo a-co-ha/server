@@ -1,6 +1,6 @@
 import { MessageService, messageService } from "./../services/messageService";
 import { Message } from "./../model/message";
-import { RedisHandler } from "../utils";
+import { logger, RedisHandler } from "../utils";
 import { AsyncRequestHandler } from "../utils";
 
 interface IMessageController {
@@ -14,16 +14,12 @@ export class MessageController implements IMessageController {
     );
 
     await RedisHandler.saveMessage(message);
-    await RedisHandler.setLastMessagePerRoom(
-      data.roomId,
-      data.userId,
-      // message.id,
-      data.readUser
-    );
-    await RedisHandler.resetRead(data.roomId, data.userId);
+    // await RedisHandler.setReadMessagePerRoom(data.roomId, data.readUser);
+    // await RedisHandler.resetRead(data.roomId, data.userId);
+
     delete message.roomId;
 
-    return { message };
+    return message;
   };
 }
 

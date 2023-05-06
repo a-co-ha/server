@@ -60,9 +60,8 @@ export class ChannelService {
     const result = results.map((room) => {
       const id = room._id.toString();
       const readUser = users;
-      const unreadCount = 0;
 
-      return { id, readUser, unreadCount };
+      return { id, readUser };
     });
     return result;
   }

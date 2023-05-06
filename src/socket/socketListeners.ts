@@ -8,13 +8,14 @@ import { BookmarkInterface } from "../interface/bookmarkInterface";
 import { Message } from "../interface/messageInterface";
 import { bookmarkService } from "../services";
 import { messageService } from "../services/messageService";
-import { getCurrentDate, RedisHandler } from "../utils";
+import { getCurrentDate, logger, RedisHandler } from "../utils";
 
 export class SocketListener {
   public sendMessage =
     (socket: Socket, connectedUsers: Map<number, Socket>) =>
     async ({ content, roomId }: { content: string; roomId: string }) => {
-      const { readUser } = socket.roomIds[0];
+      const { readUser } = socket.roomIds.find((room) => room.id === roomId);
+
       const data: Message = {
         userId: socket.userID,
         name: socket.name,
@@ -28,18 +29,21 @@ export class SocketListener {
       socket.emit("RECEIVE_MESSAGE", message);
       socket.to(roomId).emit("RECEIVE_MESSAGE", message);
 
-      await Promise.all(
-        readUser.map(async (user) => {
-          if (user !== socket.userID) {
-            const recipientSocket = connectedUsers.get(user);
+      await RedisHandler.setReadMessagePerRoom(data.roomId, data.readUser);
+      await RedisHandler.resetRead(data.roomId, data.userId);
 
-            if (recipientSocket) {
-              const status = await RedisHandler.getRoomReadCount(roomId, user);
-              return recipientSocket.emit("UPDATE_STATUS", status);
-            }
-          }
-        })
-      );
+      // await Promise.all(
+      //   readUser.map(async (user) => {
+      //     if (user !== socket.userID) {
+      //       const recipientSocket = connectedUsers.get(user);
+      //       if (recipientSocket) {
+      //         const status = await RedisHandler.getIsRead(roomId, user);
+      //         console.log(recipientSocket);
+      //         return recipientSocket.emit("UPDATE_STATUS", status);
+      //       }
+      //     }
+      //   })
+      // );
     };
 
   public readMessage =
@@ -62,11 +66,6 @@ export class SocketListener {
         messages = [...restMessage, ...cachedMessages];
       }
 
-      await RedisHandler.setLastMessagePerRoom(
-        roomId,
-        socket.userID
-        // cachedMessages[length - 1].id
-      );
       await RedisHandler.resetRead(roomId, socket.userID);
 
       messages = cachedMessages;

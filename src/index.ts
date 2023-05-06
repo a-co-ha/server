@@ -26,7 +26,6 @@ import {
   errorHandler,
   useSession,
   morganMiddleware,
-  DtoValidatorMiddleware,
   SessionStore,
 } from "./middlewares";
 
@@ -41,7 +40,6 @@ export class AppServer {
     this.middleWare();
     new MySqlAdapter();
     new MongoAdapter();
-    await connectSequelize();
     this.routes();
   }
 

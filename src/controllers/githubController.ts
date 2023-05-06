@@ -4,6 +4,7 @@ import { Octokit } from "octokit";
 import { GITHUBAUTH } from "../config";
 import { AsyncRequestHandler } from "../utils";
 import { channelService } from "../services";
+
 const octokit = new Octokit({
   auth: GITHUBAUTH,
 });
@@ -25,15 +26,21 @@ export class GithubController implements IGithubController {
     const {
       name,
       private: IsPrivate,
-      description,
+      description: desc,
       url: html_url,
+      events_url,
     } = result.data;
 
+    const events = await axios.get(events_url).then((response) => {
+      console.log(response.data);
+      return response.data;
+    });
     res.json({
       name,
       private: IsPrivate,
-      description,
+      desc,
       url: html_url,
+      events,
     });
   };
 
@@ -49,7 +56,7 @@ export class GithubController implements IGithubController {
       return {
         name: el.name,
         isPrivate: el.private,
-        description: el.description,
+        desc: el.description,
         url: el.html_url,
       };
     });
@@ -65,22 +72,21 @@ export class GithubController implements IGithubController {
       org,
       headers: githubHeader,
     });
-    const { data } = result;
-    const orgImg = data.avatar_url;
-    const desc = data.description;
-    const orgUrl = data.html_url;
-    const orgName = data.login;
+    const {
+      avatar_url: orgImg,
+      description: desc,
+      html_url: orgUrl,
+      login: orgName,
+      repos_url,
+    } = result.data;
 
-    axios({
-      method: "get",
-      url: data.repos_url,
-    }).then((response) => {
-      const repos = response.data.map((i) => {
+    const repos = await axios.get(repos_url).then((response) => {
+      return response.data.map((i) => {
         return { name: i.name, url: i.url };
       });
-      channelService.channelOrgAdd(channelId, orgName);
-      res.json({ orgName, orgUrl, orgImg, desc, repos });
     });
+    channelService.channelOrgAdd(channelId, orgName);
+    res.json({ orgName, orgUrl, orgImg, desc, repos });
   };
 
   getEvents: AsyncRequestHandler = async (req, res) => {

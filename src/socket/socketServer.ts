@@ -6,9 +6,10 @@ import { useSession } from "../middlewares";
 import { socketValidation } from "../middlewares";
 import { RedisHandler, logger, createSocketAdapter } from "../utils";
 import { Server as httpServer } from "http";
-import { Room, SocketData } from "../interface";
+import { Message, Room, SocketData } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
+import { messageController } from "../controllers";
 export class Socket {
   private io: Server;
   private connectedUsers: Map<number, SocketIO>;
@@ -102,9 +103,8 @@ export class Socket {
 
   private async messageStatus(socket: any): Promise<void> {
     const { roomIds, userID } = socket;
-
     const result = await Promise.all(
-      roomIds.map((room) => RedisHandler.getRoomReadCount(room.id, userID))
+      roomIds.map((room) => RedisHandler.getIsRead(room.id, userID))
     );
     socket.emit("MESSAGE_STATUS", result);
   }
