@@ -21,22 +21,8 @@ export const socketValidation = async (
   socket.userID = sessionInfo.userId;
   socket.name = sessionInfo.name;
   socket.img = sessionInfo.img;
+};
 
-  const socketId = await getSocketId(sessionID);
-
-  if (!socketId) {
-    await saveSocketId(sessionID, socket.id);
-    return null;
-  } else {
-    return socketId;
-  }
-};
-const getSocketId = async (sessionID: string) => {
-  return await RedisHandler.getSocketId(sessionID);
-};
-const saveSocketId = async (sessionID, socketID) => {
-  await RedisHandler.saveSocketId(sessionID, socketID);
-};
 const getChannels = async (userId: number): Promise<any> => {
   const getChannel = await userService.getUserWithChannels(userId);
 

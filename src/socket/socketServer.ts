@@ -10,6 +10,7 @@ import { Message, Room, SocketData } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
 import e from "express";
+import { exists } from "fs";
 
 export class Socket {
   private io: Server;
@@ -44,11 +45,12 @@ export class Socket {
           throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
-        const isNewSocket = await socketValidation(sessionID, socket);
+        await socketValidation(sessionID, socket);
 
         const existSocket = this.connectedSession.get(sessionID);
 
-        if (isNewSocket != null && existSocket.id === isNewSocket) {
+        if (existSocket) {
+          console.log("이미 연결되어있음");
           socket = existSocket;
         } else {
           // DM 연결
@@ -68,9 +70,9 @@ export class Socket {
       }
 
       const rooms = socket.roomIds;
+
       for (const room of rooms) {
-        console.log(room.id);
-        socket.to(room.id.toString()).emit("NEW_MEMBER", {
+        socket.broadcast.to(room.id).emit("NEW_MEMBER", {
           userID: socket.userID,
           name: socket.name,
           img: socket.img,
