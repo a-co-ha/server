@@ -13,7 +13,7 @@ export const isUser = (
 export const socketValidation = async (
   sessionID: string,
   socket: any
-): Promise<boolean> => {
+): Promise<any> => {
   const sessionInfo = await RedisHandler.findSession(sessionID);
 
   socket.roomIds = await getChannels(sessionInfo.userId);
@@ -26,9 +26,9 @@ export const socketValidation = async (
 
   if (!socketId) {
     await saveSocketId(sessionID, socket.id);
-    return true;
+    return null;
   } else {
-    return false;
+    return socketId;
   }
 };
 const getSocketId = async (sessionID: string) => {

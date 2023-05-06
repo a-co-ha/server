@@ -12,7 +12,7 @@ import { getCurrentDate, logger, RedisHandler } from "../utils";
 
 export class SocketListener {
   public sendMessage =
-    (socket: Socket, connectedUsers: Map<number, Socket>) =>
+    (socket: Socket) =>
     async ({ content, roomId }: { content: string; roomId: string }) => {
       const { readUser } = socket.roomIds.find((room) => room.id === roomId);
 

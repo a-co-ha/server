@@ -9,15 +9,14 @@ import { Server as httpServer } from "http";
 import { Message, Room, SocketData } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
+import e from "express";
 
 export class Socket {
   private io: Server;
-  private connectedUsers: Map<number, SocketIO>;
   private connectedSession: Map<string, SocketIO>;
 
   constructor(server: httpServer, private socketListener: SocketListener) {
     this.io = new Server<SocketData>(server, ioCorsOptions);
-    this.connectedUsers = new Map();
     this.connectedSession = new Map();
   }
 
@@ -45,11 +44,13 @@ export class Socket {
           throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
-        this.connectedUsers.set(socket.userID, socket);
-        this.connectedSession.set(sessionID, socket);
-
         const isNewSocket = await socketValidation(sessionID, socket);
-        if (isNewSocket) {
+
+        const existSocket = this.connectedSession.get(sessionID);
+
+        if (isNewSocket != null && existSocket.id === isNewSocket) {
+          socket = existSocket;
+        } else {
           // DM 연결
           socket.join(socket.userID.toString());
 
@@ -58,8 +59,7 @@ export class Socket {
           await this.userInfo(socket);
           await this.messageStatus(socket);
           await this.myAlert(socket);
-        } else {
-          socket = this.connectedSession.get(sessionID);
+          this.connectedSession.set(sessionID, socket);
         }
       } catch (err: any) {
         logger.error(err.message);
@@ -67,6 +67,15 @@ export class Socket {
         return;
       }
 
+      const rooms = socket.roomIds;
+      for (const room of rooms) {
+        console.log(room.id);
+        socket.to(room.id.toString()).emit("NEW_MEMBER", {
+          userID: socket.userID,
+          name: socket.name,
+          img: socket.img,
+        });
+      }
       socket.on(
         "JOIN_CHANNEL",
         async ({ channelId }: { channelId: number }) => {
@@ -75,10 +84,7 @@ export class Socket {
         }
       );
 
-      socket.on(
-        "SEND_MESSAGE",
-        this.socketListener.sendMessage(socket, this.connectedUsers)
-      );
+      socket.on("SEND_MESSAGE", this.socketListener.sendMessage(socket));
 
       socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
 
@@ -120,11 +126,6 @@ export class Socket {
     if (roomIds) {
       for (const room of roomIds) {
         socket.join(room.id);
-        socket.broadcast.to(room.id).emit("NEW_MEMBER", {
-          userID: socket.userID,
-          name: socket.name,
-          img: socket.img,
-        });
       }
 
       logger.info(
