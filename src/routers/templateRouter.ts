@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { templateController } from "../controllers";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils";
 import { cascade } from "../middlewares";
 import { DtoValidatorMiddleware } from "../middlewares";
 import { TemplateDto } from "../dto";

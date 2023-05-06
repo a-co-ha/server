@@ -7,10 +7,11 @@ import {
   basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
   page,
-} from "../interface/pageInterface";
-import { AsyncRequestHandler, RedisHandler } from "../utils";
+} from "../interface";
+import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
+import { PageType } from "../constants";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
@@ -22,16 +23,14 @@ interface IPageController {
 }
 
 export class PageController implements IPageController {
-  constructor(private mongoTransaction: MongoTransaction) {
-    this.mongoTransaction = mongoTransaction;
-  }
+  constructor(private mongoTransaction: MongoTransaction) {}
 
-  findPage: AsyncRequestHandler = async (req, res) => {
+  public findPage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type } = req.body;
     if (
-      type === "normal" ||
-      type === "progress-page" ||
-      type === "normal-page"
+      type === PageType.NORMAL ||
+      type === PageType.PROGRESSIVE ||
+      type === PageType.NORMALIZE
     ) {
       const findEditablePageResult =
         await this.mongoTransaction.withTransaction(
@@ -49,7 +48,10 @@ export class PageController implements IPageController {
         );
       res.json(findEditablePageResult);
     }
-    if (type === "template-progress" || type === "template-normal") {
+    if (
+      type === PageType.TEMPLATE_PROGRESSIVE ||
+      type === PageType.TEMPLATE_NORMAL
+    ) {
       const findProgressResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
           const templateInfo: basicPageOrTemplateInfo = {
@@ -58,7 +60,7 @@ export class PageController implements IPageController {
             session,
             type,
           };
-          if (type === "template-progress") {
+          if (type === PageType.TEMPLATE_PROGRESSIVE) {
             const findTemplateProgress =
               await templateService.findTemplateProgress(templateInfo);
             return findTemplateProgress;
@@ -74,7 +76,7 @@ export class PageController implements IPageController {
     }
   };
 
-  createPage: AsyncRequestHandler = async (req, res) => {
+  public createPage: AsyncRequestHandler = async (req, res) => {
     const { blockId, channel } = req.body;
     const createPageResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
@@ -90,8 +92,8 @@ export class PageController implements IPageController {
     res.json(createPageResult);
   };
 
-  createRoom: AsyncRequestHandler = async (req, res) => {
-    const channel = req.body.channel;
+  public createRoom: AsyncRequestHandler = async (req, res) => {
+    const { channel } = req.body;
     const createRoomPageResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
         const createPage = await pageService.createRoom(channel, session);
@@ -101,7 +103,7 @@ export class PageController implements IPageController {
     res.json(createRoomPageResult);
   };
 
-  putBlockInEditablePage: AsyncRequestHandler = async (req, res) => {
+  public putBlockInEditablePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, label, blocks, pageName } = req.body;
     const pushBlockResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
@@ -124,13 +126,13 @@ export class PageController implements IPageController {
     res.json(pushBlockResult);
   };
 
-  editRoomName: AsyncRequestHandler = async (req, res) => {
+  public editRoomName: AsyncRequestHandler = async (req, res) => {
     const { id, channel, pageName } = req.body;
     const result = await pageService.editRoomName(id, channel, pageName);
     res.json(result);
   };
 
-  deletePage: AsyncRequestHandler = async (req, res) => {
+  public deletePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type } = req.body;
     if (type !== "normal") {
       const templateInEditablePageResult =
@@ -163,7 +165,7 @@ export class PageController implements IPageController {
     }
   };
 
-  pageAndTemplateSearch: AsyncRequestHandler = async (req, res) => {
+  public pageAndTemplateSearch: AsyncRequestHandler = async (req, res) => {
     const { search, channel } = req.body;
     const searchResult = await pageService.pageAndTemplateSearch(
       channel,

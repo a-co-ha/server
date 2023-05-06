@@ -7,6 +7,7 @@ import {
   mysqlDataBase,
 } from "../config";
 import { logger } from "../utils/winston";
+import { connectSequelize } from "./sequelize";
 
 export class MySqlAdapter {
   private pool: Pool;
@@ -29,7 +30,7 @@ export class MySqlAdapter {
     }
   }
 
-  // 시퀄라이즈안쓸때만쓰면됌
+  // 시퀄라이즈안쓸때만쓰면된다.
   public async execute<T>(
     query: string,
     params: string[] | Object

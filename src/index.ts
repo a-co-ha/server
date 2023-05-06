@@ -5,8 +5,7 @@ import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import { corsOptions, port, SESSION_SECRET } from "./config";
 import { endPoint } from "./constants";
-import { MongoAdapter, MySqlAdapter, connect } from "./db";
-import { InviteDto, BookMarkDto } from "./dto";
+import { MongoAdapter, MySqlAdapter, connectSequelize } from "./db";
 import { Socket } from "./socket/socketServer";
 import { logger } from "./utils";
 import {
@@ -42,7 +41,7 @@ export class AppServer {
     this.middleWare();
     new MySqlAdapter();
     new MongoAdapter();
-    await connect();
+    await connectSequelize();
     this.routes();
   }
 
@@ -73,20 +72,16 @@ export class AppServer {
     this.app.get(endPoint.index, indexRouter);
     this.app.use(endPoint.oauth, oauthRouter);
     this.app.use(endPoint.user, userRouter);
-    this.app.use(
-      endPoint.invite,
-      loginRequired,
-      DtoValidatorMiddleware(InviteDto),
-      channelRouter
-    );
+    this.app.use(endPoint.invite, loginRequired, channelRouter);
     this.app.use(endPoint.channel, loginRequired, channelRouter);
-    this.app.use(endPoint.page, pageRouter);
-    this.app.use(endPoint.template, templateRouter);
-    this.app.use(endPoint.list, listRouter);
-    this.app.use(endPoint.github, githubRouter);
+    this.app.use(endPoint.page, loginRequired, pageRouter);
+    this.app.use(endPoint.template, loginRequired, templateRouter);
+    this.app.use(endPoint.list, loginRequired, listRouter);
+    this.app.use(endPoint.github, loginRequired, githubRouter);
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
     this.app.use(endPoint.bookmarks, loginRequired, bookmarkListRouter);
-    this.app.use(endPoint.image, imageRouter);
+    this.app.use(endPoint.image, loginRequired, imageRouter);
+
     this.app.use(errorHandler);
   }
 }

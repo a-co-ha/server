@@ -19,7 +19,7 @@ export const sequelize = new Sequelize(
   }
 );
 
-export const connect = async () => {
+export const connectSequelize = async () => {
   try {
     await sequelize.authenticate().then(() => {
       logger.info("sequelize connection success");

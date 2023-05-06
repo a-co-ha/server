@@ -21,9 +21,7 @@ export class ChannelDto {
   @IsOptional()
   @IsString()
   blockId: string;
-}
 
-export class InviteDto {
   @IsOptional()
   @IsString()
   channelCode: string;

@@ -1,15 +1,13 @@
+import { PageType } from "./../constants";
 import { templateService, templateNormalService } from "../services";
 import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 import {
-  basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
-} from "../interface/pageInterface";
-import {
   putPageInTemplate,
   updateTemplateInfo,
-} from "../interface/templateInterface";
+} from "../interface";
 
 interface ITemplateController {
   createTemplate: AsyncRequestHandler;
@@ -27,7 +25,7 @@ export class TemplateController implements ITemplateController {
 
   createTemplate: AsyncRequestHandler = async (req, res) => {
     const { channel, blockId, type } = req.body;
-    if (type === "template-progress") {
+    if (type === PageType.TEMPLATE_PROGRESSIVE) {
       const createTemplateProgressResult =
         await this.mongoTransaction.withTransaction(
           async (session: ClientSession) => {
@@ -68,7 +66,7 @@ export class TemplateController implements ITemplateController {
 
   putPageInTemplate: AsyncRequestHandler = async (req, res) => {
     const { id, progressStatus, blockId, channel, type } = req.body;
-    if (type === "template-progress") {
+    if (type === PageType.TEMPLATE_PROGRESSIVE) {
       const addTemplatePageResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
           const putPageInTemplate: putPageInTemplate = {
@@ -110,7 +108,7 @@ export class TemplateController implements ITemplateController {
   updateTemplate: AsyncRequestHandler = async (req, res) => {
     const { id, channel, pages, pageName, type } = req.body;
 
-    if (type === "template-progress") {
+    if (type === PageType.TEMPLATE_PROGRESSIVE) {
       const updateProgressResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
           const updateTemplateInfo: updateTemplateInfo = {

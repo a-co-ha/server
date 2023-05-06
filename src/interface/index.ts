@@ -1,10 +1,9 @@
 export * from "./channelInterface";
-import { ListInterface } from "../model/schema/listSchema";
-import { BookmarkInterface } from "./bookmarkInterface";
+export * from "./pageInterface";
 export * from "./userInterface";
 export * from "./messageInterface";
 export * from "./socketInterface";
-
+export * from "./templateInterface";
 // export interface label {
 //   content: string;
 // }

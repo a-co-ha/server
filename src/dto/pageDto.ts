@@ -43,10 +43,9 @@ export class PageDto {
   @IsOptional()
   public pageName: string;
 
-
   @IsString()
   @IsOptional()
-  public search:string
+  public search: string;
 
   @IsNumber()
   @IsOptional()

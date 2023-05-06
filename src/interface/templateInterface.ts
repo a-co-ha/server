@@ -1,6 +1,4 @@
-import { ClientSession } from "mongoose";
 import { basicPageOrTemplateInfo } from "./pageInterface";
-
 export interface template {
   id?: string;
   channelId: number;
