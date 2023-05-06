@@ -31,19 +31,6 @@ export class SocketListener {
 
       await RedisHandler.setReadMessagePerRoom(data.roomId, data.readUser);
       await RedisHandler.resetRead(data.roomId, data.userId);
-
-      // await Promise.all(
-      //   readUser.map(async (user) => {
-      //     if (user !== socket.userID) {
-      //       const recipientSocket = connectedUsers.get(user);
-      //       if (recipientSocket) {
-      //         const status = await RedisHandler.getIsRead(roomId, user);
-      //         console.log(recipientSocket);
-      //         return recipientSocket.emit("UPDATE_STATUS", status);
-      //       }
-      //     }
-      //   })
-      // );
     };
 
   public readMessage =

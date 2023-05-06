@@ -6,10 +6,3 @@ export interface Room {
 export interface UserOfRoom {
   userID: number;
 }
-
-export interface SocketData {
-  sessionID?: string;
-  userID: number;
-  name: string;
-  rooms: string[];
-}

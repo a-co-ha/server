@@ -6,6 +6,7 @@ import { Room } from "../interface";
 
 declare module "socket.io" {
   interface Socket {
+    sessionID?: string;
     userID: number;
     name: string;
     img: string;
