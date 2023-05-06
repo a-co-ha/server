@@ -9,14 +9,16 @@ import { Server as httpServer } from "http";
 import { Message, Room, SocketData } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
-import { messageController } from "../controllers";
+
 export class Socket {
   private io: Server;
   private connectedUsers: Map<number, SocketIO>;
+  private connectedSession: Map<string, SocketIO>;
 
   constructor(server: httpServer, private socketListener: SocketListener) {
     this.io = new Server<SocketData>(server, ioCorsOptions);
     this.connectedUsers = new Map();
+    this.connectedSession = new Map();
   }
 
   async config() {
@@ -43,17 +45,22 @@ export class Socket {
           throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
-        await socketValidation(sessionID, socket);
         this.connectedUsers.set(socket.userID, socket);
+        this.connectedSession.set(sessionID, socket);
 
-        // DM 연결
-        socket.join(socket.userID.toString());
+        const isNewSocket = await socketValidation(sessionID, socket);
+        if (isNewSocket) {
+          // DM 연결
+          socket.join(socket.userID.toString());
 
-        await this.join(socket, socket.roomIds);
-        await this.getUsers(socket);
-        await this.userInfo(socket);
-        await this.messageStatus(socket);
-        await this.myAlert(socket);
+          await this.join(socket, socket.roomIds);
+          await this.getUsers(socket);
+          await this.userInfo(socket);
+          await this.messageStatus(socket);
+          await this.myAlert(socket);
+        } else {
+          socket = this.connectedSession.get(sessionID);
+        }
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();

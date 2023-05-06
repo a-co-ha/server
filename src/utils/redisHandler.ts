@@ -21,7 +21,16 @@ export class RedisHandler {
   static BOOKMARK_PREFIX = "bookMark:";
   static ROOM_PREFIX = "rooms:";
   static ALERT_PREFIX = "alert:";
+  static SOCKET_PREFIX = "socket:";
 
+  static async saveSocketId(sessionID, socketID) {
+    const key = `${RedisHandler.SOCKET_PREFIX}${sessionID}`;
+    await RedisHelper.setWithExpiration(key, socketID, REDIS_TTL.DAY);
+  }
+  static async getSocketId(sessionID) {
+    const key = `${RedisHandler.SOCKET_PREFIX}${sessionID}`;
+    return await redisClient.get(key);
+  }
   static async saveUserSession(
     userID: number,
     sessionID: string
