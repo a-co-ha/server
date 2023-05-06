@@ -9,7 +9,7 @@ import {
   MaxLength,
 } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
-import { block } from "../interface";
+import { block } from "../interface/pageInterface";
 
 // 제목 2-10글자
 export class PageDto {

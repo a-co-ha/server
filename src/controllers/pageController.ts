@@ -20,6 +20,7 @@ interface IPageController {
   findPage: AsyncRequestHandler;
   deletePage: AsyncRequestHandler;
   pageAndTemplateSearch: AsyncRequestHandler;
+  recentlyCreated: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
@@ -172,6 +173,13 @@ export class PageController implements IPageController {
       search
     );
     res.json(searchResult);
+  };
+
+  recentlyCreated: AsyncRequestHandler = async (req, res) => {
+    const { channel } = req.body;
+
+    const recentlyCreated = await pageService.recentlyCreated(channel);
+    res.json(recentlyCreated);
   };
 }
 
