@@ -19,7 +19,7 @@ export class MessageController implements IMessageController {
 
     delete message.roomId;
 
-    return message;
+    return { message };
   };
 }
 
