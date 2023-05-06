@@ -51,7 +51,12 @@ export class Socket {
 
         if (existSocket) {
           console.log("이미 연결되어있음");
-          socket = existSocket;
+          socket.disconnect(); // 현재 소켓 연결을 끊음
+
+          // existSocket.on("connect", () => {
+          //   console.log("기존 소켓으로 다시 연결되었습니다.");
+          //   this.handleSocketEvents(existSocket);
+          // });
         } else {
           // DM 연결
           socket.join(socket.userID.toString());
@@ -62,6 +67,7 @@ export class Socket {
           await this.messageStatus(socket);
           await this.myAlert(socket);
           this.connectedSession.set(sessionID, socket);
+          this.handleSocketEvents(socket); // 새로운 소켓에 대한 이벤트 처리
         }
       } catch (err: any) {
         logger.error(err.message);
@@ -69,50 +75,95 @@ export class Socket {
         return;
       }
 
-      const rooms = socket.roomIds;
+      // const rooms = socket.roomIds;
 
-      for (const room of rooms) {
-        socket.broadcast.to(room.id).emit("NEW_MEMBER", {
-          userID: socket.userID,
-          name: socket.name,
-          img: socket.img,
-        });
-      }
-      socket.on(
-        "JOIN_CHANNEL",
-        async ({ channelId }: { channelId: number }) => {
-          const newRooms = await channelService.getRooms(channelId);
-          await this.join(socket, newRooms);
-        }
-      );
+      // for (const room of rooms) {
+      //   socket.broadcast.to(room.id).emit("NEW_MEMBER", {
+      //     userID: socket.userID,
+      //     name: socket.name,
+      //     img: socket.img,
+      //   });
+      // }
+      // socket.on(
+      //   "JOIN_CHANNEL",
+      //   async ({ channelId }: { channelId: number }) => {
+      //     const newRooms = await channelService.getRooms(channelId);
+      //     await this.join(socket, newRooms);
+      //   }
+      // );
 
-      socket.on("SEND_MESSAGE", this.socketListener.sendMessage(socket));
+      // socket.on("SEND_MESSAGE", this.socketListener.sendMessage(socket));
 
-      socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
+      // socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
 
-      socket.on("SET_BOOKMARK", this.socketListener.setBookmark(socket));
+      // socket.on("SET_BOOKMARK", this.socketListener.setBookmark(socket));
 
-      socket.on("SET_ALERT", this.socketListener.setLabel(socket));
-      socket.on("READ_ALERT", this.socketListener.readLabel(socket));
+      // socket.on("SET_ALERT", this.socketListener.setLabel(socket));
+      // socket.on("READ_ALERT", this.socketListener.readLabel(socket));
 
-      socket.on("disconnect", async () => {
-        const matchingSockets = await this.io
-          .in(socket.userID.toString())
-          .fetchSockets();
+      // socket.on("disconnect", async () => {
+      //   const matchingSockets = await this.io
+      //     .in(socket.userID.toString())
+      //     .fetchSockets();
 
-        const isDisconnected = matchingSockets.length === 0;
+      //   const isDisconnected = matchingSockets.length === 0;
 
-        if (isDisconnected) {
-          for (const room of socket.roomIds) {
-            socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
-              roomId: room.id,
-              userID: socket.userID,
-              name: socket.name,
-              connected: false,
-            });
-          }
-        }
+      //   if (isDisconnected) {
+      //     for (const room of socket.roomIds) {
+      //       socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
+      //         roomId: room.id,
+      //         userID: socket.userID,
+      //         name: socket.name,
+      //         connected: false,
+      //       });
+      //     }
+      //   }
+      // });
+    });
+  }
+
+  private handleSocketEvents(socket: SocketIO): void {
+    const rooms = socket.roomIds;
+
+    for (const room of rooms) {
+      socket.broadcast.to(room.id).emit("NEW_MEMBER", {
+        userID: socket.userID,
+        name: socket.name,
+        img: socket.img,
       });
+    }
+
+    socket.on("JOIN_CHANNEL", async ({ channelId }: { channelId: number }) => {
+      const newRooms = await channelService.getRooms(channelId);
+      await this.join(socket, newRooms);
+    });
+
+    socket.on("SEND_MESSAGE", this.socketListener.sendMessage(socket));
+
+    socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
+
+    socket.on("SET_BOOKMARK", this.socketListener.setBookmark(socket));
+
+    socket.on("SET_ALERT", this.socketListener.setLabel(socket));
+    socket.on("READ_ALERT", this.socketListener.readLabel(socket));
+
+    socket.on("disconnect", async () => {
+      const matchingSockets = await this.io
+        .in(socket.userID.toString())
+        .fetchSockets();
+
+      const isDisconnected = matchingSockets.length === 0;
+
+      if (isDisconnected) {
+        for (const room of socket.roomIds) {
+          socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
+            roomId: room.id,
+            userID: socket.userID,
+            name: socket.name,
+            connected: false,
+          });
+        }
+      }
     });
   }
 
