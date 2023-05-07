@@ -5,8 +5,8 @@ import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import { corsOptions, port, SESSION_SECRET } from "./config";
 import { endPoint } from "./constants";
-import { MongoAdapter, MySqlAdapter, connectSequelize } from "./db";
-import { Socket } from "./socket/socketServer";
+import { MongoAdapter, MySqlAdapter } from "./db";
+import { Socket } from "./socket";
 import { logger } from "./utils";
 import {
   channelRouter,
@@ -79,7 +79,6 @@ export class AppServer {
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
     this.app.use(endPoint.bookmarks, loginRequired, bookmarkListRouter);
     this.app.use(endPoint.image, loginRequired, imageRouter);
-
     this.app.use(errorHandler);
   }
 }

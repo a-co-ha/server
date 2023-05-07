@@ -1,5 +1,5 @@
 import { Sequelize, Transaction as TransactionType } from "sequelize";
-import { sequelize } from "./sequelize";
+import { sequelize } from "./mysqlSequelize";
 
 export class MysqlTransaction {
   constructor(
@@ -32,7 +32,7 @@ export class MysqlTransaction {
       await this.commit();
     } catch (error) {
       await this.rollback();
-      throw error;
+      throw new Error();
     }
   }
 }

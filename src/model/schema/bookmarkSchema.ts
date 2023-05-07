@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PAGE_NAME } from "../../constants";
 import { BookmarkInterface } from "../../interface/bookmarkInterface";
 const Schema = mongoose.Schema;
 
@@ -7,7 +8,7 @@ export const BookmarkSchema = new Schema<BookmarkInterface>(
     bookmarkName: {
       type: String,
       required: false,
-      default: "제목 없음",
+      default: PAGE_NAME.DEFAULT,
     },
     content: {
       type: String,

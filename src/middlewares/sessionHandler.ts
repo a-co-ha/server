@@ -4,11 +4,11 @@ import session from "express-session";
 import { sessionConfig } from "../config";
 import { Request } from "express";
 
+export const useSession = () => session(sessionConfig);
+
 export interface ISessionStore {
   saveSession(req: Request): Promise<void>;
 }
-
-export const useSession = () => session(sessionConfig);
 
 export class SessionStore implements ISessionStore {
   async saveSession(req: Request): Promise<void> {

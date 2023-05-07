@@ -1,3 +1,4 @@
+import { PageInterface } from "./../model/schema/pageSchema";
 import {
   socketModel,
   socketModelType,
@@ -64,7 +65,7 @@ export class PageService {
 
   public async createPage(
     createPageInfo: createPageOrTemplateInfo
-  ): Promise<any> {
+  ): Promise<PageInterface> {
     const { channelId, blockId, session, parentTemplateInfo } = createPageInfo;
     const blocks: block = {
       blockId: blockId,

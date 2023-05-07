@@ -4329,6 +4329,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express-validator", "npm:3.0.0"],\
             ["@types/http-errors", "npm:2.0.1"],\
             ["@types/jsonwebtoken", "npm:9.0.2"],\
+            ["@types/lodash", "npm:4.14.194"],\
             ["@types/mongoose", "npm:5.11.97"],\
             ["@types/morgan", "npm:1.9.4"],\
             ["@types/multer", "npm:1.4.7"],\
@@ -4383,6 +4384,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jsonwebtoken", "npm:8.5.1"],\
             ["koa-session2", "npm:1.0.10"],\
             ["lint-staged", "npm:13.2.2"],\
+            ["lodash", "npm:4.17.21"],\
             ["moment-timezone", "npm:0.5.43"],\
             ["mongoclient", "npm:1.0.3"],\
             ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.3.0"],\
@@ -10349,6 +10351,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/express-validator", "npm:3.0.0"],\
             ["@types/http-errors", "npm:2.0.1"],\
             ["@types/jsonwebtoken", "npm:9.0.2"],\
+            ["@types/lodash", "npm:4.14.194"],\
             ["@types/mongoose", "npm:5.11.97"],\
             ["@types/morgan", "npm:1.9.4"],\
             ["@types/multer", "npm:1.4.7"],\
@@ -10403,6 +10406,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jsonwebtoken", "npm:8.5.1"],\
             ["koa-session2", "npm:1.0.10"],\
             ["lint-staged", "npm:13.2.2"],\
+            ["lodash", "npm:4.17.21"],\
             ["moment-timezone", "npm:0.5.43"],\
             ["mongoclient", "npm:1.0.3"],\
             ["mongodb", "virtual:4b378cd58f6701f35eed58fc5622b07e166c4d9fea2b14a925b9220493a3fb9940c8f7229bf2f52dbfbfdde42464a09f54f22afad7057821625bd5d66251819d#npm:5.3.0"],\

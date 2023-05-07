@@ -71,3 +71,14 @@ export const dateFormat = "YY-MM-DD HH:mm:ss";
 export const enum REDIS_TTL {
   DAY = 86400,
 }
+
+export const enum PAGE_NAME {
+  DEFAULT = "제목 없음",
+}
+
+export const enum PAGE_TYPE {
+  SOCKET = "socket",
+  PAGE = "page",
+  TEMPLATE = "template",
+  NORMAL = "normal",
+}

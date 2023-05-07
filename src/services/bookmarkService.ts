@@ -17,7 +17,7 @@ export class BookmarkService {
       );
 
       if (!updatedBookmarkList) {
-        throw Error("채널이 없습니다.");
+        throw new Error("채널이 없습니다.");
       }
 
       await RedisHandler.saveBookmark(bookmarkInfo);

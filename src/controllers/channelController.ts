@@ -3,6 +3,7 @@ import { mysqlTransaction, MysqlTransaction } from "./../db";
 import { AsyncRequestHandler, logger } from "../utils";
 import { channelService, ChannelService } from "../services";
 import { channelJoinInterface, IChannelController } from "../interface";
+import { Transaction } from "sequelize";
 
 export class ChannelController implements IChannelController {
   constructor(
@@ -10,7 +11,7 @@ export class ChannelController implements IChannelController {
     private mysqlTransaction: MysqlTransaction
   ) {}
 
-  public create: AsyncRequestHandler = async (req, res) => {
+  public createChannel: AsyncRequestHandler = async (req, res) => {
     const { userId, name } = req.user;
     const { channelName, blockId } = req.body;
     const channelInfo: channelJoinInterface = {
@@ -21,17 +22,18 @@ export class ChannelController implements IChannelController {
     };
     let newChannel: Channel;
     await this.mysqlTransaction.execute(async (t) => {
-      newChannel = await this.channelService.create(t, channelInfo, blockId);
+      newChannel = await this.channelService.createChannel(
+        t,
+        channelInfo,
+        blockId
+      );
     });
-    if (!newChannel) {
-      throw Error("채널 생성 실패");
-    }
     const { id: channelId } = newChannel;
 
     res.json({ id: channelId, channelName, admin: userId });
   };
 
-  public join: AsyncRequestHandler = async (req, res) => {
+  public joinChannel: AsyncRequestHandler = async (req, res) => {
     const { adminCode } = req.params;
     const { channelCode } = req.body;
     const { userId, name } = req.user;
@@ -43,7 +45,7 @@ export class ChannelController implements IChannelController {
     };
     let result: Channel;
     await this.mysqlTransaction.execute(async (t) => {
-      result = await this.channelService.join(t, joinInfo);
+      result = await this.channelService.joinChannel(t, joinInfo);
     });
 
     res.json(result);
@@ -82,17 +84,17 @@ export class ChannelController implements IChannelController {
     res.json(channelNameUpdate);
   };
 
-  public delete: AsyncRequestHandler = async (req, res) => {
+  public deleteChannel: AsyncRequestHandler = async (req, res) => {
     const channelId = req.body.channel;
     const { userId } = req.user;
 
     await this.mysqlTransaction.execute(async (t) => {
-      await this.channelService.delete(t, channelId, userId);
+      await this.channelService.deleteChannel(t, channelId, userId);
     });
     res.json({ channelId, status: "삭제되었습니다." });
   };
 
-  public channelExit: AsyncRequestHandler = async (req, res) => {
+  public exitChannel: AsyncRequestHandler = async (req, res) => {
     const { channel: channelId } = req.body;
     const { userId } = req.user;
     let channelExit: Channel;

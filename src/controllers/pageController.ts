@@ -11,7 +11,7 @@ import {
 import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
-import { PageType } from "../constants";
+import { PageType, PAGE_TYPE } from "../constants";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
@@ -86,8 +86,7 @@ export class PageController implements IPageController {
           blockId,
           session,
         };
-        const createPage = await pageService.createPage(createPageInfo);
-        return createPage;
+        return await pageService.createPage(createPageInfo);
       }
     );
     res.json(createPageResult);
@@ -97,8 +96,7 @@ export class PageController implements IPageController {
     const { channel } = req.body;
     const createRoomPageResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
-        const createPage = await pageService.createRoom(channel, session);
-        return createPage;
+        return await pageService.createRoom(channel, session);
       }
     );
     res.json(createRoomPageResult);
@@ -115,12 +113,7 @@ export class PageController implements IPageController {
           blocks: blocks,
         };
 
-        const putBlockInEditablePage = await pageService.putBlockInEditablePage(
-          id,
-          page,
-          session
-        );
-        return putBlockInEditablePage;
+        return await pageService.putBlockInEditablePage(id, page, session);
       }
     );
 
@@ -135,7 +128,7 @@ export class PageController implements IPageController {
 
   public deletePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type } = req.body;
-    if (type !== "normal") {
+    if (type !== PAGE_TYPE.NORMAL) {
       const templateInEditablePageResult =
         await this.mongoTransaction.withTransaction(
           async (session: ClientSession) => {
@@ -158,8 +151,7 @@ export class PageController implements IPageController {
             channelId: channel,
             session,
           };
-          const deletePage = await pageService.deletePage(deletePageInfo);
-          return deletePage;
+          return await pageService.deletePage(deletePageInfo);
         }
       );
       res.json(deletePageResult);

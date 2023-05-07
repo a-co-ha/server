@@ -2,15 +2,14 @@ import dotenv from "dotenv";
 import { createClient, RedisClientOptions } from "@redis/client";
 import { createAdapter, RedisAdapter } from "@socket.io/redis-adapter";
 import { logger } from "./winston";
-
 dotenv.config();
-const host = process.env.REDIS_HOST;
-const password = process.env.REDIS_PASSWORD;
-const port = parseInt(process.env.REDIS_PORT);
 
 const redisOptions: RedisClientOptions = {
-  socket: { host, port },
-  password,
+  socket: {
+    host: process.env.REDIS_HOST,
+    port: Number(process.env.REDIS_PORT),
+  },
+  password: process.env.REDIS_PASSWORD,
 };
 
 export const redisClient = createClient(redisOptions);
@@ -22,8 +21,12 @@ export const createSocketAdapter = async (): Promise<
 > => {
   await Promise.all([redisClient.connect(), subClient.connect()]);
   logger.info("Redis clients are all connected!");
-
-  return createAdapter(redisClient, subClient);
+  try {
+    return createAdapter(redisClient, subClient);
+  } catch (err) {
+    logger.error("Failed to connect Redis clients:", err);
+    throw new Error("Failed to connect Redis clients");
+  }
 };
 
 redisClient.on("error", (err) => {

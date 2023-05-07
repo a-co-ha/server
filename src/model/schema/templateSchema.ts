@@ -1,5 +1,6 @@
 import { PageInterface, PageSchema } from "./pageSchema";
 import mongoose from "mongoose";
+import { PAGE_NAME, PAGE_TYPE } from "../../constants";
 
 const Schema = mongoose.Schema;
 export interface TemplateInterface {
@@ -19,9 +20,9 @@ export const TemplateSchema = new Schema<TemplateInterface>(
     pageName: {
       type: String,
       required: false,
-      default: "제목 없음",
+      default: PAGE_NAME.DEFAULT,
     },
-    pages: [{ type: mongoose.Schema.Types.ObjectId, ref: "page" }],
+    pages: [{ type: mongoose.Schema.Types.ObjectId, ref: PAGE_TYPE.PAGE }],
 
     type: {
       type: String,

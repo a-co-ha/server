@@ -56,9 +56,7 @@ export const sessionConfig = {
 export const corsOrigin = [
   "http://localhost:3001/",
   "https://acoha.site/",
-  "https://npm.acoha.site/",
   "https://acoha.store/",
-  "http://3.35.132.30:3000",
 ];
 
 export const ioCorsOptions = {

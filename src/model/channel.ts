@@ -1,5 +1,5 @@
 import { DataTypes, Model, Association, Sequelize } from "sequelize";
-import { sequelize } from "../db/sequelize";
+import { sequelize } from "../db/mysqlSequelize";
 import { ChannelAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
 

@@ -2,7 +2,7 @@ import { Sequelize } from "sequelize";
 import { DataTypes, Model, Association } from "sequelize";
 import { Channel_UserAttributes } from "../interface";
 import { Channel } from "./channel";
-import { sequelize } from "../db/sequelize";
+import { sequelize } from "../db/mysqlSequelize";
 import { User } from "./user";
 
 export class ChannelUser extends Model<Channel_UserAttributes> {

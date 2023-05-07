@@ -20,17 +20,17 @@ export class UserController implements IUserController {
     await this.mysqlTransaction.execute(async (t) => {
       result = await this.userService.login(t, req.user, req.sessionID);
     });
+
     req.session.user = result.user;
     await this.sessionStore.saveSession(req);
 
     const existSession = await RedisHandler.getUserSession(result.user.userId);
 
     if (existSession) {
-      await RedisHandler.delete(existSession.sessionID);
+      await RedisHandler.deleteSession(existSession.sessionID);
     }
     await RedisHandler.saveUserSession(result.user.userId, req.sessionID);
 
-    // await connectSocket(req.sessionID);
     res.status(200).json(result);
   };
 
@@ -51,7 +51,7 @@ export class UserController implements IUserController {
   public logout: AsyncRequestHandler = async (req, res) => {
     await RedisHandler.findSession(req.body.sessionID);
 
-    await RedisHandler.delete(req.body.sessionID);
+    await RedisHandler.deleteSession(req.body.sessionID);
 
     res
       .status(200)

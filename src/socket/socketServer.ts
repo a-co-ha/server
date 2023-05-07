@@ -1,3 +1,4 @@
+import { merge } from "lodash";
 import { userService, channelService } from "../services";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
@@ -6,12 +7,9 @@ import { useSession } from "../middlewares";
 import { socketValidation } from "../middlewares";
 import { RedisHandler, logger, createSocketAdapter } from "../utils";
 import { Server as httpServer } from "http";
-import { Message, Room } from "../interface";
+import { Room } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
-import e from "express";
-import { exists } from "fs";
-
 export class Socket {
   private io: Server;
   private connectedSession: Map<string, SocketIO>;
@@ -45,25 +43,25 @@ export class Socket {
           throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
-        await socketValidation(sessionID, socket);
-
         const existSocket = this.connectedSession.get(sessionID);
 
-        if (existSocket) {
-          console.log("이미 연결되어있음");
-          this.connectedSession.delete(socket.sessionID);
-          existSocket.disconnect();
-        }
-        // DM 연결
-        socket.join(socket.userID.toString());
+        if (!existSocket) {
+          await socketValidation(sessionID, socket);
 
-        await this.join(socket, socket.roomIds);
-        await this.getUsers(socket);
-        await this.userInfo(socket);
-        await this.messageStatus(socket);
-        await this.myAlert(socket);
-        this.connectedSession.set(sessionID, socket);
-        this.handleSocketEvents(socket); // 새로운 소켓에 대한 이벤트 처리
+          socket.join(socket.userID.toString());
+          await this.join(socket, socket.roomIds);
+          await this.getUsers(socket);
+          await this.userInfo(socket);
+          await this.messageStatus(socket);
+          await this.myAlert(socket);
+          this.connectedSession.set(sessionID, socket);
+          this.handleSocketEvents(socket);
+        } else {
+          await this.messageStatus(existSocket);
+          await this.myAlert(existSocket);
+          this.handleSocketEvents(existSocket);
+          socket.disconnect();
+        }
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();

@@ -9,6 +9,8 @@ import { listModelType } from "../model";
 import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
 import { createPageOrTemplateInfo } from "../interface/pageInterface";
+import { Transaction } from "sequelize";
+import { channel } from "diagnostics_channel";
 
 export class ChannelService {
   constructor(
@@ -20,8 +22,8 @@ export class ChannelService {
     private pageService: PageService,
     private socketModel: socketModelType
   ) {}
-  public async create(
-    t: any,
+  public async createChannel(
+    t: Transaction,
     info: channelJoinInterface,
     blockId: string
   ): Promise<any> {
@@ -29,7 +31,7 @@ export class ChannelService {
 
     const channelNameCheck = await this.getChannelInfo(info, t);
     if (channelNameCheck) {
-      throw Error("같은 이름의 채널이 이미 있습니다.");
+      throw new Error("같은 이름의 채널이 이미 있습니다.");
     }
     const newChannel = await Channel.create(
       {
@@ -78,7 +80,7 @@ export class ChannelService {
   }
 
   private async userJoin(
-    transaction: any,
+    transaction: Transaction,
     info: channelJoinInterface
   ): Promise<void> {
     const { userId, id, name, channelName } = info;
@@ -93,7 +95,6 @@ export class ChannelService {
     );
   }
 
-  // 채널 주인과, 채널 이름으로 찾음
   public async getChannelInfo(
     info: IChannelInfo,
     transaction?: any
@@ -109,18 +110,17 @@ export class ChannelService {
     });
   }
 
-  public async getChannels(
-    // transaction: any,
-    userId: number
-  ): Promise<ChannelUser[]> {
+  public async getChannels(userId: number): Promise<ChannelUser[]> {
     return await ChannelUser.findAll({
       where: { userId },
       raw: true,
-      // transaction,
     });
   }
 
-  public async join(t: any, joinInfo: channelJoinInterface): Promise<any> {
+  public async joinChannel(
+    t: Transaction,
+    joinInfo: channelJoinInterface
+  ): Promise<any> {
     const {
       admin: adminCode,
       channelName: channelCode,
@@ -133,7 +133,7 @@ export class ChannelService {
 
     const channelInfo = await this.getChannelInfo({ admin, channelName }, t);
     if (await this.isInvited({ channelName, name })) {
-      throw Error(`${channelInfo.id}`);
+      throw new Error(`${channelInfo.id}`);
     }
 
     if (channelName === channelInfo.channelName) {
@@ -162,7 +162,7 @@ export class ChannelService {
   }
 
   public async channelImagUpdate(
-    t: any,
+    t: Transaction,
     channelId: number,
     userId: number,
     channelImg: string
@@ -174,7 +174,7 @@ export class ChannelService {
       transaction: t,
     });
     if (admin !== userId) {
-      throw Error("권한 오류");
+      throw new Error("권한 오류");
     }
 
     return await Channel.update(
@@ -190,7 +190,7 @@ export class ChannelService {
   }
 
   public async channelNameUpdate(
-    t: any,
+    t: Transaction,
     channelId: number,
     userId: number,
     channelName: string
@@ -202,7 +202,7 @@ export class ChannelService {
       transaction: t,
     });
     if (admin !== userId) {
-      throw Error("권한 오류");
+      throw new Error("권한 오류");
     }
     const channelNameUpdate = await Channel.update(
       { channelName },
@@ -222,8 +222,8 @@ export class ChannelService {
     return channelNameUpdate;
   }
 
-  public async delete(
-    t: any,
+  public async deleteChannel(
+    t: Transaction,
     channelId: number,
     userId: number
   ): Promise<number> {
@@ -236,10 +236,10 @@ export class ChannelService {
 
     const admin = channel.userId;
     if (admin !== userId) {
-      throw Error("권한 오류");
+      throw new Error("권한 오류");
     }
     if (!admin) {
-      throw Error("채널이 존재하지 않습니다. ");
+      throw new Error("채널이 존재하지 않습니다. ");
     }
 
     await this.deleteChannelUser(t, channelId);
@@ -252,7 +252,7 @@ export class ChannelService {
   }
 
   public async deleteChannelUser(
-    transaction: any,
+    transaction: Transaction,
     channelId: number,
     userId?: number
   ): Promise<any> {
@@ -262,7 +262,7 @@ export class ChannelService {
     });
 
     if (result < 0) {
-      throw Error("채널에서 나가는 중 에러가 발생했습니다.");
+      throw new Error("채널에서 나가는 중 에러가 발생했습니다.");
     }
 
     return { channelId, status: "채널에서 나갔습니다." };
@@ -308,6 +308,13 @@ export class ChannelService {
     return await Channel.update(
       { orgGithubName },
       { where: { id: channelId } }
+    );
+  }
+  public async getRoomsForChannels(channelIds: number[]): Promise<Room[][]> {
+    return await Promise.all(
+      channelIds.map((channel) => {
+        return this.getRooms(channel);
+      })
     );
   }
 }

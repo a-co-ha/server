@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PAGE_NAME, PAGE_TYPE } from "../../constants";
 import { TemplateInterface } from "./templateSchema";
 const Schema = mongoose.Schema;
 
@@ -24,7 +25,7 @@ export interface PageInterface {
 export const PageSchema = new Schema<PageInterface>(
   {
     channelId: { type: Number, required: true },
-    pageName: { type: String, required: false, default: "제목 없음" },
+    pageName: { type: String, required: false, default: PAGE_NAME.DEFAULT },
     label: [
       {
         content: { type: String, required: false },
@@ -56,7 +57,7 @@ export const PageSchema = new Schema<PageInterface>(
     ],
     type: {
       type: String,
-      default: "normal",
+      default: PAGE_TYPE.NORMAL,
     },
     progressStatus: {
       type: String,
@@ -64,11 +65,11 @@ export const PageSchema = new Schema<PageInterface>(
     },
     categories: {
       type: String,
-      default: "page",
+      default: PAGE_TYPE.PAGE,
     },
     parentTemplate: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "template",
+      ref: PAGE_TYPE.TEMPLATE,
       default: null,
     },
   },

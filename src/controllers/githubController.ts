@@ -32,7 +32,6 @@ export class GithubController implements IGithubController {
     } = result.data;
 
     const events = await axios.get(events_url).then((response) => {
-      console.log(response.data);
       return response.data;
     });
     res.json({

@@ -29,7 +29,7 @@ export class MongoTransaction {
       return result;
     } catch (error) {
       await this.abortTransaction(session);
-      throw error;
+      throw new Error();
     } finally {
       session.endSession();
     }

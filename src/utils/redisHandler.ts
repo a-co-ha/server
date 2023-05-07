@@ -4,9 +4,7 @@ import { SessionData } from "express-session";
 import { REDIS_TTL } from "../constants";
 import { User, Message, MessageAttributes, PrivateMessage } from "../interface";
 import { redisClient } from "./redisClient";
-import { logger } from "./winston";
 import { promisify } from "util";
-import { NIL } from "uuid";
 
 class RedisHelper {
   static async setWithExpiration(key: string, value: any, expiration: number) {
@@ -53,7 +51,7 @@ export class RedisHandler {
     const value = await redisClient.get(key);
 
     if (!value) {
-      throw Error(`세션을 찾을 수 없습니다. sessionID : ${id}`);
+      throw new Error(`세션을 찾을 수 없습니다. sessionID : ${id}`);
     }
 
     return JSON.parse(value).user;
@@ -118,7 +116,7 @@ export class RedisHandler {
     await RedisHelper.setWithExpiration(key, { bookmarkInfo }, REDIS_TTL.DAY);
   }
 
-  static async delete(key: string): Promise<void> {
+  static async deleteSession(key: string): Promise<void> {
     const sessionKey = `${RedisHandler.SESSION_PREFIX}${key}`;
     await redisClient.del(sessionKey);
   }

@@ -7,7 +7,7 @@ import {
   mysqlDataBase,
 } from "../config";
 import { logger } from "../utils/winston";
-import { connectSequelize } from "./sequelize";
+import { connectSequelize } from "./mysqlSequelize";
 
 export class MySqlAdapter {
   private pool: Pool;

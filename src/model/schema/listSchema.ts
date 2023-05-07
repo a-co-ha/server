@@ -1,9 +1,11 @@
+import { Socket } from "socket.io";
 import { PageInterface } from "./pageSchema";
 import { TemplateInterface } from "./templateSchema";
 import mongoose from "mongoose";
 import { BookmarkSchema } from "./bookmarkSchema";
 import { BookmarkInterface } from "../../interface/bookmarkInterface";
 import { ChannelUser } from "../channelUser";
+import { PAGE_NAME, PAGE_TYPE } from "../../constants";
 
 const Schema = mongoose.Schema;
 export interface SocketInterface {
@@ -19,11 +21,11 @@ export const socketSchema = new Schema<SocketInterface>(
   {
     channelId: { type: Number, required: true },
 
-    pageName: { type: String, default: "제목 없음" },
-    type: { type: String, default: "socket" },
+    pageName: { type: String, default: PAGE_NAME.DEFAULT },
+    type: { type: String, default: PAGE_TYPE.SOCKET },
     categories: {
       type: String,
-      default: "socket",
+      default: PAGE_TYPE.SOCKET,
     },
     bookmarkList: [
       {
@@ -53,16 +55,19 @@ export const ListSchema = new Schema<ListInterface>({
     {
       page: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "page",
+        ref: PAGE_TYPE.PAGE,
       },
-      template: { type: mongoose.Schema.Types.ObjectId, ref: "template" },
+      template: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PAGE_TYPE.TEMPLATE,
+      },
     },
   ],
   SocketPage: [
     {
       page: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "socket",
+        ref: PAGE_TYPE.SOCKET,
       },
     },
   ],
