@@ -106,9 +106,11 @@ export class SocketListener {
     const res = subPageName
       ? `${channelName}의 ${pageName} - ${subPageName}에서 ${targetUserName}님을 태그했습니다. `
       : `${channelName}의 ${pageName}에서 ${targetUserName}님을 태그했습니다. `;
+
     await RedisHandler.setAlert(targetUserId);
     socket.to(targetUserId).emit("GET_ALERT", res);
   };
+
   public readLabel = (socket: SocketIO) => async () => {
     await RedisHandler.readAlert(socket.userID);
     const res = await RedisHandler.getAlert(socket.userID);

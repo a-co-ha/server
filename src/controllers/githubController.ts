@@ -17,7 +17,7 @@ export class GithubController implements IGithubController {
   getRepo: AsyncRequestHandler = async (req, res) => {
     const { githubID } = req.user;
     const { repo } = req.body;
-    const result = await octokit.request("GET /repos/{owner}/{repo}", {
+    const { data } = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: githubID,
       repo,
       headers: githubHeader,
@@ -28,18 +28,15 @@ export class GithubController implements IGithubController {
       private: IsPrivate,
       description: desc,
       url: html_url,
-      events_url,
-    } = result.data;
+      language,
+    } = data;
 
-    const events = await axios.get(events_url).then((response) => {
-      return response.data;
-    });
     res.json({
       name,
       private: IsPrivate,
       desc,
       url: html_url,
-      events,
+      language,
     });
   };
 
@@ -78,7 +75,6 @@ export class GithubController implements IGithubController {
       login: orgName,
       repos_url,
     } = result.data;
-
     const repos = await axios.get(repos_url).then((response) => {
       return response.data.map((i) => {
         return { name: i.name, url: i.url };
@@ -86,6 +82,43 @@ export class GithubController implements IGithubController {
     });
     channelService.channelOrgAdd(channelId, orgName);
     res.json({ orgName, orgUrl, orgImg, desc, repos });
+  };
+
+  getOrgs: AsyncRequestHandler = async (req, res) => {
+    const { githubID } = req.user;
+
+    const { data } = await octokit.request("GET /users/{owner}/orgs", {
+      owner: githubID,
+      headers: githubHeader,
+    });
+    const result = data.map(
+      ({
+        login: name,
+        id: orgID,
+        description: desc,
+        avatar_url,
+        html_url,
+      }) => ({
+        name,
+        orgID,
+        url: html_url,
+        orgImg: avatar_url,
+        desc,
+      })
+    );
+
+    res.json(result);
+  };
+  getCommits: AsyncRequestHandler = async (req, res) => {
+    const { org, owner, repo } = req.body;
+    const admin = org ? org : owner;
+
+    const { data } = await octokit.request("GET /repos/{admin}/{repo}/events", {
+      admin,
+      repo,
+      headers: githubHeader,
+    });
+    res.json(data.splice(0, 5));
   };
 
   getEvents: AsyncRequestHandler = async (req, res) => {
@@ -98,17 +131,19 @@ export class GithubController implements IGithubController {
   };
 
   getIssue: AsyncRequestHandler = async (req, res) => {
-    const { org, repo } = req.body;
+    const { org, owner, repo } = req.body;
+    const admin = org ? org : owner;
+
     const { data } = await octokit.request(
-      "GET /repos/{org}/{repo}/issues?state=all",
+      "GET /repos/{admin}/{repo}/issues?state=all",
       {
-        org,
+        admin,
         repo,
         headers: githubHeader,
       }
     );
 
-    const result = data.map((i) => {
+    const result = data.slice(0, 5).map((i) => {
       const labels = i.labels.map((el) => {
         return { name: el.name, color: el.color, desc: el.description };
       });
