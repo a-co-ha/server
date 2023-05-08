@@ -68,7 +68,7 @@ class TemplateNormalService {
       { session }
     );
 
-    const pageParentTemplate = await this.pageModel
+    await this.pageModel
       .findByIdAndUpdate(
         {
           _id: pages._id,
@@ -76,7 +76,6 @@ class TemplateNormalService {
         { parentTemplate: createNormalTemplate[0].id }
       )
       .session(session);
-    console.log(pageParentTemplate);
 
     await this.templateService.putTemplateInList(
       channelId,

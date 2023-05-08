@@ -11,7 +11,7 @@ import {
 import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
-import { PageType, PAGE_TYPE } from "../constants";
+import { PAGE_TYPE } from "../constants";
 
 interface IPageController {
   createPage: AsyncRequestHandler;
@@ -30,9 +30,9 @@ export class PageController implements IPageController {
   public findPage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, type } = req.body;
     if (
-      type === PageType.NORMAL ||
-      type === PageType.PROGRESSIVE ||
-      type === PageType.NORMALIZE
+      type === PAGE_TYPE.NORMAL ||
+      type === PAGE_TYPE.PROGRESSIVE ||
+      type === PAGE_TYPE.NORMALIZE
     ) {
       const findEditablePageResult =
         await this.mongoTransaction.withTransaction(
@@ -51,8 +51,8 @@ export class PageController implements IPageController {
       res.json(findEditablePageResult);
     }
     if (
-      type === PageType.TEMPLATE_PROGRESSIVE ||
-      type === PageType.TEMPLATE_NORMAL
+      type === PAGE_TYPE.TEMPLATE_PROGRESSIVE ||
+      type === PAGE_TYPE.TEMPLATE_NORMAL
     ) {
       const findProgressResult = await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
@@ -62,7 +62,7 @@ export class PageController implements IPageController {
             session,
             type,
           };
-          if (type === PageType.TEMPLATE_PROGRESSIVE) {
+          if (type === PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
             const findTemplateProgress =
               await templateService.findTemplateProgress(templateInfo);
             return findTemplateProgress;

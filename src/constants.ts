@@ -41,13 +41,6 @@ export enum TokenType {
   ACCESS = "access",
   REFRESH = "refresh",
 }
-export enum PageType {
-  NORMAL = "normal",
-  PROGRESSIVE = "progress-page",
-  NORMALIZE = "normal-page",
-  TEMPLATE_PROGRESSIVE = "template-progress",
-  TEMPLATE_NORMAL = "template-normal",
-}
 
 export const githubHeader = {
   Accept: "application/vnd.github.v3+json",
@@ -81,4 +74,8 @@ export const enum PAGE_TYPE {
   PAGE = "page",
   TEMPLATE = "template",
   NORMAL = "normal",
+  PROGRESSIVE = "progress-page",
+  NORMALIZE = "normal-page",
+  TEMPLATE_PROGRESSIVE = "template-progress",
+  TEMPLATE_NORMAL = "template-normal",
 }
