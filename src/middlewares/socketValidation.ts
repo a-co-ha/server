@@ -1,8 +1,7 @@
 import { channelService } from "../services/channelService";
 import { userService } from "../services";
 import { RedisHandler } from "../utils";
-import { userHasChannels } from "../interface";
-import { Socket } from "socket.io";
+import { Room, userHasChannels } from "../interface";
 
 export const isUser = (
   user: userHasChannels | boolean
@@ -16,9 +15,9 @@ export const socketValidation = async (
 ): Promise<void> => {
   const sessionInfo = await RedisHandler.findSession(sessionID);
 
-  const channels = await getChannels(sessionInfo.userId);
+  const rooms = await getRooms(sessionInfo.userId);
   Object.assign(socket, {
-    roomIds: channels,
+    roomIds: rooms,
     sessionID,
     userID: sessionInfo.userId,
     name: sessionInfo.name,
@@ -26,13 +25,13 @@ export const socketValidation = async (
   });
 };
 
-const getChannels = async (userId: number): Promise<any> => {
+const getRooms = async (userId: number): Promise<Room[]> => {
   const getChannel = await userService.getUserWithChannels(userId);
 
   if (isUser(getChannel)) {
     const channelIds = getChannel.channels.map((channel) => channel.id);
-    const channels = await channelService.getRoomsForChannels(channelIds);
-    return channels.flat();
+    const rooms = await channelService.getRoomsForChannels(channelIds);
+    return rooms.flat();
   }
   throw new Error("채널 접속 실패");
 };

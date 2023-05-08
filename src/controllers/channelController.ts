@@ -1,9 +1,8 @@
 import { Channel } from "./../model/channel";
 import { mysqlTransaction, MysqlTransaction } from "./../db";
-import { AsyncRequestHandler, logger } from "../utils";
+import { AsyncRequestHandler } from "../utils";
 import { channelService, ChannelService } from "../services";
 import { channelJoinInterface, IChannelController } from "../interface";
-import { Transaction } from "sequelize";
 
 export class ChannelController implements IChannelController {
   constructor(

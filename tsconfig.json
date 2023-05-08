@@ -15,7 +15,7 @@
     "sourceMap": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
-    "include": ["src/**/*", ".eslintrc.cjs"],
+  "include": ["src/**/*", ".eslintrc.cjs"]
 }

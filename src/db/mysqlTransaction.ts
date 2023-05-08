@@ -30,9 +30,9 @@ export class MysqlTransaction {
       await this.begin();
       await func(this.transaction);
       await this.commit();
-    } catch (error) {
+    } catch (error: any) {
       await this.rollback();
-      throw new Error();
+      throw new Error(error.message);
     }
   }
 }

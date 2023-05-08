@@ -10,7 +10,6 @@ import { PageService, pageService } from "./pageService";
 import { ListService, listService } from "./listService";
 import { createPageOrTemplateInfo } from "../interface/pageInterface";
 import { Transaction } from "sequelize";
-import { channel } from "diagnostics_channel";
 
 export class ChannelService {
   constructor(
@@ -30,6 +29,7 @@ export class ChannelService {
     const { admin, channelName, userId, name } = info;
 
     const channelNameCheck = await this.getChannelInfo(info, t);
+
     if (channelNameCheck) {
       throw new Error("같은 이름의 채널이 이미 있습니다.");
     }

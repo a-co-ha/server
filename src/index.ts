@@ -1,4 +1,3 @@
-import { socketListener } from "./socket/socketListeners";
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -8,6 +7,7 @@ import { endPoint } from "./constants";
 import { MongoAdapter, MySqlAdapter } from "./db";
 import { Socket } from "./socket";
 import { logger } from "./utils";
+import { socketEmitter, socketListener } from "./socket";
 import {
   channelRouter,
   githubRouter,
@@ -48,7 +48,7 @@ export class AppServer {
     const server = createServer(appServer.app);
     await appServer.config();
 
-    const socket = new Socket(server, socketListener);
+    const socket = new Socket(server, socketListener, socketEmitter);
     await socket.config();
     socket.start();
     server.listen(port, async () => {

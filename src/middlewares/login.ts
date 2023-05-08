@@ -1,5 +1,5 @@
-import { mysqlTransaction, MysqlTransaction } from "./../db/mysqlTransaction";
-import axios from "axios";
+import { mysqlTransaction } from "./../db/mysqlTransaction";
+import axios, { AxiosResponse } from "axios";
 import {
   GITHUBACCESSURL,
   GITHUBUSERURL,
@@ -8,7 +8,7 @@ import {
   oauthSecretLOCAL,
   oauthSecret,
 } from "../config";
-import { User, UserAttributes } from "../interface";
+import { User } from "../interface";
 import { userService } from "../services";
 import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
@@ -24,7 +24,7 @@ export const githubLogin = async (req, res, next) => {
   }
   const requestToken = req.query.code;
   try {
-    const response = await axios.post(
+    const response: AxiosResponse = await axios.post(
       GITHUBACCESSURL,
       {},
       {

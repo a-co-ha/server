@@ -1,5 +1,5 @@
-import { merge } from "lodash";
-import { userService, channelService } from "../services";
+import { SocketEmitter } from "./socketEmitter";
+import { userService } from "../services";
 import { ioCorsOptions } from "../config";
 import { Server, Socket as SocketIO } from "socket.io";
 import sharedSession from "express-socket.io-session";
@@ -7,14 +7,25 @@ import { useSession } from "../middlewares";
 import { socketValidation } from "../middlewares";
 import { RedisHandler, logger, createSocketAdapter } from "../utils";
 import { Server as httpServer } from "http";
-import { Room } from "../interface";
 import { SocketListener } from "./socketListeners";
 import { instrument } from "@socket.io/admin-ui";
+
 export class Socket {
+  static CONNECTION = "connection";
+  static DISCONNECTION = "disconnection";
+  static JOIN_CHANNEL = "JOIN_CHANNEL";
+  static SEND_MESSAGE = "SEND_MESSAGE";
+  static READ_MESSAGE = "READ_MESSAGE";
+  static SET_BOOKMARK = "SET_BOOKMARK";
+  static SET_ALERT = "SET_ALERT";
+  static READ_ALERT = "READ_ALERT";
   private io: Server;
   private connectedSession: Map<string, SocketIO>;
-
-  constructor(server: httpServer, private socketListener: SocketListener) {
+  constructor(
+    server: httpServer,
+    private socketListener: SocketListener,
+    private socketEmitter: SocketEmitter
+  ) {
     this.io = new Server(server, ioCorsOptions);
     this.connectedSession = new Map();
   }
@@ -34,7 +45,7 @@ export class Socket {
   }
 
   public start() {
-    this.io.on("connection", async (socket: SocketIO) => {
+    this.io.on(Socket.CONNECTION, async (socket: SocketIO) => {
       try {
         const sessionID =
           socket.handshake.auth.sessionID || socket.handshake.headers.sessionid;
@@ -49,16 +60,16 @@ export class Socket {
           await socketValidation(sessionID, socket);
 
           socket.join(socket.userID.toString());
-          await this.join(socket, socket.roomIds);
-          await this.getUsers(socket);
-          await this.userInfo(socket);
-          await this.messageStatus(socket);
-          await this.myAlert(socket);
+          await this.socketEmitter.join(socket, socket.roomIds);
+          await this.socketEmitter.getUsers(socket);
+          await this.socketEmitter.userInfo(socket);
+          await this.socketEmitter.messageStatus(socket);
+          await this.socketEmitter.myAlert(socket);
           this.connectedSession.set(sessionID, socket);
           this.handleSocketEvents(socket);
         } else {
-          await this.messageStatus(existSocket);
-          await this.myAlert(existSocket);
+          await this.socketEmitter.messageStatus(existSocket);
+          await this.socketEmitter.myAlert(existSocket);
           this.handleSocketEvents(existSocket);
           socket.disconnect();
         }
@@ -71,31 +82,19 @@ export class Socket {
   }
 
   private handleSocketEvents(socket: SocketIO): void {
-    const rooms = socket.roomIds;
+    socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
 
-    for (const room of rooms) {
-      socket.broadcast.to(room.id).emit("NEW_MEMBER", {
-        userID: socket.userID,
-        name: socket.name,
-        img: socket.img,
-      });
-    }
+    socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
 
-    socket.on("JOIN_CHANNEL", async ({ channelId }: { channelId: number }) => {
-      const newRooms = await channelService.getRooms(channelId);
-      await this.join(socket, newRooms);
-    });
+    socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
 
-    socket.on("SEND_MESSAGE", this.socketListener.sendMessage(socket));
+    socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));
 
-    socket.on("READ_MESSAGE", this.socketListener.readMessage(socket));
+    socket.on(Socket.SET_ALERT, this.socketListener.setLabel(socket));
 
-    socket.on("SET_BOOKMARK", this.socketListener.setBookmark(socket));
+    socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
 
-    socket.on("SET_ALERT", this.socketListener.setLabel(socket));
-    socket.on("READ_ALERT", this.socketListener.readLabel(socket));
-
-    socket.on("disconnect", async () => {
+    socket.on(Socket.DISCONNECTION, async () => {
       const matchingSockets = await this.io
         .in(socket.userID.toString())
         .fetchSockets();
@@ -117,61 +116,4 @@ export class Socket {
       }
     });
   }
-
-  private async messageStatus(socket: any): Promise<void> {
-    const { roomIds, userID } = socket;
-    const result = await Promise.all(
-      roomIds.map((room) => RedisHandler.getIsRead(room.id, userID))
-    );
-    socket.emit("MESSAGE_STATUS", result);
-  }
-
-  private async join(socket: any, roomIds: Room[]): Promise<void> {
-    if (roomIds) {
-      for (const room of roomIds) {
-        socket.join(room.id);
-      }
-
-      logger.info(
-        `[1] 채팅방 조인 user : ${socket.name}, sessionID : ${
-          socket.sessionID
-        }, rooms : ${JSON.stringify(socket.roomIds)}`
-      );
-    }
-  }
-
-  private async userInfo(socket: any): Promise<void> {
-    const { sessionID, userID, name } = socket;
-    const rooms = Array.from(socket.rooms).slice(1).map(String);
-    const user = { sessionID, userID, name, rooms };
-
-    socket.emit("USER_INFO", user);
-    logger.info(
-      `[3] 소켓 접속완료 
-      user : ${socket.name}, sessionID : ${socket.sessionID}`
-    );
-  }
-
-  private async getUsers(socket: any): Promise<void> {
-    const members = await userService.getChannelMembersID(socket.userID);
-
-    if (members.length !== 0) {
-      const sessions = await RedisHandler.findMemberSessions(members);
-
-      const users = sessions.map((session) => {
-        const { userId, name, img } = JSON.parse(session).user;
-        return { userID: userId, name, img };
-      });
-
-      socket.emit("MEMBERS", users);
-
-      logger.info(`[2] 현재 접속자 user : ${JSON.stringify(users)}`);
-    }
-  }
-
-  private myAlert = async (socket: SocketIO) => {
-    const res = await RedisHandler.getAlert(socket.userID);
-
-    socket.emit("ALERT", res);
-  };
 }

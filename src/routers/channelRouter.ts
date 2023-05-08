@@ -9,22 +9,22 @@ export const channelRouter = Router();
 channelRouter.post(
   "/create",
   DtoValidatorMiddleware(ChannelDto),
-  asyncHandler(channelController.create)
+  asyncHandler(channelController.createChannel)
 );
 channelRouter.post(
   "/:adminCode",
   DtoValidatorMiddleware(ChannelDto),
-  asyncHandler(channelController.join)
+  asyncHandler(channelController.joinChannel)
 );
 channelRouter.delete(
   "/admin",
   DtoValidatorMiddleware(ChannelDto),
-  asyncHandler(channelController.delete)
+  asyncHandler(channelController.deleteChannel)
 );
 channelRouter.delete(
   "/exit",
   DtoValidatorMiddleware(ChannelDto),
-  asyncHandler(channelController.channelExit)
+  asyncHandler(channelController.exitChannel)
 );
 channelRouter.get(
   "/users",

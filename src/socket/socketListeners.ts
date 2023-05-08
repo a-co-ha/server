@@ -1,7 +1,8 @@
+import { socketEmitter, SocketEmitter } from "./socketEmitter";
 import { pageService } from "./../services/pageService";
 import { channelService } from "./../services/channelService";
 import moment from "moment-timezone";
-import { Socket } from "socket.io";
+import { Socket as SocketIO } from "socket.io";
 import { dateFormat } from "../constants";
 import { messageController } from "../controllers";
 import { BookmarkInterface } from "../interface/bookmarkInterface";
@@ -9,10 +10,20 @@ import { Message } from "../interface/messageInterface";
 import { bookmarkService } from "../services";
 import { messageService } from "../services/messageService";
 import { getCurrentDate, logger, RedisHandler } from "../utils";
+import { emitHandler } from "./socketUtils";
 
 export class SocketListener {
+  constructor(private socketEmitter: SocketEmitter) {}
+
+  public joinChannel =
+    (socket: SocketIO) =>
+    async ({ channelId }: { channelId: number }) => {
+      const newRooms = await channelService.getRooms(channelId);
+      await this.socketEmitter.join(socket, newRooms);
+    };
+
   public sendMessage =
-    (socket: Socket) =>
+    (socket: SocketIO) =>
     async ({ content, roomId }: { content: string; roomId: string }) => {
       const { readUser } = socket.roomIds.find((room) => room.id === roomId);
 
@@ -26,15 +37,14 @@ export class SocketListener {
       };
       const message = await messageController.createMessage(data);
 
-      socket.emit("RECEIVE_MESSAGE", message);
-      socket.to(roomId).emit("RECEIVE_MESSAGE", message);
+      emitHandler(socket, "RECEIVE_MESSAGE", roomId, message);
 
       await RedisHandler.setReadMessagePerRoom(data.roomId, data.readUser);
       await RedisHandler.resetRead(data.roomId, data.userId);
     };
 
   public readMessage =
-    (socket: Socket) =>
+    (socket: SocketIO) =>
     async ({ roomId }: { roomId: string }) => {
       const cachedMessages = await RedisHandler.findMessages(roomId);
 
@@ -57,11 +67,11 @@ export class SocketListener {
 
       messages = cachedMessages;
 
-      socket.emit("READ_MESSAGE", messages);
+      socket.emit("GET_MESSAGE", messages);
     };
 
   public setBookmark =
-    (socket: Socket) =>
+    (socket: SocketIO) =>
     async ({
       bookmarkName,
       content,
@@ -83,11 +93,10 @@ export class SocketListener {
         updatedAt: date,
       };
       const createBookmark = await bookmarkService.createBookmark(data);
-      socket.emit("NEW_BOOKMARK", createBookmark);
-      socket.to(roomId).emit("NEW_BOOKMARK", createBookmark);
+      emitHandler(socket, "NEW_BOOKMARK", roomId, createBookmark);
     };
 
-  public setLabel = (socket: Socket) => async (content: any) => {
+  public setLabel = (socket: SocketIO) => async (content: any) => {
     const { channelId, pageId, targetUserId, targetUserName } = content;
     const subPageName = content?.subPageId;
 
@@ -100,11 +109,11 @@ export class SocketListener {
     await RedisHandler.setAlert(targetUserId);
     socket.to(targetUserId).emit("GET_ALERT", res);
   };
-  public readLabel = (socket: Socket) => async () => {
+  public readLabel = (socket: SocketIO) => async () => {
     await RedisHandler.readAlert(socket.userID);
     const res = await RedisHandler.getAlert(socket.userID);
     socket.to(socket.userID.toString()).emit("GET_ALERT", res);
   };
 }
 
-export const socketListener = new SocketListener();
+export const socketListener = new SocketListener(socketEmitter);
