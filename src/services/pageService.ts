@@ -175,6 +175,16 @@ export class PageService {
       .then(() => this.listService.findList(channel));
   }
 
+  public async deleteRooom(
+    id: string,
+    channelId: number,
+    session: ClientSession
+  ): Promise<Object> {
+    await this.socketModel.deleteOne({ _id: id, channelId }).session(session);
+    const channelList = await listService.deleteListSocket(channelId, id);
+    return channelList;
+  }
+
   public async putBlockInEditablePage(
     id: string,
     page: page,
@@ -264,7 +274,6 @@ export class PageService {
     return searchResult;
   }
 
-  //해야함
   public async recentlyCreated(channelId: number): Promise<any> {
     const recentlyCreatedpage = await this.pageModel
       .find(

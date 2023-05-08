@@ -92,6 +92,28 @@ export class ListService {
     return deleteList;
   }
 
+  async deleteListSocket(
+    channelId: number,
+    id: string
+  ): Promise<ListInterface> {
+    const list = await this.listModel.findOne(
+      {
+        channelId,
+      },
+      { SocketPage: { $elemMatch: { page: id } } }
+    );
+
+    const listPageId = list.SocketPage[0]._id;
+    return await this.listModel
+      .findOneAndUpdate(
+        { channelId },
+        { $pull: { SocketPage: { _id: listPageId } } }
+      )
+      .then(async () => {
+        return await this.findList(channelId);
+      });
+  }
+
   async deleteList(channelId: number): Promise<list> {
     const list = await this.listModel.findOne({ channelId });
     if (!list) {

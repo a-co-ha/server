@@ -4,6 +4,7 @@ import { TemplateInterface } from "./templateSchema";
 const Schema = mongoose.Schema;
 
 export interface PageInterface {
+  _id?: string;
   channelId: number;
   pageName: string;
   label: string[];

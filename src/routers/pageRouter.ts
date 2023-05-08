@@ -31,6 +31,13 @@ pageRouter.put(
   DtoValidatorMiddleware(PageDto),
   asyncHandler(pageController.editRoomName)
 );
+
+pageRouter.delete(
+  "/room/:id",
+  DtoValidatorMiddleware(PageDto),
+  asyncHandler(pageController.deleteRoom)
+);
+
 pageRouter.delete(
   "/:id",
   DtoValidatorMiddleware(PageDto),

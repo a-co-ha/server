@@ -21,6 +21,7 @@ interface IPageController {
   deletePage: AsyncRequestHandler;
   pageAndTemplateSearch: AsyncRequestHandler;
   recentlyCreated: AsyncRequestHandler;
+  deleteRoom: AsyncRequestHandler;
 }
 
 export class PageController implements IPageController {
@@ -124,6 +125,17 @@ export class PageController implements IPageController {
     const { id, channel, pageName } = req.body;
     const result = await pageService.editRoomName(id, channel, pageName);
     res.json(result);
+  };
+
+  public deleteRoom: AsyncRequestHandler = async (req, res) => {
+    const { id, channel } = req.body;
+    const deleteRoomResult = await this.mongoTransaction.withTransaction(
+      async (session: ClientSession) => {
+        const deleteRoom = await pageService.deleteRooom(id, channel, session);
+        return deleteRoom;
+      }
+    );
+    res.json(deleteRoomResult);
   };
 
   public deletePage: AsyncRequestHandler = async (req, res) => {
