@@ -43,7 +43,7 @@ export interface ListInterface {
     { page: PageInterface; _id: string },
     { template: TemplateInterface; _id: string }
   ];
-  SocketPage: [];
+  SocketPage: [{ page: SocketInterface; _id: string }];
 }
 
 export const ListSchema = new Schema<ListInterface>({
