@@ -12,7 +12,7 @@ import { instrument } from "@socket.io/admin-ui";
 
 export class Socket {
   static CONNECTION = "connection";
-  static DISCONNECTION = "disconnection";
+  static DISCONNECTION = "disconnect";
   static JOIN_CHANNEL = "JOIN_CHANNEL";
   static SEND_MESSAGE = "SEND_MESSAGE";
   static READ_MESSAGE = "READ_MESSAGE";
@@ -68,6 +68,7 @@ export class Socket {
           this.connectedSession.set(sessionID, socket);
           this.handleSocketEvents(socket);
         } else {
+          console.log("소켓있음");
           await this.socketEmitter.messageStatus(existSocket);
           await this.socketEmitter.myAlert(existSocket);
           this.handleSocketEvents(existSocket);
@@ -95,13 +96,14 @@ export class Socket {
     socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
 
     socket.on(Socket.DISCONNECTION, async () => {
+      this.connectedSession.delete(socket.sessionID);
+
       const matchingSockets = await this.io
         .in(socket.userID.toString())
         .fetchSockets();
 
       const isDisconnected = matchingSockets.length === 0;
-      socket.leave(socket.userID.toString());
-      this.connectedSession.delete(socket.sessionID);
+
       if (isDisconnected) {
         for (const room of socket.roomIds) {
           socket.leave(room.id);
