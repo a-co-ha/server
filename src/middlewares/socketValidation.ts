@@ -1,6 +1,6 @@
-import { userService, channelService } from "../services";
-import { RedisHandler } from "../utils";
 import { Room, userHasChannels } from "../interface";
+import { channelService, userService } from "../services";
+import { RedisHandler } from "../utils";
 
 export const isUser = (
   user: userHasChannels | boolean

@@ -1,33 +1,32 @@
-import express from "express";
-import cors from "cors";
-import { createServer } from "http";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
+import { createServer } from "http";
 import { corsOptions, port, SESSION_SECRET } from "./config";
 import { endPoint } from "./constants";
 import { MongoAdapter, MySqlAdapter } from "./db";
-import { Socket } from "./socket";
-import { logger } from "./utils";
-import { socketEmitter, socketListener } from "./socket";
 import {
+  errorHandler,
+  loginRequired,
+  morganMiddleware,
+  SessionStore,
+  useSession,
+} from "./middlewares";
+import {
+  bookmarkListRouter,
+  bookmarkRouter,
   channelRouter,
   githubRouter,
+  imageRouter,
   indexRouter,
   listRouter,
   oauthRouter,
   pageRouter,
   templateRouter,
   userRouter,
-  bookmarkRouter,
-  imageRouter,
-  bookmarkListRouter,
 } from "./routers";
-import {
-  loginRequired,
-  errorHandler,
-  useSession,
-  morganMiddleware,
-  SessionStore,
-} from "./middlewares";
+import { Socket, socketEmitter, socketListener } from "./socket";
+import { logger } from "./utils";
 
 export class AppServer {
   app: express.Application;

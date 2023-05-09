@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
+import { jwtSecret } from "../config";
+import { sequelize } from "../db/mysqlSequelize";
 import {
   ChannelAttributes,
+  UserAttributes,
   userHasChannels,
   UserLoginInterface,
 } from "../interface";
-import { UserAttributes } from "../interface";
-import { ChannelUser, User, userModel, Channel } from "../model";
-import { jwtSecret } from "../config";
+import { Channel, ChannelUser, User, userModel } from "../model";
 import { channelService, ChannelService } from "../services";
-import { sequelize } from "../db/mysqlSequelize";
 
 export class UserService {
   constructor(private user: User, private channelService: ChannelService) {}

@@ -1,9 +1,8 @@
 import { instrument } from "@socket.io/admin-ui";
-import sharedSession from "express-socket.io-session";
 import { Server as httpServer } from "http";
 import { Server, Socket as SocketIO } from "socket.io";
 import { ioCorsOptions } from "../config";
-import { socketValidation, useSession } from "../middlewares";
+import { socketValidation } from "../middlewares";
 import { createSocketAdapter, logger } from "../utils";
 import { SocketEmitter } from "./socketEmitter";
 import { SocketListener } from "./socketListeners";
@@ -33,11 +32,6 @@ export class Socket {
     const adapter = await createSocketAdapter();
     this.io.adapter(adapter);
 
-    this.io.use(
-      sharedSession(useSession(), {
-        autoSave: true,
-      })
-    );
     instrument(this.io, {
       auth: false,
     });

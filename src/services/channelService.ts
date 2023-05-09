@@ -1,21 +1,22 @@
-import {
-  IChannelInfo,
-  channelJoinInterface,
-  Room,
-  createPageOrTemplateInfo,
-} from "../interface";
+import { Transaction } from "sequelize";
 import { decode, ENCTYPE } from "../constants";
 import {
+  channelJoinInterface,
+  createPageOrTemplateInfo,
+  IChannelInfo,
+  Room,
+} from "../interface";
+import {
+  Channel,
+  channelModel,
   ChannelUser,
   channelUserModel,
   listModel,
+  listModelType,
   socketModel,
   socketModelType,
-  listModelType,
   User,
   userModel,
-  Channel,
-  channelModel,
 } from "../model";
 import {
   ListService,
@@ -23,7 +24,6 @@ import {
   PageService,
   pageService,
 } from "../services";
-import { Transaction } from "sequelize";
 
 export class ChannelService {
   constructor(
@@ -35,6 +35,7 @@ export class ChannelService {
     private pageService: PageService,
     private socketModel: socketModelType
   ) {}
+
   public async createChannel(
     t: Transaction,
     info: channelJoinInterface,
@@ -164,7 +165,7 @@ export class ChannelService {
     return { channelId: channelInfo.id, userId, channelName };
   }
 
-  private async isInvited({ channelName, name }): Promise<boolean> {
+  public async isInvited({ channelName, name }): Promise<boolean> {
     const { count } = await ChannelUser.findAndCountAll({
       where: {
         channelName,

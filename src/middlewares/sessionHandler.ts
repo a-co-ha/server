@@ -1,8 +1,7 @@
-import { Response, NextFunction } from "express";
-import { User } from "../model";
+import { NextFunction, Request, Response } from "express";
 import session from "express-session";
 import { sessionConfig } from "../config";
-import { Request } from "express";
+import { User } from "../model";
 
 export const useSession = () => session(sessionConfig);
 
