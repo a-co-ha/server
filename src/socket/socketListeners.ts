@@ -115,6 +115,7 @@ export class SocketListener {
 
       await RedisHandler.setAlert(targetUserId);
 
+      socket.emit("GET_ALERT", result); // 추후 제거 예정
       socket.to(targetUserId).emit("GET_ALERT", result);
     } catch (err) {
       throw new Error("페이지를 찾을 수 없습니다.");
