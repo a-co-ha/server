@@ -1,14 +1,12 @@
-import { SocketEmitter } from "./socketEmitter";
-import { userService } from "../services";
-import { ioCorsOptions } from "../config";
+import { instrument } from "@socket.io/admin-ui";
 import { Server, Socket as SocketIO } from "socket.io";
 import sharedSession from "express-socket.io-session";
-import { useSession } from "../middlewares";
-import { socketValidation } from "../middlewares";
-import { RedisHandler, logger, createSocketAdapter } from "../utils";
 import { Server as httpServer } from "http";
+import { SocketEmitter } from "./socketEmitter";
+import { ioCorsOptions } from "../config";
+import { socketValidation, useSession } from "../middlewares";
+import { logger, createSocketAdapter } from "../utils";
 import { SocketListener } from "./socketListeners";
-import { instrument } from "@socket.io/admin-ui";
 
 export class Socket {
   static CONNECTION = "connection";

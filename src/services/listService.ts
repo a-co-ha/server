@@ -5,24 +5,16 @@ import {
   pageModelType,
   templateModelType,
 } from "../model";
-import { list } from "../interface/listInterface";
-import { ListInterface } from "../model/schema/listSchema";
-import { templateModel } from "../model/index";
+import { list, ListInterface } from "../interface";
+import { templateModel } from "../model";
 import { ClientSession } from "mongoose";
 
 export class ListService {
-  private listModel: listModelType;
-  private pageModel: pageModelType;
-  private templateModel: templateModelType;
   constructor(
-    listModel: listModelType,
-    pageModel: pageModelType,
-    templateModel: templateModelType
-  ) {
-    this.listModel = listModel;
-    this.pageModel = pageModel;
-    this.templateModel = templateModel;
-  }
+    private listModel: listModelType,
+    private pageModel: pageModelType,
+    private templateModel: templateModelType
+  ) {}
   async findList(channelId: number): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;

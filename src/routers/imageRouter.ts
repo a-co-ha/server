@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { imageController } from "../controllers";
-import { asyncHandler } from "../utils/asyncHandler";
-import { imageUpload, deleteImage } from "../middlewares/imageUpload";
+import { asyncHandler } from "../utils";
+import { imageUpload } from "../middlewares";
 export const imageRouter = Router();
 
 imageRouter.post(

@@ -1,5 +1,5 @@
 import { Response, NextFunction } from "express";
-import { User } from "../model/user";
+import { User } from "../model";
 import session from "express-session";
 import { sessionConfig } from "../config";
 import { Request } from "express";

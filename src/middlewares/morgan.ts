@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { logger } from "../utils/winston";
+import { logger } from "../utils";
 dotenv.config();
 const stream = {
   write: (message: string) => {

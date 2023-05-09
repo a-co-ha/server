@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { socketModel, socketModelType } from "../model";
 import { logger, RedisHandler } from "../utils";
-import { BookmarkInterface } from "../interface/bookmarkInterface";
+import { BookmarkInterface } from "../interface";
 
 export class BookmarkService {
   constructor(private socketModel: socketModelType) {}

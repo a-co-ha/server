@@ -7,7 +7,7 @@ import {
   IsString,
 } from "class-validator";
 import { Transform, TransformFnParams } from "class-transformer";
-import { list } from "../interface/listInterface";
+import { list } from "../interface";
 
 export class ListDto {
   @IsMongoId()

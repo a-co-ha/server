@@ -1,7 +1,5 @@
 import { Op } from "sequelize";
-import { User } from "../model/user";
-import { RedisHandler } from "../utils";
-import { Message } from "./../model/message";
+import { Message, User } from "../model";
 export class MessageService {
   public async getRestMessage(
     roomId: string,

@@ -1,16 +1,17 @@
-import { socketEmitter, SocketEmitter } from "./socketEmitter";
-import { pageService } from "./../services/pageService";
-import { channelService } from "./../services/channelService";
 import moment from "moment-timezone";
 import { Socket as SocketIO } from "socket.io";
+import { socketEmitter, SocketEmitter } from "./socketEmitter";
+import { emitHandler } from "./socketUtils";
 import { dateFormat } from "../constants";
 import { messageController } from "../controllers";
-import { BookmarkInterface } from "../interface/bookmarkInterface";
-import { Message } from "../interface/messageInterface";
-import { bookmarkService } from "../services";
-import { messageService } from "../services/messageService";
+import { Message, BookmarkInterface } from "../interface";
+import {
+  bookmarkService,
+  messageService,
+  pageService,
+  channelService,
+} from "../services";
 import { getCurrentDate, logger, RedisHandler } from "../utils";
-import { emitHandler } from "./socketUtils";
 
 export class SocketListener {
   constructor(private socketEmitter: SocketEmitter) {}

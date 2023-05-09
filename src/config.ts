@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { SessionOptions } from "express-session";
 import RedisStore from "connect-redis";
-import { redisClient } from "./utils/redisClient";
+import { redisClient } from "./utils";
 import { Dialect } from "sequelize";
 dotenv.config();
 

@@ -1,5 +1,5 @@
-import { mysqlTransaction } from "./../db/mysqlTransaction";
 import axios, { AxiosResponse } from "axios";
+import { mysqlTransaction } from "./../db";
 import {
   GITHUBACCESSURL,
   GITHUBUSERURL,

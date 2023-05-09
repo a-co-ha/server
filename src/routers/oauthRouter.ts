@@ -1,4 +1,4 @@
-import { githubLogin } from "./../middlewares/login";
+import { githubLogin } from "./../middlewares";
 import express from "express";
 import { userController } from "../controllers";
 import { asyncHandler } from "../utils";

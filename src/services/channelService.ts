@@ -1,14 +1,28 @@
-import { listModel, socketModel, socketModelType } from "./../model/index";
-import { channelJoinInterface, Room } from "./../interface/index";
-import { IChannelInfo } from "../interface";
+import {
+  IChannelInfo,
+  channelJoinInterface,
+  Room,
+  createPageOrTemplateInfo,
+} from "../interface";
 import { decode, ENCTYPE } from "../constants";
-import { Channel, channelModel } from "../model/channel";
-import { ChannelUser, channelUserModel } from "../model/channelUser";
-import { User, userModel } from "../model/user";
-import { listModelType } from "../model";
-import { PageService, pageService } from "./pageService";
-import { ListService, listService } from "./listService";
-import { createPageOrTemplateInfo } from "../interface/pageInterface";
+import {
+  ChannelUser,
+  channelUserModel,
+  listModel,
+  socketModel,
+  socketModelType,
+  listModelType,
+  User,
+  userModel,
+  Channel,
+  channelModel,
+} from "../model";
+import {
+  ListService,
+  listService,
+  PageService,
+  pageService,
+} from "../services";
 import { Transaction } from "sequelize";
 
 export class ChannelService {

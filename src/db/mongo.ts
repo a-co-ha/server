@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { mongoDBUri } from "../config";
-import { logger } from "../utils/winston";
+import { logger } from "../utils";
 
 export class MongoAdapter {
   constructor() {

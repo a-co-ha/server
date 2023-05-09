@@ -1,8 +1,6 @@
 import { Model, model } from "mongoose";
 import {
-  PageInterface,
   PageSchema,
-  TemplateInterface,
   TemplateSchema,
   ListSchema,
   socketSchema,
@@ -11,7 +9,9 @@ import {
 import {
   BookmarkInterface,
   ListInterface,
+  PageInterface,
   SocketInterface,
+  TemplateInterface,
 } from "../interface";
 
 interface ModelIdentifierInterface {

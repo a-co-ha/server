@@ -1,10 +1,14 @@
-import { UserOfRoom } from "./../interface/socketInterface";
-import { BookmarkInterface } from "./../interface/bookmarkInterface";
-import { SessionData } from "express-session";
-import { REDIS_TTL } from "../constants";
-import { User, Message, MessageAttributes, PrivateMessage } from "../interface";
-import { redisClient } from "./redisClient";
 import { promisify } from "util";
+import { SessionData } from "express-session";
+import {
+  BookmarkInterface,
+  UserOfRoom,
+  User,
+  Message,
+  MessageAttributes,
+} from "./../interface";
+import { REDIS_TTL } from "../constants";
+import { redisClient } from "./redisClient";
 
 class RedisHelper {
   static async setWithExpiration(key: string, value: any, expiration: number) {
@@ -87,19 +91,6 @@ export class RedisHandler {
     return sessionKeys
       .map((res) => (res ? JSON.parse(res).sessionID : null))
       .filter((sessionID) => sessionID);
-  }
-
-  static async savePrivateMessage(data: PrivateMessage): Promise<void> {
-    const { from, to } = data;
-    const createAt = new Date();
-    const value = JSON.stringify({ ...data, createAt });
-
-    const multi = redisClient.multi();
-    multi.rPush(`${RedisHandler.MESSAGE_PREFIX}${from}`, value);
-    multi.rPush(`${RedisHandler.MESSAGE_PREFIX}${to}`, value);
-    multi.expire(`${RedisHandler.MESSAGE_PREFIX}${from}`, REDIS_TTL.DAY);
-    multi.expire(`${RedisHandler.MESSAGE_PREFIX}${to}`, REDIS_TTL.DAY);
-    await multi.exec();
   }
 
   static async saveMessage({ roomId, ...data }: Message): Promise<void> {

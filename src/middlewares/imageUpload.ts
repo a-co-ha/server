@@ -3,7 +3,7 @@ import { s3keyId, s3accesskey, s3region } from "../config";
 import multerS3 from "multer-s3";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
-import { logger } from "../utils/winston";
+import { logger } from "../utils";
 
 const s3 = new S3Client({
   region: s3region,

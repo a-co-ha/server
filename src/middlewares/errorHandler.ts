@@ -1,7 +1,6 @@
 import { ErrorType } from "../constants";
 import { ErrorRequestHandler } from "express";
-import { errorResponse } from "../utils";
-import { logger } from "../utils/winston";
+import { errorResponse, logger } from "../utils";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   logger.error(err.stack);

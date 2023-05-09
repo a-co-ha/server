@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { asyncHandler } from "../utils/asyncHandler";
+import { asyncHandler } from "../utils";
 import { listController } from "../controllers";
 import { DtoValidatorMiddleware } from "../middlewares";
 import { ListDto } from "../dto";

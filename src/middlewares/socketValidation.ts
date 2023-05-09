@@ -1,5 +1,4 @@
-import { channelService } from "../services/channelService";
-import { userService } from "../services";
+import { userService, channelService } from "../services";
 import { RedisHandler } from "../utils";
 import { Room, userHasChannels } from "../interface";
 
