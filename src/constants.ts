@@ -79,3 +79,20 @@ export const enum PAGE_TYPE {
   TEMPLATE_PROGRESSIVE = "template-progress",
   TEMPLATE_NORMAL = "template-normal",
 }
+
+export const enum PAGE_BLOCK {
+  TAG_DEFAULT = "p",
+  DEFAULT = "",
+}
+
+export const enum TEMPLATE_STATUS {
+  TODO = "todo",
+  COMPLETE = "complete",
+  DEFAULT = "null",
+}
+
+export const enum ERROR_NAME {
+  NOT_FOUND_CHANNEL = "채널이 없습니다.",
+  NOT_FOUND_PROGRESS_STATUS = "progressStatus를 입력하세요.",
+  TEMPLATE_TYPE_ERROR = "진행현황 템플릿이 아닙니다.",
+}

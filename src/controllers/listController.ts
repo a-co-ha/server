@@ -9,6 +9,7 @@ import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 import { basicPageOrTemplateInfo, IListController } from "../interface";
+import { PAGE_TYPE } from "../constants";
 
 export class ListController implements IListController {
   constructor(
@@ -42,9 +43,9 @@ export class ListController implements IListController {
     const { id, type, channel } = req.body;
 
     if (
-      type === "normal" ||
-      type === "progress-page" ||
-      type === "normal-page"
+      type === PAGE_TYPE.NORMAL ||
+      type === PAGE_TYPE.PROGRESSIVE ||
+      type === PAGE_TYPE.NORMALIZE
     ) {
       await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
@@ -57,7 +58,10 @@ export class ListController implements IListController {
         }
       );
     }
-    if (type === "template-progress" || type === "template-normal") {
+    if (
+      type === PAGE_TYPE.TEMPLATE_PROGRESSIVE ||
+      type === PAGE_TYPE.TEMPLATE_NORMAL
+    ) {
       await this.mongoTransaction.withTransaction(
         async (session: ClientSession) => {
           await templateService.deleteTemplate(id, channel, session);

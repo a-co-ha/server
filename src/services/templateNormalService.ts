@@ -14,6 +14,7 @@ import {
   basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
 } from "../interface";
+import { PAGE_TYPE } from "../constants";
 
 class TemplateNormalService {
   private templateModel: templateModelType;
@@ -41,7 +42,7 @@ class TemplateNormalService {
   ): Promise<template> {
     const { channelId, blockId, type, session } = createTemplateNormalInfo;
 
-    const pageType = "normal-page";
+    const pageType = PAGE_TYPE.NORMALIZE;
     const parentTemplateInfo: parentTemplateInfo = {
       pageType,
     };
@@ -107,10 +108,10 @@ class TemplateNormalService {
       type,
     };
     const findTemplateNormal = await this.findTemplateNormal(templateInfo);
-    const pageType = "normal-page";
+    const pageType = PAGE_TYPE.NORMALIZE;
     const templateType = findTemplateNormal.type;
 
-    if (templateType === "template-normal") {
+    if (templateType === PAGE_TYPE.TEMPLATE_NORMAL) {
       const parentTemplateInfo: parentTemplateInfo = {
         pageType,
         parentTemplate: findTemplateNormal.id,

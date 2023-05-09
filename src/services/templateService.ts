@@ -1,4 +1,5 @@
 import { ClientSession } from "mongoose";
+import { ERROR_NAME, PAGE_TYPE, TEMPLATE_STATUS } from "../constants";
 import {
   basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
@@ -36,8 +37,8 @@ export class TemplateService {
   public async createTemplateProgress(
     createTemplateInfo: createPageOrTemplateInfo
   ): Promise<template> {
-    const pageType = "progress-page";
-    const progressStatus = "todo";
+    const pageType = PAGE_TYPE.PROGRESSIVE;
+    const progressStatus = TEMPLATE_STATUS.TODO;
     const { channelId, blockId, type, session } = createTemplateInfo;
     const parentTemplateInfo: parentTemplateInfo = {
       pageType,
@@ -117,12 +118,12 @@ export class TemplateService {
     const findTemplateProgress = await this.findTemplateProgress(templateInfo);
 
     const templateType = findTemplateProgress.type;
-    if (templateType === "template-progress") {
+    if (templateType === PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
       if (!progressStatus) {
-        throw new Error("progressStatus를 입력하세요");
+        throw new Error(ERROR_NAME.NOT_FOUND_PROGRESS_STATUS);
       }
 
-      const pageType = "progress-page";
+      const pageType = PAGE_TYPE.PROGRESSIVE;
 
       const parentTemplateInfo: parentTemplateInfo = {
         pageType,
@@ -229,15 +230,15 @@ export class TemplateService {
       path: "pages",
       select: "progressStatus",
     });
-    if (progress.type !== "template-progress") {
-      throw new Error("진행현황 템플릿이 아닙니다.");
+    if (progress.type !== PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
+      throw new Error(ERROR_NAME.TEMPLATE_TYPE_ERROR);
     }
 
     const progressPages = progress.pages;
     const length = progressPages.length;
     let count = 0;
     progressPages.map((page) => {
-      if (page.progressStatus === "complete") {
+      if (page.progressStatus === TEMPLATE_STATUS.COMPLETE) {
         count++;
       }
     });
@@ -248,10 +249,10 @@ export class TemplateService {
     return progressPercentage;
   }
 
-  async channelAllProgressTemplatePercent(
+  public async channelAllProgressTemplatePercent(
     channelId: number
   ): Promise<progressPercentage[]> {
-    const type = "template-progress";
+    const type = PAGE_TYPE.TEMPLATE_PROGRESSIVE;
     const channelAllProgressTemplate = await this.templateModel.find(
       {
         channelId,
