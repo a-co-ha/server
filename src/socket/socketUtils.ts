@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 export const emitHandler = (
   socket: Socket,
@@ -8,4 +8,8 @@ export const emitHandler = (
 ) => {
   socket.emit(event, data);
   socket.to(target).emit(event, data);
+};
+
+export const socketsInRoom = async (io: Server, room: number | string) => {
+  return await io.in(room.toString()).fetchSockets();
 };

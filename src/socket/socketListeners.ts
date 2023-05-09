@@ -1,5 +1,5 @@
 import moment from "moment-timezone";
-import { Socket as SocketIO } from "socket.io";
+import { Server, Socket as SocketIO } from "socket.io";
 import { dateFormat } from "../constants";
 import { messageController } from "../controllers";
 import { BookmarkInterface, MessageData } from "../interface";
@@ -11,7 +11,7 @@ import {
 } from "../services";
 import { getCurrentDate, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
-import { emitHandler } from "./socketUtils";
+import { emitHandler, socketsInRoom } from "./socketUtils";
 
 export class SocketListener {
   constructor(private socketEmitter: SocketEmitter) {}
@@ -98,22 +98,58 @@ export class SocketListener {
     };
 
   public setLabel = (socket: SocketIO) => async (content: any) => {
-    const { channelId, pageId, targetUserId, targetUserName } = content;
-    const subPageName = content?.subPageId;
+    const { channelId, pageId, targetUserId, targetUserName, subPageId } =
+      content;
 
-    const { channelName } = await channelService.getChannelInfo(channelId);
-    const { pageName } = await pageService.findPageNameByPageId(pageId);
+    try {
+      const { channelName } = await channelService.getChannelInfo(channelId);
+      const { pageName } = await pageService.findPageNameByPageId(pageId);
 
-    await RedisHandler.setAlert(targetUserId);
-    const result = { channelName, pageName, targetUserName, subPageName };
-    socket.to(targetUserId).emit("GET_ALERT", result);
+      const result: any = { channelName, pageName, targetUserName };
+
+      if (subPageId) {
+        const { pageName: subPageName } =
+          await pageService.findPageNameByPageId(subPageId);
+        result.subPageName = subPageName;
+      }
+
+      await RedisHandler.setAlert(targetUserId);
+
+      socket.to(targetUserId).emit("GET_ALERT", result);
+    } catch (err) {
+      throw new Error("페이지를 찾을 수 없습니다.");
+    }
   };
 
   public readLabel = (socket: SocketIO) => async () => {
     await RedisHandler.readAlert(socket.userID);
+
     const res = await RedisHandler.getAlert(socket.userID);
+
     socket.to(socket.userID.toString()).emit("GET_ALERT", res);
   };
+
+  public disconnect =
+    (socket: SocketIO, io: Server, connectedSession: Map<string, SocketIO>) =>
+    async () => {
+      connectedSession.delete(socket.sessionID);
+
+      const isDisconnected =
+        (await socketsInRoom(io, socket.userID)).length === 0;
+
+      if (isDisconnected) {
+        for (const room of socket.roomIds) {
+          socket.leave(room.id);
+
+          socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
+            roomId: room.id,
+            userID: socket.userID,
+            name: socket.name,
+            connected: false,
+          });
+        }
+      }
+    };
 }
 
 export const socketListener = new SocketListener(socketEmitter);

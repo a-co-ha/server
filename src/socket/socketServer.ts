@@ -94,27 +94,9 @@ export class Socket {
 
     socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
 
-    socket.on(Socket.DISCONNECTION, async () => {
-      this.connectedSession.delete(socket.sessionID);
-
-      const matchingSockets = await this.io
-        .in(socket.userID.toString())
-        .fetchSockets();
-
-      const isDisconnected = matchingSockets.length === 0;
-
-      if (isDisconnected) {
-        for (const room of socket.roomIds) {
-          socket.leave(room.id);
-
-          socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
-            roomId: room.id,
-            userID: socket.userID,
-            name: socket.name,
-            connected: false,
-          });
-        }
-      }
-    });
+    socket.on(
+      Socket.DISCONNECTION,
+      this.socketListener.disconnect(socket, this.io, this.connectedSession)
+    );
   }
 }

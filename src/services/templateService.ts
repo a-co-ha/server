@@ -33,7 +33,6 @@ export class TemplateService {
     private listService: ListService,
     private pageModel: pageModelType
   ) {}
-
   public async createTemplateProgress(
     createTemplateInfo: createPageOrTemplateInfo
   ): Promise<template> {

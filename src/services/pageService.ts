@@ -1,11 +1,6 @@
-import { PageInterface } from "./../model/schema/pageSchema";
-import {
-  socketModel,
-  socketModelType,
-  templateModelType,
-  templateModel,
-} from "./../model/index";
-import { listModel, listModelType, pageModel, pageModelType } from "../model";
+import { ObjectId } from "mongodb";
+import { ClientSession } from "mongoose";
+import { mongoTransaction, MongoTransaction } from "../db";
 import {
   basicPageOrTemplateInfo,
   block,
@@ -13,11 +8,16 @@ import {
   page,
   putPageOrSocketInList,
 } from "../interface/pageInterface";
-import { ListService, listService } from "./listService";
+import { listModel, listModelType, pageModel, pageModelType } from "../model";
 import { ListInterface } from "../model/schema/listSchema";
-import { mongoTransaction, MongoTransaction } from "../db";
-import { ClientSession } from "mongoose";
-import { ObjectId } from "mongodb";
+import {
+  socketModel,
+  socketModelType,
+  templateModel,
+  templateModelType,
+} from "./../model/index";
+import { PageInterface } from "./../model/schema/pageSchema";
+import { ListService, listService } from "./listService";
 export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
