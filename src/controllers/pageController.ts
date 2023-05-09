@@ -6,23 +6,13 @@ import {
 import {
   basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
+  IPageController,
   page,
 } from "../interface";
 import { AsyncRequestHandler } from "../utils";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 import { PAGE_TYPE } from "../constants";
-
-interface IPageController {
-  createPage: AsyncRequestHandler;
-  putBlockInEditablePage: AsyncRequestHandler;
-  createRoom: AsyncRequestHandler;
-  findPage: AsyncRequestHandler;
-  deletePage: AsyncRequestHandler;
-  pageAndTemplateSearch: AsyncRequestHandler;
-  recentlyCreated: AsyncRequestHandler;
-  deleteRoom: AsyncRequestHandler;
-}
 
 export class PageController implements IPageController {
   constructor(private mongoTransaction: MongoTransaction) {}

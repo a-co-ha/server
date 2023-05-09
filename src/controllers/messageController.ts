@@ -1,11 +1,8 @@
-import { MessageService, messageService } from "./../services/messageService";
-import { Message } from "./../model/message";
-import { logger, RedisHandler } from "../utils";
-import { AsyncRequestHandler } from "../utils";
+import { MessageService, messageService } from "./../services";
+import { Message } from "./../model";
+import { RedisHandler } from "../utils";
+import { IMessageController } from "../interface";
 
-interface IMessageController {
-  createMessage: AsyncRequestHandler;
-}
 export class MessageController implements IMessageController {
   constructor(private messageService: MessageService) {}
   createMessage = async (data: any) => {

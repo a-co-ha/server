@@ -1,9 +1,6 @@
 import moment from "moment-timezone";
 import { dateFormat } from "../constants";
-import {
-  BookmarkInterface,
-  IBookmarkController,
-} from "../interface/bookmarkInterface";
+import { BookmarkInterface, IBookmarkController } from "../interface";
 import { BookmarkService, bookmarkService } from "../services";
 import { AsyncRequestHandler, getCurrentDate } from "../utils";
 

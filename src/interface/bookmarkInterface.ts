@@ -1,5 +1,5 @@
 import { AsyncRequestHandler } from "../utils";
-import { User } from "./userInterface";
+import { User } from "../interface";
 
 export interface IBookmarkController {
   getBookmark: AsyncRequestHandler;

@@ -1,16 +1,9 @@
-import { PageInterface, PageSchema } from "./pageSchema";
 import mongoose from "mongoose";
 import { PAGE_NAME, PAGE_TYPE } from "../../constants";
+import { TemplateInterface } from "../../interface";
 
 const Schema = mongoose.Schema;
-export interface TemplateInterface {
-  id?: string;
-  channelId: number;
-  pageName: string;
-  pages: PageInterface[];
-  type: string;
-  categories: string;
-}
+
 export const TemplateSchema = new Schema<TemplateInterface>(
   {
     channelId: {

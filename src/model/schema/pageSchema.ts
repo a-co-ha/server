@@ -1,27 +1,7 @@
 import mongoose from "mongoose";
 import { PAGE_NAME, PAGE_TYPE } from "../../constants";
-import { TemplateInterface } from "./templateSchema";
+import { PageInterface } from "../../interface";
 const Schema = mongoose.Schema;
-
-export interface PageInterface {
-  _id?: string;
-  channelId: number;
-  pageName: string;
-  label: string[];
-  initial: boolean;
-  blocks: [
-    {
-      blockId: string;
-      tag: string;
-      html: string;
-      igUrl: string;
-    }
-  ];
-  type: string;
-  progressStatus: string;
-  categories: string;
-  parentTemplate: TemplateInterface;
-}
 
 export const PageSchema = new Schema<PageInterface>(
   {

@@ -1,4 +1,10 @@
 import {
+  ListService,
+  listService,
+  PageService,
+  pageService,
+} from "../services";
+import {
   listModel,
   listModelType,
   pageModel,
@@ -6,24 +12,17 @@ import {
   templateModel,
   templateModelType,
 } from "../model";
-import { PageService, pageService } from "./pageService";
 import {
   template,
-  pageStatusUpdate,
   parentTemplateInfo,
   progressPercentage,
   progressPercentageArray,
   putPageInTemplate,
   updateTemplateInfo,
-} from "../interface/templateInterface";
-
-import {
   basicPageOrTemplateInfo,
-  block,
   createPageOrTemplateInfo,
-} from "../interface/pageInterface";
-import { ListService, listService } from "./listService";
-import { ListInterface } from "../model/schema/listSchema";
+  ListInterface,
+} from "../interface";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 

@@ -3,10 +3,6 @@ import { User } from "../model/user";
 import { RedisHandler } from "../utils";
 import { Message } from "./../model/message";
 export class MessageService {
-  private async getCachedMessages(roomId: string): Promise<any[]> {
-    return await RedisHandler.findMessages(roomId);
-  }
-
   public async getRestMessage(
     roomId: string,
     counts: number,

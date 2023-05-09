@@ -1,24 +1,21 @@
-import { templateService, pageService, PageService } from "../services";
+import {
+  templateService,
+  pageService,
+  PageService,
+  ListService,
+  listService,
+} from "../services";
 import { AsyncRequestHandler } from "../utils";
-import { ListService, listService } from "../services/listService";
 import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
-import { basicPageOrTemplateInfo } from "../interface/pageInterface";
-
-interface IListController {
-  findList: AsyncRequestHandler;
-  updateList: AsyncRequestHandler;
-  deleteListOne: AsyncRequestHandler;
-}
+import { basicPageOrTemplateInfo, IListController } from "../interface";
 
 export class ListController implements IListController {
   constructor(
     private mongoTransaction: MongoTransaction,
     private pageService: PageService,
     private listService: ListService
-  ) {
-    this.mongoTransaction = mongoTransaction;
-  }
+  ) {}
   findList: AsyncRequestHandler = async (req, res) => {
     const { channel } = req.body;
     const list = await this.listService.findList(channel);
@@ -71,6 +68,7 @@ export class ListController implements IListController {
     res.json(list);
   };
 }
+
 export const listController = new ListController(
   mongoTransaction,
   pageService,

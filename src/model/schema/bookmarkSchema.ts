@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { PAGE_NAME } from "../../constants";
-import { BookmarkInterface } from "../../interface/bookmarkInterface";
+import { BookmarkInterface } from "../../interface";
 const Schema = mongoose.Schema;
 
 export const BookmarkSchema = new Schema<BookmarkInterface>(

@@ -6,3 +6,4 @@ export * from "./pageService";
 export * from "./templateNormalService";
 export * from "./listService";
 export * from "./bookmarkService";
+export * from "./messageService";

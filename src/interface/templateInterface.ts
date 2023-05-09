@@ -1,4 +1,5 @@
-import { basicPageOrTemplateInfo } from "./pageInterface";
+import { basicPageOrTemplateInfo, PageInterface } from "../interface";
+import { AsyncRequestHandler } from "../utils";
 export interface template {
   id?: string;
   channelId: number;
@@ -35,4 +36,22 @@ export interface updateTemplateInfo extends basicPageOrTemplateInfo {
 export interface progressPercentageArray extends progressPercentage {
   _id: string;
   pageName: string;
+}
+
+export interface TemplateInterface {
+  id?: string;
+  channelId: number;
+  pageName: string;
+  pages: PageInterface[];
+  type: string;
+  categories: string;
+}
+
+export interface ITemplateController {
+  createTemplate: AsyncRequestHandler;
+  putPageInTemplate: AsyncRequestHandler;
+  updateTemplate: AsyncRequestHandler;
+  deleteTemplate: AsyncRequestHandler;
+  percentageProgress: AsyncRequestHandler;
+  channelAllProgressTemplatePercent: AsyncRequestHandler;
 }

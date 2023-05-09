@@ -1,5 +1,6 @@
 import { ClientSession } from "mongoose";
-import { parentTemplateInfo } from "./templateInterface";
+import { parentTemplateInfo, TemplateInterface } from "../interface";
+import { AsyncRequestHandler } from "../utils";
 
 export interface block {
   blockId?: string;
@@ -66,4 +67,35 @@ export interface pages {
   pageName: string;
   label: {};
   status?: string;
+}
+
+export interface PageInterface {
+  _id?: string;
+  channelId: number;
+  pageName: string;
+  label: string[];
+  initial: boolean;
+  blocks: [
+    {
+      blockId: string;
+      tag: string;
+      html: string;
+      igUrl: string;
+    }
+  ];
+  type: string;
+  progressStatus: string;
+  categories: string;
+  parentTemplate: TemplateInterface;
+}
+
+export interface IPageController {
+  createPage: AsyncRequestHandler;
+  putBlockInEditablePage: AsyncRequestHandler;
+  createRoom: AsyncRequestHandler;
+  findPage: AsyncRequestHandler;
+  deletePage: AsyncRequestHandler;
+  pageAndTemplateSearch: AsyncRequestHandler;
+  recentlyCreated: AsyncRequestHandler;
+  deleteRoom: AsyncRequestHandler;
 }

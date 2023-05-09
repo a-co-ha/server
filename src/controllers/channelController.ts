@@ -1,4 +1,4 @@
-import { Channel } from "./../model/channel";
+import { Channel } from "./../model";
 import { mysqlTransaction, MysqlTransaction } from "./../db";
 import { AsyncRequestHandler } from "../utils";
 import { channelService, ChannelService } from "../services";

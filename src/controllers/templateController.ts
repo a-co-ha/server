@@ -5,23 +5,13 @@ import { mongoTransaction, MongoTransaction } from "../db";
 import { ClientSession } from "mongoose";
 import {
   createPageOrTemplateInfo,
+  ITemplateController,
   putPageInTemplate,
   updateTemplateInfo,
 } from "../interface";
 
-interface ITemplateController {
-  createTemplate: AsyncRequestHandler;
-  putPageInTemplate: AsyncRequestHandler;
-  updateTemplate: AsyncRequestHandler;
-  deleteTemplate: AsyncRequestHandler;
-  percentageProgress: AsyncRequestHandler;
-  channelAllProgressTemplatePercent: AsyncRequestHandler;
-}
-
 export class TemplateController implements ITemplateController {
-  constructor(private mongoTransaction: MongoTransaction) {
-    this.mongoTransaction = mongoTransaction;
-  }
+  constructor(private mongoTransaction: MongoTransaction) {}
 
   createTemplate: AsyncRequestHandler = async (req, res) => {
     const { channel, blockId, type } = req.body;

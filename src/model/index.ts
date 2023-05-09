@@ -1,14 +1,18 @@
 import { Model, model } from "mongoose";
-import { PageInterface, PageSchema } from "./schema/pageSchema";
-import { TemplateInterface, TemplateSchema } from "./schema/templateSchema";
 import {
+  PageInterface,
+  PageSchema,
+  TemplateInterface,
+  TemplateSchema,
   ListSchema,
+  socketSchema,
+  BookmarkSchema,
+} from "./schema";
+import {
+  BookmarkInterface,
   ListInterface,
   SocketInterface,
-  socketSchema,
-} from "./schema/listSchema";
-import { BookmarkSchema } from "./schema/bookmarkSchema";
-import { BookmarkInterface } from "../interface/bookmarkInterface";
+} from "../interface";
 
 interface ModelIdentifierInterface {
   page: string;
@@ -47,3 +51,7 @@ export type templateModelType = Model<TemplateInterface>;
 export type listModelType = Model<ListInterface>;
 export type socketModelType = Model<SocketInterface>;
 export type chatBookmarkModelType = Model<BookmarkInterface>;
+export * from "./message";
+export * from "./channel";
+export * from "./user";
+export * from "./channelUser";

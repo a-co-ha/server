@@ -188,21 +188,6 @@ export class GithubController implements IGithubController {
     result.url = data.issue_url;
     res.json(result);
   };
-
-  createIssue: AsyncRequestHandler = async (req, res) => {
-    const { org, repo, title, body, assignees, milestone, labels } = req.body;
-    const { data } = await octokit.request("POST /repos/{org}/{repo}/issues", {
-      org,
-      repo,
-      title,
-      body,
-      assignees,
-      milestone,
-      labels,
-      headers: githubHeader,
-    });
-    res.json(data);
-  };
 }
 
 const githubController = new GithubController();

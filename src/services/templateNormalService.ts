@@ -1,23 +1,19 @@
+import { PageService, pageService } from "./pageService";
+import { templateService, TemplateService } from "./templateService";
 import {
   pageModel,
   pageModelType,
   templateModel,
   templateModelType,
 } from "../model";
-import { PageService, pageService } from "./pageService";
-import { templateService, TemplateService } from "./templateService";
 import {
   template,
-  pageStatusUpdate,
   parentTemplateInfo,
   putPageInTemplate,
   updateTemplateInfo,
-} from "../interface/templateInterface";
-import { ClientSession } from "mongoose";
-import {
   basicPageOrTemplateInfo,
   createPageOrTemplateInfo,
-} from "../interface/pageInterface";
+} from "../interface";
 
 class TemplateNormalService {
   private templateModel: templateModelType;

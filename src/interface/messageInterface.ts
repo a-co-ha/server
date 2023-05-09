@@ -1,5 +1,5 @@
-import { UserOfRoom } from "./socketInterface";
-import { User } from "./userInterface";
+import { UserOfRoom, User } from "../interface";
+import { AsyncRequestHandler } from "../utils";
 
 export interface MessageAttributes extends Message {
   id: string;
@@ -13,8 +13,6 @@ export interface Message extends User {
   readUser?: number[] | UserOfRoom[];
 }
 
-export interface PrivateMessage {
-  to: number;
-  from: number;
-  content: string;
+export interface IMessageController {
+  createMessage: AsyncRequestHandler;
 }

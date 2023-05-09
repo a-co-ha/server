@@ -1,7 +1,7 @@
+import moment from "moment-timezone";
 import { Sequelize, DataTypes, Model, Association } from "sequelize";
 import { MessageAttributes } from "../interface";
 import { Channel } from "./channel";
-import moment from "moment-timezone";
 import { sequelize } from "../db/mysqlSequelize";
 import { User } from "./user";
 import { dateFormat } from "../constants";
