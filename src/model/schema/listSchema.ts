@@ -31,3 +31,4 @@ export const ListSchema = new Schema<ListInterface>({
     },
   ],
 });
+export { ListInterface };

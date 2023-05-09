@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { PAGE_NAME, PAGE_TYPE } from "../../constants";
+import {
+  PAGE_BLOCK,
+  PAGE_NAME,
+  PAGE_TYPE,
+  TEMPLATE_STATUS,
+} from "../../constants";
 import { PageInterface } from "../../interface";
 const Schema = mongoose.Schema;
 
@@ -22,17 +27,17 @@ export const PageSchema = new Schema<PageInterface>(
         tag: {
           type: String,
           required: true,
-          default: "p",
+          default: PAGE_BLOCK.TAG_DEFAULT,
         },
         html: {
           type: String,
           required: false,
-          default: "",
+          default: PAGE_BLOCK.DEFAULT,
         },
         imgUrl: {
           type: String,
           required: false,
-          default: "",
+          default: PAGE_BLOCK.DEFAULT,
         },
       },
     ],
@@ -42,7 +47,7 @@ export const PageSchema = new Schema<PageInterface>(
     },
     progressStatus: {
       type: String,
-      default: "null",
+      default: TEMPLATE_STATUS.DEFAULT,
     },
     categories: {
       type: String,
@@ -58,3 +63,4 @@ export const PageSchema = new Schema<PageInterface>(
     timestamps: true,
   }
 );
+export { PageInterface };

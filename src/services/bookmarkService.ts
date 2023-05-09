@@ -2,11 +2,12 @@ import { ObjectId } from "mongodb";
 import { socketModel, socketModelType } from "../model";
 import { logger, RedisHandler } from "../utils";
 import { BookmarkInterface } from "../interface";
+import { ERROR_NAME } from "../constants";
 
 export class BookmarkService {
   constructor(private socketModel: socketModelType) {}
 
-  async createBookmark(
+  public async createBookmark(
     bookmarkInfo: BookmarkInterface
   ): Promise<BookmarkInterface> {
     const { roomId } = bookmarkInfo;
@@ -17,7 +18,7 @@ export class BookmarkService {
       );
 
       if (!updatedBookmarkList) {
-        throw new Error("채널이 없습니다.");
+        throw new Error(ERROR_NAME.NOT_FOUND_CHANNEL);
       }
 
       await RedisHandler.saveBookmark(bookmarkInfo);
@@ -30,7 +31,7 @@ export class BookmarkService {
     }
   }
 
-  async findBookmarkByRoomId(
+  public async findBookmarkByRoomId(
     id: string
   ): Promise<{ bookmarkList: BookmarkInterface[] }> {
     return await socketModel.findById(
@@ -41,7 +42,7 @@ export class BookmarkService {
     );
   }
 
-  async findBookmarkByBookmarkId(id: string): Promise<any> {
+  public async findBookmarkByBookmarkId(id: string): Promise<any> {
     return await socketModel.aggregate([
       { $unwind: "$bookmarkList" },
       {
@@ -50,7 +51,7 @@ export class BookmarkService {
     ]);
   }
 
-  async updateBookmark(
+  public async updateBookmark(
     id: string,
     bookmarkInfo: BookmarkInterface
   ): Promise<any> {
@@ -70,7 +71,7 @@ export class BookmarkService {
     );
   }
 
-  async deleteBookmark(id: string): Promise<any> {
+  public async deleteBookmark(id: string): Promise<any> {
     return await socketModel.updateOne(
       {
         "bookmarkList._id": new ObjectId(id),
@@ -79,13 +80,13 @@ export class BookmarkService {
     );
   }
 
-  async findBookmarkList(roomId: string): Promise<any> {
+  public async findBookmarkList(roomId: string): Promise<any> {
     return await socketModel.findById(
       { _id: new ObjectId(roomId) },
       { bookmarkList: 1 }
     );
   }
-  async updateBookmarkList(
+  public async updateBookmarkList(
     roomId: string,
     bookmark: BookmarkInterface[]
   ): Promise<any> {

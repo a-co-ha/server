@@ -19,12 +19,11 @@ export const TemplateSchema = new Schema<TemplateInterface>(
 
     type: {
       type: String,
-      //todo required: true, 로 바꿔야함
-      default: "template",
+      default: PAGE_TYPE.TEMPLATE,
     },
     categories: {
       type: String,
-      default: "page",
+      default: PAGE_TYPE.PAGE,
     },
   },
   {

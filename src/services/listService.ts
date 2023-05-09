@@ -8,6 +8,7 @@ import {
 import { list, ListInterface } from "../interface";
 import { templateModel } from "../model";
 import { ClientSession } from "mongoose";
+import { ERROR_NAME } from "../constants";
 
 export class ListService {
   constructor(
@@ -15,7 +16,7 @@ export class ListService {
     private pageModel: pageModelType,
     private templateModel: templateModelType
   ) {}
-  async findList(channelId: number): Promise<ListInterface> {
+  public async findList(channelId: number): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
     const listPage = await this.listModel.findOne({ _id: listId }).populate({
@@ -26,7 +27,7 @@ export class ListService {
     return listPage;
   }
 
-  async updateList(
+  public async updateList(
     channelId: number,
     EditablePage: list,
     session: ClientSession
@@ -40,7 +41,7 @@ export class ListService {
       .then(() => this.findList(channelId));
   }
 
-  async deleteListPage(
+  public async deleteListPage(
     channelId: number,
     id: string,
     session: ClientSession
@@ -63,7 +64,7 @@ export class ListService {
     return deleteList;
   }
 
-  async deleteListTemplate(
+  public async deleteListTemplate(
     channelId: number,
     id: string,
     session: ClientSession
@@ -84,7 +85,7 @@ export class ListService {
     return deleteList;
   }
 
-  async deleteListSocket(
+  public async deleteListSocket(
     channelId: number,
     id: string
   ): Promise<ListInterface> {
@@ -106,10 +107,10 @@ export class ListService {
       });
   }
 
-  async deleteList(channelId: number): Promise<list> {
+  public async deleteList(channelId: number): Promise<list> {
     const list = await this.listModel.findOne({ channelId });
     if (!list) {
-      throw new Error("채널이 없습니다.");
+      throw new Error(ERROR_NAME.NOT_FOUND_CHANNEL);
     }
     const _id = list._id;
     await this.pageModel.deleteMany({ channelId });
