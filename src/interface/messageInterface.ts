@@ -1,11 +1,11 @@
-import { UserOfRoom, User } from "../interface";
+import { User, UserOfRoom } from "../interface";
 import { AsyncRequestHandler } from "../utils";
 
-export interface MessageAttributes extends Message {
+export interface MessageAttributes extends MessageData {
   id: string;
 }
 
-export interface Message extends User {
+export interface MessageData extends User {
   content?: string;
   roomId?: string | number;
   createdAt?: Date;

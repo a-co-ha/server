@@ -1,9 +1,15 @@
+import { ClientSession } from "mongoose";
 import {
-  ListService,
-  listService,
-  PageService,
-  pageService,
-} from "../services";
+  basicPageOrTemplateInfo,
+  createPageOrTemplateInfo,
+  ListInterface,
+  parentTemplateInfo,
+  progressPercentage,
+  progressPercentageArray,
+  putPageInTemplate,
+  template,
+  updateTemplateInfo,
+} from "../interface";
 import {
   listModel,
   listModelType,
@@ -13,41 +19,20 @@ import {
   templateModelType,
 } from "../model";
 import {
-  template,
-  parentTemplateInfo,
-  progressPercentage,
-  progressPercentageArray,
-  putPageInTemplate,
-  updateTemplateInfo,
-  basicPageOrTemplateInfo,
-  createPageOrTemplateInfo,
-  ListInterface,
-} from "../interface";
-import { mongoTransaction, MongoTransaction } from "../db";
-import { ClientSession } from "mongoose";
+  ListService,
+  listService,
+  PageService,
+  pageService,
+} from "../services";
 
 export class TemplateService {
-  private templateModel: templateModelType;
-  private listModel: listModelType;
-  private pageService: PageService;
-  private listService: ListService;
-  private mongoTransaction: MongoTransaction;
-  private pageModel: pageModelType;
   constructor(
-    templateModel: templateModelType,
-    listModel: listModelType,
-    pageService: PageService,
-    listService: ListService,
-    mongoTransaction: MongoTransaction,
-    pageModel: pageModelType
-  ) {
-    this.templateModel = templateModel;
-    this.listModel = listModel;
-    this.pageService = pageService;
-    this.listService = listService;
-    this.mongoTransaction = mongoTransaction;
-    this.pageModel = pageModel;
-  }
+    private templateModel: templateModelType,
+    private listModel: listModelType,
+    private pageService: PageService,
+    private listService: ListService,
+    private pageModel: pageModelType
+  ) {}
 
   public async createTemplateProgress(
     createTemplateInfo: createPageOrTemplateInfo
@@ -304,6 +289,5 @@ export const templateService = new TemplateService(
   listModel,
   pageService,
   listService,
-  mongoTransaction,
   pageModel
 );

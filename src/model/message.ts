@@ -1,10 +1,10 @@
 import moment from "moment-timezone";
-import { Sequelize, DataTypes, Model, Association } from "sequelize";
+import { Association, DataTypes, Model, Sequelize } from "sequelize";
+import { dateFormat } from "../constants";
+import { sequelize } from "../db/mysqlSequelize";
 import { MessageAttributes } from "../interface";
 import { Channel } from "./channel";
-import { sequelize } from "../db/mysqlSequelize";
 import { User } from "./user";
-import { dateFormat } from "../constants";
 
 export class Message extends Model<MessageAttributes> {
   declare id: number;
@@ -74,14 +74,5 @@ export class Message extends Model<MessageAttributes> {
   }
 }
 
-// todo
-// Channel.belongsTo(Message, {
-//   targetKey: "id",
-// });
-// User.belongsTo(Message, {
-//   targetKey: "githubID",
-// });
-// Message.hasOne(User);
-// Message.hasOne(Channel);
 Message.initialize(sequelize);
 export const messageModel = new Message();

@@ -1,11 +1,11 @@
 import { instrument } from "@socket.io/admin-ui";
-import { Server, Socket as SocketIO } from "socket.io";
 import sharedSession from "express-socket.io-session";
 import { Server as httpServer } from "http";
-import { SocketEmitter } from "./socketEmitter";
+import { Server, Socket as SocketIO } from "socket.io";
 import { ioCorsOptions } from "../config";
 import { socketValidation, useSession } from "../middlewares";
-import { logger, createSocketAdapter } from "../utils";
+import { createSocketAdapter, logger } from "../utils";
+import { SocketEmitter } from "./socketEmitter";
 import { SocketListener } from "./socketListeners";
 
 export class Socket {
@@ -17,6 +17,7 @@ export class Socket {
   static SET_BOOKMARK = "SET_BOOKMARK";
   static SET_ALERT = "SET_ALERT";
   static READ_ALERT = "READ_ALERT";
+
   private io: Server;
   private connectedSession: Map<string, SocketIO>;
   constructor(
@@ -70,7 +71,7 @@ export class Socket {
           await this.socketEmitter.messageStatus(existSocket);
           await this.socketEmitter.myAlert(existSocket);
           this.handleSocketEvents(existSocket);
-          // socket.disconnect();
+          socket.disconnect();
         }
       } catch (err: any) {
         logger.error(err.message);

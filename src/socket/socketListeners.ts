@@ -1,17 +1,17 @@
 import moment from "moment-timezone";
 import { Socket as SocketIO } from "socket.io";
-import { socketEmitter, SocketEmitter } from "./socketEmitter";
-import { emitHandler } from "./socketUtils";
 import { dateFormat } from "../constants";
 import { messageController } from "../controllers";
-import { Message, BookmarkInterface } from "../interface";
+import { BookmarkInterface, MessageData } from "../interface";
 import {
   bookmarkService,
+  channelService,
   messageService,
   pageService,
-  channelService,
 } from "../services";
-import { getCurrentDate, logger, RedisHandler } from "../utils";
+import { getCurrentDate, RedisHandler } from "../utils";
+import { socketEmitter, SocketEmitter } from "./socketEmitter";
+import { emitHandler } from "./socketUtils";
 
 export class SocketListener {
   constructor(private socketEmitter: SocketEmitter) {}
@@ -28,7 +28,7 @@ export class SocketListener {
     async ({ content, roomId }: { content: string; roomId: string }) => {
       const { readUser } = socket.roomIds.find((room) => room.id === roomId);
 
-      const data: Message = {
+      const data: MessageData = {
         userId: socket.userID,
         name: socket.name,
         img: socket.img,

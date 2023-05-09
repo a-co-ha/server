@@ -1,5 +1,5 @@
 import { AsyncRequestHandler } from "../utils";
-import { UserAttributes } from "./userInterface";
+import { UserAttributes } from "../interface";
 
 export interface IChannelController {
   createChannel: AsyncRequestHandler;

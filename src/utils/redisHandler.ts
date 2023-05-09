@@ -1,13 +1,13 @@
-import { promisify } from "util";
 import { SessionData } from "express-session";
+import { promisify } from "util";
+import { REDIS_TTL } from "../constants";
 import {
   BookmarkInterface,
-  UserOfRoom,
-  User,
-  Message,
   MessageAttributes,
+  MessageData,
+  User,
+  UserOfRoom,
 } from "./../interface";
-import { REDIS_TTL } from "../constants";
 import { redisClient } from "./redisClient";
 
 class RedisHelper {
@@ -93,7 +93,7 @@ export class RedisHandler {
       .filter((sessionID) => sessionID);
   }
 
-  static async saveMessage({ roomId, ...data }: Message): Promise<void> {
+  static async saveMessage({ roomId, ...data }: MessageData): Promise<void> {
     const key = `${RedisHandler.MESSAGE_PREFIX}${roomId}`;
     const value = JSON.stringify(data);
 
