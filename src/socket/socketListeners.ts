@@ -8,7 +8,6 @@ import {
   channelService,
   messageService,
   pageService,
-  templateService,
 } from "../services";
 import { getCurrentDate, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
@@ -99,25 +98,20 @@ export class SocketListener {
     };
 
   public setLabel = (socket: SocketIO) => async (content: any) => {
-    const { channelId, pageId, targetUserId, targetUserName, subPageId } =
-      content;
+    const { channelId, pageId, targetUserId, targetUserName } = content;
 
     const { channelName } = await channelService.getChannelInfo({
       id: channelId,
     });
+    const { pageName, parentTemplate } = await pageService.findPage({
+      channelId,
+      id: pageId,
+    });
 
-    const result: any = { channelName, targetUserName };
-
-    if (subPageId) {
-      const { pageName } = await pageService.findPageNameByPageId(pageId);
-      const { pageName: subPageName } = await templateService.findTemplateName(
-        subPageId
-      );
-      result.pageName = pageName;
-      result.subPageName = subPageName;
-    } else {
-      const { pageName } = await pageService.findPageNameByPageId(pageId);
-      result.pageName = pageName;
+    const result: any = { channelName, targetUserName, pageName };
+    if (parentTemplate) {
+      result.subPageName = pageName;
+      result.pageName = parentTemplate.pageName;
     }
 
     await RedisHandler.setAlert(targetUserId);

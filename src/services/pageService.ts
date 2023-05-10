@@ -41,23 +41,11 @@ export class PageService {
     this.templateModel = templateModel;
   }
 
-  public async findPageNameByPageId(pageId: string): Promise<page> {
-    try {
-      return await this.pageModel.findById(
-        {
-          _id: new ObjectId(pageId),
-        },
-        { pageName: 1 }
-      );
-    } catch (err) {
-      throw new Error("페이지를 찾을 수 없습니다.");
-    }
-  }
   public async findPage(pageInfo: basicPageOrTemplateInfo): Promise<page> {
-    const { id, channelId, type, session } = pageInfo;
+    const { id, channelId, session } = pageInfo;
 
     const result = await this.pageModel
-      .findOne({ _id: id, channelId, type })
+      .findOne({ _id: new ObjectId(id), channelId })
       .session(session)
       .populate({
         path: "parentTemplate",
@@ -129,9 +117,6 @@ export class PageService {
 
     await this.createSocketPageList(putSocketInListInfo);
     return room[0];
-    // .then(
-    //   () => this.listService.findList(channelId)
-    // );
   }
 
   public async putPageInList(

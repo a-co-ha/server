@@ -22,6 +22,7 @@ export interface page {
   type?: string;
   categories?: string;
   session?: any;
+  parentTemplate?: TemplateInterface;
 }
 
 export interface socketPage {
