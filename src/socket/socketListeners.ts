@@ -102,31 +102,28 @@ export class SocketListener {
     const { channelId, pageId, targetUserId, targetUserName, subPageId } =
       content;
 
-    try {
-      const { channelName } = await channelService.getChannelInfo({
-        id: channelId,
-      });
+    const { channelName } = await channelService.getChannelInfo({
+      id: channelId,
+    });
 
-      const result: any = { channelName, targetUserName };
+    const result: any = { channelName, targetUserName };
 
-      if (subPageId) {
-        const { pageName } = await pageService.findPageNameByPageId(pageId);
-        const { pageName: subPageName } =
-          await templateService.findTemplateName(subPageId);
-        result.pageName = pageName;
-        result.subPageName = subPageName;
-      } else {
-        const { pageName } = await pageService.findPageNameByPageId(pageId);
-        result.pageName = pageName;
-      }
-
-      await RedisHandler.setAlert(targetUserId);
-
-      socket.emit("GET_ALERT", result); // 추후 제거 예정
-      socket.to(targetUserId).emit("GET_ALERT", result);
-    } catch (err) {
-      throw new Error("페이지를 찾을 수 없습니다.");
+    if (subPageId) {
+      const { pageName } = await pageService.findPageNameByPageId(pageId);
+      const { pageName: subPageName } = await templateService.findTemplateName(
+        subPageId
+      );
+      result.pageName = pageName;
+      result.subPageName = subPageName;
+    } else {
+      const { pageName } = await pageService.findPageNameByPageId(pageId);
+      result.pageName = pageName;
     }
+
+    await RedisHandler.setAlert(targetUserId);
+
+    socket.emit("GET_ALERT", result); // 추후 제거 예정
+    socket.to(targetUserId).emit("GET_ALERT", result);
   };
 
   public readLabel = (socket: SocketIO) => async () => {

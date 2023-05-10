@@ -1,14 +1,14 @@
+import { ClientSession } from "mongoose";
+import { ERROR_NAME } from "../constants";
+import { list, ListInterface } from "../interface";
 import {
   listModel,
   listModelType,
   pageModel,
   pageModelType,
+  templateModel,
   templateModelType,
 } from "../model";
-import { list, ListInterface } from "../interface";
-import { templateModel } from "../model";
-import { ClientSession } from "mongoose";
-import { ERROR_NAME } from "../constants";
 
 export class ListService {
   constructor(

@@ -76,21 +76,27 @@ export class Socket {
   }
 
   private handleSocketEvents(socket: SocketIO): void {
-    socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
+    try {
+      socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
 
-    socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
+      socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
 
-    socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
+      socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
 
-    socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));
+      socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));
 
-    socket.on(Socket.SET_ALERT, this.socketListener.setLabel(socket));
+      socket.on(Socket.SET_ALERT, this.socketListener.setLabel(socket));
 
-    socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
+      socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
 
-    socket.on(
-      Socket.DISCONNECTION,
-      this.socketListener.disconnect(socket, this.io, this.connectedSession)
-    );
+      socket.on(
+        Socket.DISCONNECTION,
+        this.socketListener.disconnect(socket, this.io, this.connectedSession)
+      );
+    } catch (err: any) {
+      logger.error(err.message);
+      socket.disconnect();
+      return;
+    }
   }
 }

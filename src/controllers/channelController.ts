@@ -1,8 +1,8 @@
-import { Channel } from "./../model";
-import { mysqlTransaction, MysqlTransaction } from "./../db";
-import { AsyncRequestHandler } from "../utils";
-import { channelService, ChannelService } from "../services";
 import { channelJoinInterface, IChannelController } from "../interface";
+import { channelService, ChannelService } from "../services";
+import { AsyncRequestHandler } from "../utils";
+import { mysqlTransaction, MysqlTransaction } from "./../db";
+import { Channel } from "./../model";
 
 export class ChannelController implements IChannelController {
   constructor(

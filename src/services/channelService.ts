@@ -18,12 +18,7 @@ import {
   User,
   userModel,
 } from "../model";
-import {
-  ListService,
-  listService,
-  PageService,
-  pageService,
-} from "../services";
+import { listService, pageService } from "../services";
 
 export class ChannelService {
   constructor(
@@ -31,8 +26,6 @@ export class ChannelService {
     private channelModel: Channel,
     private userModel: User,
     private listModel: listModelType,
-    private listService: ListService,
-    private pageService: PageService,
     private socketModel: socketModelType
   ) {}
 
@@ -90,8 +83,8 @@ export class ChannelService {
     };
 
     await this.listModel.create({ channelId });
-    await this.pageService.createRoom(channelId);
-    await this.pageService.createPage(createPageInfo);
+    await pageService.createRoom(channelId);
+    await pageService.createPage(createPageInfo);
   }
 
   private async userJoin(
@@ -261,7 +254,7 @@ export class ChannelService {
 
     await Channel.destroy({ where: { id: channelId }, transaction: t });
 
-    await this.listService.deleteList(channelId);
+    await listService.deleteList(channelId);
 
     return channelId;
   }
@@ -339,7 +332,5 @@ export const channelService = new ChannelService(
   channelModel,
   userModel,
   listModel,
-  listService,
-  pageService,
   socketModel
 );

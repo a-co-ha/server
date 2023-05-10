@@ -285,12 +285,16 @@ export class TemplateService {
   }
 
   public findTemplateName = async (id: string) => {
-    return await this.templateModel.findById(
-      {
-        _id: new ObjectId(id),
-      },
-      { pageName: 1 }
-    );
+    try {
+      return await this.templateModel.findById(
+        {
+          _id: new ObjectId(id),
+        },
+        { pageName: 1 }
+      );
+    } catch (err) {
+      throw new Error("페이지를 찾을 수 없습니다.");
+    }
   };
 }
 

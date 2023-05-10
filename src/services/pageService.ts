@@ -42,12 +42,16 @@ export class PageService {
   }
 
   public async findPageNameByPageId(pageId: string): Promise<page> {
-    return await this.pageModel.findById(
-      {
-        _id: new ObjectId(pageId),
-      },
-      { pageName: 1 }
-    );
+    try {
+      return await this.pageModel.findById(
+        {
+          _id: new ObjectId(pageId),
+        },
+        { pageName: 1 }
+      );
+    } catch (err) {
+      throw new Error("페이지를 찾을 수 없습니다.");
+    }
   }
   public async findPage(pageInfo: basicPageOrTemplateInfo): Promise<page> {
     const { id, channelId, type, session } = pageInfo;
