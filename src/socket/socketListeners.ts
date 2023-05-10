@@ -107,14 +107,17 @@ export class SocketListener {
         id: channelId,
       });
 
-      const { pageName } = await pageService.findPageNameByPageId(pageId);
-
-      const result: any = { channelName, pageName, targetUserName };
+      const result: any = { channelName, targetUserName };
 
       if (subPageId) {
+        const { pageName } = await pageService.findPageNameByPageId(pageId);
         const { pageName: subPageName } =
           await templateService.findTemplateName(subPageId);
+        result.pageName = pageName;
         result.subPageName = subPageName;
+      } else {
+        const { pageName } = await pageService.findPageNameByPageId(pageId);
+        result.pageName = pageName;
       }
 
       await RedisHandler.setAlert(targetUserId);
