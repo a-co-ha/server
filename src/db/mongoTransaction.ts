@@ -29,7 +29,6 @@ export class MongoTransaction {
       return result;
     } catch (error: any) {
       await this.abortTransaction(session);
-      console.log(error);
       throw new Error(error);
     } finally {
       session.endSession();

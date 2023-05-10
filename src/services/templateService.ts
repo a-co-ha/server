@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { ClientSession } from "mongoose";
 import { ERROR_NAME, PAGE_TYPE, TEMPLATE_STATUS } from "../constants";
 import {
@@ -282,6 +283,15 @@ export class TemplateService {
 
     return resultArray;
   }
+
+  public findTemplateName = async (id: string) => {
+    return await this.templateModel.findById(
+      {
+        _id: new ObjectId(id),
+      },
+      { pageName: 1 }
+    );
+  };
 }
 
 export const templateService = new TemplateService(

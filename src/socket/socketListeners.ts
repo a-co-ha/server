@@ -8,6 +8,7 @@ import {
   channelService,
   messageService,
   pageService,
+  templateService,
 } from "../services";
 import { getCurrentDate, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
@@ -102,14 +103,17 @@ export class SocketListener {
       content;
 
     try {
-      const { channelName } = await channelService.getChannelInfo(channelId);
+      const { channelName } = await channelService.getChannelInfo({
+        id: channelId,
+      });
+
       const { pageName } = await pageService.findPageNameByPageId(pageId);
 
       const result: any = { channelName, pageName, targetUserName };
 
       if (subPageId) {
         const { pageName: subPageName } =
-          await pageService.findPageNameByPageId(subPageId);
+          await templateService.findTemplateName(subPageId);
         result.subPageName = subPageName;
       }
 

@@ -1,5 +1,5 @@
-import { AsyncRequestHandler } from "../utils";
 import { UserAttributes } from "../interface";
+import { AsyncRequestHandler } from "../utils";
 
 export interface IChannelController {
   createChannel: AsyncRequestHandler;
@@ -24,7 +24,7 @@ export interface Channel_UserAttributes extends ChannelAttributes {
 export interface IChannelInfo {
   id?: number;
   admin?: string | number;
-  channelName: string;
+  channelName?: string;
 }
 export interface IChannelModel {
   invite(info: IChannelInfo): Promise<void>;
