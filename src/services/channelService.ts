@@ -1,5 +1,5 @@
 import { Transaction } from "sequelize";
-import { decode, ENCTYPE } from "../constants";
+import { ENCTYPE } from "../constants";
 import {
   channelJoinInterface,
   createPageOrTemplateInfo,
@@ -19,6 +19,7 @@ import {
   userModel,
 } from "../model";
 import { listService, pageService } from "../services";
+import { decode } from "../utils";
 
 export class ChannelService {
   constructor(
@@ -39,7 +40,7 @@ export class ChannelService {
     const channelNameCheck = await this.getChannelInfo(info, t);
 
     if (channelNameCheck) {
-      throw new Error("같은 이름의 채널이 이미 있습니다.");
+      throw new Error("같은 이름의 채널이 존재합니다.");
     }
     const newChannel = await Channel.create(
       {
@@ -66,8 +67,9 @@ export class ChannelService {
       (user) => user.userId
     );
 
-    const results = await this.socketModel.find({ channelId }, { _id: 1 });
-    const result = results.map((room) => {
+    const rooms = await this.socketModel.find({ channelId }, { _id: 1 });
+
+    const result = rooms.map((room) => {
       const id = room._id.toString();
       const readUser = users;
 
@@ -309,12 +311,13 @@ export class ChannelService {
     });
   };
 
-  public async channelOrgAdd(
+  public async channelRepoAdd(
     channelId: number,
-    orgGithubName: string
+    repoName: string,
+    repoType: string
   ): Promise<any> {
     return await Channel.update(
-      { orgGithubName },
+      { repoName, repoType },
       { where: { id: channelId } }
     );
   }

@@ -1,9 +1,9 @@
 import axios from "axios";
-import { githubHeader } from "../constants";
 import { Octokit } from "octokit";
 import { GITHUBAUTH } from "../config";
-import { AsyncRequestHandler } from "../utils";
+import { githubHeader, gitHubType } from "../constants";
 import { channelService } from "../services";
+import { AsyncRequestHandler } from "../utils";
 
 const octokit = new Octokit({
   auth: GITHUBAUTH,
@@ -60,8 +60,8 @@ export class GithubController implements IGithubController {
   };
 
   getOrg: AsyncRequestHandler = async (req, res) => {
-    const channel = req.query.channel as string;
-    const channelId = parseInt(channel);
+    // const channel = req.query.channel as string;
+    // const channelId = parseInt(channel);
     const { org } = req.body;
 
     const result = await octokit.request("GET /orgs/{org}", {
@@ -80,7 +80,7 @@ export class GithubController implements IGithubController {
         return { name: i.name, url: i.url };
       });
     });
-    channelService.channelOrgAdd(channelId, orgName);
+
     res.json({ orgName, orgUrl, orgImg, desc, repos });
   };
 
@@ -187,6 +187,21 @@ export class GithubController implements IGithubController {
     });
     result.url = data.issue_url;
     res.json(result);
+  };
+  register: AsyncRequestHandler = async (req, res) => {
+    const { channelId, repoName, repoType } = req.body;
+    if (!(repoType === gitHubType.ORG || repoType === gitHubType.REPO)) {
+      throw new Error("정상적인 타입이 아닙니다.");
+    }
+    await channelService.channelRepoAdd(channelId, repoName, repoType);
+
+    if (repoType === gitHubType.ORG) {
+      req.body.org = repoName;
+      this.getOrg(req, res);
+    } else {
+      req.body.repo = repoName;
+      this.getRepo(req, res);
+    }
   };
 }
 

@@ -13,3 +13,4 @@ githubRouter.post(
   "/org/issue/comments",
   asyncHandler(githubController.getIssueDetail)
 );
+githubRouter.post("/register", asyncHandler(githubController.register));

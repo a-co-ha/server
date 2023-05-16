@@ -14,40 +14,34 @@ export class SocketEmitter {
           img: socket.img,
         });
       }
-
-      logger.info(
-        `[1] 채팅방 조인 user : ${socket.name}, sessionID : ${
-          socket.sessionID
-        }, rooms : ${JSON.stringify(socket.roomIds)}`
-      );
+      await this.userInfo(socket);
     }
   }
 
-  public async messageStatus(socket): Promise<void> {
-    const { roomIds, userID } = socket;
-    const status = await Promise.all(
-      roomIds.map(async (room) => {
-        const status = await RedisHandler.getIsRead(room.id, userID);
-        const messages = await RedisHandler.findMessages(room.id);
-        return { status, messages };
-      })
-    );
-    socket.emit("MESSAGE_STATUS", status);
-  }
-
-  public async userInfo(socket: any): Promise<void> {
+  private async userInfo(socket: any): Promise<void> {
     const { sessionID, userID, name } = socket;
     const rooms = Array.from(socket.rooms).slice(1).map(String);
     const user = { sessionID, userID, name, rooms };
 
     socket.emit("USER_INFO", user);
     logger.info(
-      `[3] 소켓 접속완료 
-      user : ${socket.name}, sessionID : ${socket.sessionID}`
+      `[1] 소켓 접속완료 
+      user : ${socket.name}, sessionID : ${socket.sessionID} , rooms : ${rooms}`
     );
   }
 
-  public async getUsers(socket: any): Promise<void> {
+  public async messageStatus(socket: SocketIO): Promise<void> {
+    const { roomIds, userID } = socket;
+    const status = await Promise.all(
+      roomIds.map(async (room: Room) => {
+        const status = await RedisHandler.getIsRead(room.id, userID);
+        return { status };
+      })
+    );
+    socket.emit("MESSAGE_STATUS", status);
+  }
+
+  public async getCurrentMembers(socket: any): Promise<void> {
     const members = await userService.getChannelMembersID(socket.userID);
 
     if (members.length !== 0) {

@@ -1,4 +1,4 @@
-import { DataTypes, Model, Association, Sequelize } from "sequelize";
+import { Association, DataTypes, Model, Sequelize } from "sequelize";
 import { sequelize } from "../db/mysqlSequelize";
 import { ChannelAttributes } from "../interface";
 import { ChannelUser } from "./channelUser";
@@ -7,7 +7,6 @@ export class Channel extends Model<ChannelAttributes> {
   declare id: number;
   declare channelName: string;
   declare userId: number;
-  declare orgGithubName: string;
   public static associations: {
     channelHasManyUsers: Association<Channel, ChannelUser>;
   };
@@ -35,10 +34,15 @@ export class Channel extends Model<ChannelAttributes> {
           defaultValue: "",
           field: "c_img",
         },
-        orgGithubName: {
+        repoName: {
           type: DataTypes.STRING(200),
           defaultValue: "",
-          field: "org_name",
+          field: "repo_name",
+        },
+        repoType: {
+          type: DataTypes.STRING(200),
+          defaultValue: "",
+          field: "repo_type",
         },
       },
       {

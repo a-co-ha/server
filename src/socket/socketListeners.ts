@@ -51,7 +51,7 @@ export class SocketListener {
 
       const length = cachedMessages.length;
       let messages = [];
-      if (length !== 0 && length < 20) {
+      if (length !== 0 && length < 100) {
         const counts = 100 - length;
         const lastId = cachedMessages[0].id;
 
@@ -125,7 +125,7 @@ export class SocketListener {
 
     const res = await RedisHandler.getAlert(socket.userID);
 
-    socket.to(socket.userID.toString()).emit("GET_ALERT", res);
+    socket.emit("GET_ALERT", res);
   };
 
   public disconnect =
@@ -148,6 +148,7 @@ export class SocketListener {
           });
         }
       }
+      socket.disconnect();
     };
 }
 

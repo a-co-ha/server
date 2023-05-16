@@ -47,14 +47,6 @@ export const githubHeader = {
   "X-GitHub-Api-Version": "2022-11-28",
 };
 
-export const decode = (
-  target: string,
-  encoding: BufferEncoding,
-  format: BufferEncoding
-): string => {
-  return Buffer.from(target, encoding).toString(format);
-};
-
 export const enum ENCTYPE {
   BASE64 = "base64",
   UTF8 = "utf-8",
@@ -95,4 +87,9 @@ export const enum ERROR_NAME {
   NOT_FOUND_CHANNEL = "채널이 없습니다.",
   NOT_FOUND_PROGRESS_STATUS = "progressStatus를 입력하세요.",
   TEMPLATE_TYPE_ERROR = "진행현황 템플릿이 아닙니다.",
+}
+
+export const enum gitHubType {
+  ORG = "org",
+  REPO = "repo",
 }

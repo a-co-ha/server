@@ -54,8 +54,7 @@ export class Socket {
 
           socket.join(socket.userID.toString());
           await this.socketEmitter.join(socket, socket.roomIds);
-          await this.socketEmitter.getUsers(socket);
-          await this.socketEmitter.userInfo(socket);
+          await this.socketEmitter.getCurrentMembers(socket);
           await this.socketEmitter.messageStatus(socket);
           await this.socketEmitter.myAlert(socket);
           this.connectedSession.set(sessionID, socket);
@@ -65,7 +64,7 @@ export class Socket {
           await this.socketEmitter.messageStatus(existSocket);
           await this.socketEmitter.myAlert(existSocket);
           this.handleSocketEvents(existSocket);
-          socket.disconnect();
+          // socket.disconnect();
         }
       } catch (err: any) {
         logger.error(err.message);
@@ -76,27 +75,15 @@ export class Socket {
   }
 
   private handleSocketEvents(socket: SocketIO): void {
-    try {
-      socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
-
-      socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
-
-      socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
-
-      socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));
-
-      socket.on(Socket.SET_ALERT, this.socketListener.setLabel(socket));
-
-      socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
-
-      socket.on(
-        Socket.DISCONNECTION,
-        this.socketListener.disconnect(socket, this.io, this.connectedSession)
-      );
-    } catch (err: any) {
-      logger.error(err.message);
-      socket.disconnect();
-      return;
-    }
+    socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
+    socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
+    socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));
+    socket.on(Socket.SET_ALERT, this.socketListener.setLabel(socket));
+    socket.on(Socket.READ_ALERT, this.socketListener.readLabel(socket));
+    socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
+    socket.on(
+      Socket.DISCONNECTION,
+      this.socketListener.disconnect(socket, this.io, this.connectedSession)
+    );
   }
 }

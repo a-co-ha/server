@@ -122,13 +122,13 @@ export class RedisHandler {
     await RedisHelper.setWithExpiration(key, false, REDIS_TTL.DAY);
   }
 
-  static async getAlert(targetUserId: number): Promise<boolean> {
+  static async getAlert(targetUserId: number): Promise<string> {
     const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
     const value = await redisClient.get(key);
     if (value === null) {
-      return false;
+      return "false";
     }
-    return Boolean(value);
+    return value;
   }
 
   static async setReadMessagePerRoom(
