@@ -1,5 +1,10 @@
 import { channelJoinInterface, IChannelController } from "../interface";
-import { channelService, ChannelService } from "../services";
+import {
+  channelService,
+  ChannelService,
+  UserService,
+  userService,
+} from "../services";
 import { AsyncRequestHandler } from "../utils";
 import { mysqlTransaction, MysqlTransaction } from "./../db";
 import { Channel } from "./../model";
@@ -7,6 +12,7 @@ import { Channel } from "./../model";
 export class ChannelController implements IChannelController {
   constructor(
     private channelService: ChannelService,
+    private userService: UserService,
     private mysqlTransaction: MysqlTransaction
   ) {}
 
@@ -90,20 +96,21 @@ export class ChannelController implements IChannelController {
     await this.mysqlTransaction.execute(async (t) => {
       await this.channelService.deleteChannel(t, channelId, userId);
     });
-    res.json({ channelId, status: "삭제되었습니다." });
+
+    const result = await this.userService.getUserWithChannels(userId);
+
+    res.json(result);
   };
 
   public exitChannel: AsyncRequestHandler = async (req, res) => {
     const { channel: channelId } = req.body;
     const { userId } = req.user;
-    let channelExit: Channel;
+
     await this.mysqlTransaction.execute(async (t) => {
-      channelExit = await this.channelService.deleteChannelUser(
-        t,
-        channelId,
-        userId
-      );
+      await this.channelService.deleteChannelUser(t, channelId, userId);
     });
+
+    const channelExit = await this.userService.getUserWithChannels(userId);
     res.json(channelExit);
   };
 
@@ -116,5 +123,6 @@ export class ChannelController implements IChannelController {
 }
 export const channelController = new ChannelController(
   channelService,
+  userService,
   mysqlTransaction
 );

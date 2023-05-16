@@ -1,22 +1,6 @@
 version: "3"
 services:
 
-  # mysql:
-  #   image: mysql
-  #   container_name: mysql
-  #   ports:
-  #     - "3306:3306"
-  #   environment:
-  #     - MYSQL_USER=admin
-  #     - MYSQL_DATABASE=acoah
-  #     - MYSQL_CONTAINER_NAME=${MYSQL_CONTAINER_NAME}
-  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-  #     - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-  #     - TZ=Asia/Seoul
-  #   env_file:
-  #     - .env.dev
-
   redis-server:
     image: redis:latest
     container_name: "redis"
