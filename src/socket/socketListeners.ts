@@ -125,7 +125,7 @@ export class SocketListener {
 
     const res = await RedisHandler.getAlert(socket.userID);
 
-    socket.emit("GET_ALERT", res);
+    socket.emit("ALERT", res);
   };
 
   public disconnect =

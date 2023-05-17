@@ -136,7 +136,6 @@ export class GithubController implements IGithubController {
       page++;
 
       if (data.length < perPage) {
-        // Reached the last page, exit the loop
         break;
       }
     }
