@@ -114,7 +114,7 @@ export class GithubController implements IGithubController {
     const admin = org ? org : owner;
 
     const perPage = 100;
-    const maxResults = 5;
+    const maxResults = 8;
 
     let page = 1;
     let resultsCount = 0;
@@ -165,7 +165,7 @@ export class GithubController implements IGithubController {
       }
     );
 
-    const result = data.slice(0, 5).map((i) => {
+    const result = data.slice(0, 8).map((i) => {
       const labels = i.labels.map((el) => {
         return { name: el.name, color: el.color, desc: el.description };
       });
