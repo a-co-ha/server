@@ -113,12 +113,35 @@ export class GithubController implements IGithubController {
     const { org, owner, repo } = req.body;
     const admin = org ? org : owner;
 
-    const { data } = await octokit.request("GET /repos/{admin}/{repo}/events", {
-      admin,
-      repo,
-      headers: githubHeader,
-    });
-    res.json(data.splice(0, 5));
+    const perPage = 100;
+    const maxResults = 5;
+
+    let page = 1;
+    let resultsCount = 0;
+    let filteredEvents = [];
+    while (resultsCount < maxResults) {
+      const { data } = await octokit.request(
+        "GET /repos/{admin}/{repo}/events",
+        {
+          admin,
+          repo,
+          headers: githubHeader,
+        }
+      );
+
+      const events = data.filter((event) => event.type === "PushEvent");
+      filteredEvents = filteredEvents.concat(events);
+      resultsCount = filteredEvents.length;
+
+      page++;
+
+      if (data.length < perPage) {
+        // Reached the last page, exit the loop
+        break;
+      }
+    }
+    filteredEvents = filteredEvents.slice(0, maxResults);
+    res.json(filteredEvents);
   };
 
   getEvents: AsyncRequestHandler = async (req, res) => {
