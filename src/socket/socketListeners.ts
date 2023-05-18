@@ -69,7 +69,9 @@ export class SocketListener {
 
       messages = cachedMessages;
 
-      socket.emit("GET_MESSAGE", messages);
+      emitHandler(socket, "GET_MESSAGE", socket.userID.toString(), messages);
+      // socket.to(socket.userID.toString()).emit("GET_MESSAGE", messages);
+      // socket.emit("GET_MESSAGE", messages);
     };
 
   public setBookmark =
@@ -129,28 +131,26 @@ export class SocketListener {
     socket.emit("ALERT", res);
   };
 
-  public disconnect =
-    (socket: SocketIO, io: Server, connectedSession: Map<string, SocketIO>) =>
-    async () => {
-      connectedSession.delete(socket.sessionID);
+  public disconnect = (socket: SocketIO, io: Server) => async () => {
+    // connectedSession.delete(socket.sessionID);
 
-      const isDisconnected =
-        (await socketsInRoom(io, socket.userID)).length === 0;
+    const isDisconnected =
+      (await socketsInRoom(io, socket.userID)).length === 0;
 
-      if (isDisconnected) {
-        for (const room of socket.roomIds) {
-          socket.leave(room.id);
+    if (isDisconnected) {
+      for (const room of socket.roomIds) {
+        socket.leave(room.id);
 
-          socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
-            roomId: room.id,
-            userID: socket.userID,
-            name: socket.name,
-            connected: false,
-          });
-        }
+        socket.broadcast.to(room.id).emit("DISCONNECT_MEMBER", {
+          roomId: room.id,
+          userID: socket.userID,
+          name: socket.name,
+          connected: false,
+        });
       }
-      socket.disconnect();
-    };
+    }
+    socket.disconnect();
+  };
 }
 
 export const socketListener = new SocketListener(socketEmitter);

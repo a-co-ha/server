@@ -47,24 +47,24 @@ export class Socket {
           throw new Error("세션이 만료되었습니다. 로그인을 해주세요.");
         }
 
-        const existSocket = this.connectedSession.get(sessionID);
+        // const existSocket = this.connectedSession.get(sessionID);
 
-        if (!existSocket) {
-          await socketValidation(sessionID, socket);
+        // if (!existSocket) {
+        await socketValidation(sessionID, socket);
+        await this.handleSocketEvents(socket);
 
-          socket.join(socket.userID.toString());
-          await this.socketEmitter.join(socket, socket.roomIds);
-          await this.socketEmitter.getCurrentMembers(socket);
-          await this.socketEmitter.messageStatus(socket);
-          await this.socketEmitter.myAlert(socket);
-          this.connectedSession.set(sessionID, socket);
-          await this.handleSocketEvents(socket);
-        } else {
-          console.log("소켓있음");
-          await this.socketEmitter.messageStatus(existSocket);
-          await this.socketEmitter.myAlert(existSocket);
-          await this.handleSocketEvents(existSocket);
-        }
+        socket.join(socket.userID.toString());
+        await this.socketEmitter.join(socket, socket.roomIds);
+        await this.socketEmitter.getCurrentMembers(socket);
+        await this.socketEmitter.messageStatus(socket);
+        await this.socketEmitter.myAlert(socket);
+        // this.connectedSession.set(sessionID, socket);
+        // } else {
+        //   console.log("소켓있음");
+        //   await this.socketEmitter.messageStatus(existSocket);
+        //   await this.socketEmitter.myAlert(existSocket);
+        //   await this.handleSocketEvents(existSocket);
+        // }
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
@@ -82,7 +82,11 @@ export class Socket {
     socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
     socket.on(
       Socket.DISCONNECTION,
-      this.socketListener.disconnect(socket, this.io, this.connectedSession)
+      this.socketListener.disconnect(
+        socket,
+        this.io
+        // this.connectedSession
+      )
     );
   }
 }
