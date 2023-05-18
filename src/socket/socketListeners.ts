@@ -120,11 +120,12 @@ export class SocketListener {
     socket.to(targetUserId).emit("GET_ALERT", result);
   };
 
-  public readLabel = (socket: SocketIO) => async () => {
+  public readLabel = (socket: SocketIO) => async (content: any) => {
     await RedisHandler.readAlert(socket.userID);
 
     const res = await RedisHandler.getAlert(socket.userID);
-
+    console.log(res);
+    socket.to(socket.userID.toString()).emit("ALERT", res);
     socket.emit("ALERT", res);
   };
 

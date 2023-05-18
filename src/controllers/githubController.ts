@@ -16,27 +16,20 @@ interface IGithubController {
 export class GithubController implements IGithubController {
   getRepo: AsyncRequestHandler = async (req, res) => {
     const { githubID } = req.user;
-    const { repo } = req.body;
+    const { repo, type } = req.body;
     const { data } = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: githubID,
       repo,
       headers: githubHeader,
     });
 
-    const {
-      name,
-      private: IsPrivate,
-      description: desc,
-      url: html_url,
-      language,
-    } = data;
+    const { name, description: desc, url: html_url } = data;
 
     res.json({
+      type,
       name,
-      private: IsPrivate,
-      desc,
       url: html_url,
-      language,
+      desc,
     });
   };
 
@@ -60,19 +53,17 @@ export class GithubController implements IGithubController {
   };
 
   getOrg: AsyncRequestHandler = async (req, res) => {
-    // const channel = req.query.channel as string;
-    // const channelId = parseInt(channel);
-    const { org } = req.body;
+    const { org, type } = req.body;
 
     const result = await octokit.request("GET /orgs/{org}", {
       org,
       headers: githubHeader,
     });
     const {
-      avatar_url: orgImg,
+      avatar_url: img,
       description: desc,
-      html_url: orgUrl,
-      login: orgName,
+      html_url: url,
+      login: name,
       repos_url,
     } = result.data;
     const repos = await axios.get(repos_url).then((response) => {
@@ -81,7 +72,7 @@ export class GithubController implements IGithubController {
       });
     });
 
-    res.json({ orgName, orgUrl, orgImg, desc, repos });
+    res.json({ type, name, url, desc, img, repos });
   };
 
   getOrgs: AsyncRequestHandler = async (req, res) => {
@@ -219,9 +210,11 @@ export class GithubController implements IGithubController {
 
     if (repoType === gitHubType.ORG) {
       req.body.org = repoName;
+      req.body.type = gitHubType.ORG;
       this.getOrg(req, res);
     } else {
       req.body.repo = repoName;
+      req.body.type = gitHubType.REPO;
       this.getRepo(req, res);
     }
   };
