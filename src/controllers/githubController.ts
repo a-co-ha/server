@@ -147,16 +147,32 @@ export class GithubController implements IGithubController {
     const { org, owner, repo } = req.body;
     const admin = org ? org : owner;
 
-    const { data } = await octokit.request(
-      "GET /repos/{admin}/{repo}/issues?state=all",
-      {
-        admin,
-        repo,
-        headers: githubHeader,
-      }
-    );
+    const perPage = 100;
+    const maxResults = 8;
 
-    const result = data.slice(0, 8).map((i) => {
+    let page = 1;
+    let resultsCount = 0;
+    let filteredIssues = [];
+    while (resultsCount < maxResults) {
+      const { data } = await octokit.request(
+        "GET /repos/{admin}/{repo}/issues?state=all",
+        {
+          admin,
+          repo,
+          headers: githubHeader,
+        }
+      );
+      const issues = data.filter((el) => el.pull_request === undefined);
+      filteredIssues = filteredIssues.concat(issues);
+      resultsCount = filteredIssues.length;
+
+      page++;
+
+      if (data.length < perPage) {
+        break;
+      }
+    }
+    const result = filteredIssues.slice(0, maxResults).map((i) => {
       const labels = i.labels.map((el) => {
         return { name: el.name, color: el.color, desc: el.description };
       });
@@ -173,6 +189,7 @@ export class GithubController implements IGithubController {
         body: i.body,
       };
     });
+
     res.json(result);
   };
 

@@ -64,7 +64,6 @@ export class Socket {
           await this.socketEmitter.messageStatus(existSocket);
           await this.socketEmitter.myAlert(existSocket);
           this.handleSocketEvents(existSocket);
-          // socket.disconnect();
         }
       } catch (err: any) {
         logger.error(err.message);
