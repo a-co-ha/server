@@ -54,7 +54,7 @@ export class Socket {
         await this.socketEmitter.getCurrentMembers(socket);
         await this.socketEmitter.messageStatus(socket);
         await this.socketEmitter.myAlert(socket);
-   
+
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
@@ -75,7 +75,6 @@ export class Socket {
       this.socketListener.disconnect(
         socket,
         this.io
-
       )
     );
   }
