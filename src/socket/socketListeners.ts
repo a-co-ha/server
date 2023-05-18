@@ -7,7 +7,7 @@ import {
   bookmarkService,
   channelService,
   messageService,
-  pageService
+  pageService,
 } from "../services";
 import { getCurrentDate, logger, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
@@ -130,7 +130,6 @@ export class SocketListener {
   };
 
   public disconnect = (socket: SocketIO, io: Server) => async () => {
-
     const isDisconnected =
       (await socketsInRoom(io, socket.userID)).length === 0;
 

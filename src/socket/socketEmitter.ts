@@ -5,10 +5,15 @@ import { logger, RedisHandler } from "../utils";
 export class SocketEmitter {
   public async join(socket: SocketIO, roomIds: Room[]): Promise<void> {
     if (roomIds) {
+      const members = [];
       for (const room of roomIds) {
         socket.join(room.id);
+        members.push(room.readUser.flat());
+      }
+      const filterMember = [...new Set(members.flat())];
 
-        socket.broadcast.to(room.id).emit("NEW_MEMBER", {
+      for (const member of filterMember) {
+        socket.broadcast.to(member.toString()).emit("NEW_MEMBER", {
           userID: socket.userID,
           name: socket.name,
           img: socket.img,

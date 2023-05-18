@@ -54,7 +54,6 @@ export class Socket {
         await this.socketEmitter.getCurrentMembers(socket);
         await this.socketEmitter.messageStatus(socket);
         await this.socketEmitter.myAlert(socket);
-
       } catch (err: any) {
         logger.error(err.message);
         socket.disconnect();
@@ -72,10 +71,7 @@ export class Socket {
     socket.on(Socket.JOIN_CHANNEL, this.socketListener.joinChannel(socket));
     socket.on(
       Socket.DISCONNECTION,
-      this.socketListener.disconnect(
-        socket,
-        this.io
-      )
+      this.socketListener.disconnect(socket, this.io)
     );
   }
 }
