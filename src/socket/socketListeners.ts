@@ -7,7 +7,7 @@ import {
   bookmarkService,
   channelService,
   messageService,
-  pageService,
+  pageService
 } from "../services";
 import { getCurrentDate, logger, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
@@ -70,8 +70,6 @@ export class SocketListener {
       messages = cachedMessages;
 
       emitHandler(socket, "GET_MESSAGE", socket.userID.toString(), messages);
-      // socket.to(socket.userID.toString()).emit("GET_MESSAGE", messages);
-      // socket.emit("GET_MESSAGE", messages);
     };
 
   public setBookmark =
@@ -132,7 +130,6 @@ export class SocketListener {
   };
 
   public disconnect = (socket: SocketIO, io: Server) => async () => {
-    // connectedSession.delete(socket.sessionID);
 
     const isDisconnected =
       (await socketsInRoom(io, socket.userID)).length === 0;
