@@ -1,8 +1,7 @@
-import { Sequelize } from "sequelize";
-import { DataTypes, Model, Association } from "sequelize";
+import { Association, DataTypes, Model, Sequelize } from "sequelize";
+import { sequelize } from "../db/mysqlSequelize";
 import { Channel_UserAttributes } from "../interface";
 import { Channel } from "./channel";
-import { sequelize } from "../db/mysqlSequelize";
 import { User } from "./user";
 
 export class ChannelUser extends Model<Channel_UserAttributes> {
@@ -43,6 +42,12 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: false,
+        indexes: [
+          {
+            name: "channelId_index",
+            fields: ["channel_id"],
+          },
+        ],
       }
     );
 

@@ -104,34 +104,15 @@ export class GithubController implements IGithubController {
     const { org, owner, repo } = req.body;
     const admin = org ? org : owner;
 
-    const perPage = 100;
-    const maxResults = 8;
+    const { data } = await octokit.request("GET /repos/{admin}/{repo}/events", {
+      admin,
+      repo,
+      headers: githubHeader,
+    });
 
-    let page = 1;
-    let resultsCount = 0;
-    let filteredEvents = [];
-    while (resultsCount < maxResults) {
-      const { data } = await octokit.request(
-        "GET /repos/{admin}/{repo}/events",
-        {
-          admin,
-          repo,
-          headers: githubHeader,
-        }
-      );
+    const events = data.filter((event) => event.type === "PushEvent");
 
-      const events = data.filter((event) => event.type === "PushEvent");
-      filteredEvents = filteredEvents.concat(events);
-      resultsCount = filteredEvents.length;
-
-      page++;
-
-      if (data.length < perPage) {
-        break;
-      }
-    }
-    filteredEvents = filteredEvents.slice(0, maxResults);
-    res.json(filteredEvents);
+    res.json(events.slice(0, 8));
   };
 
   getEvents: AsyncRequestHandler = async (req, res) => {
@@ -147,32 +128,17 @@ export class GithubController implements IGithubController {
     const { org, owner, repo } = req.body;
     const admin = org ? org : owner;
 
-    const perPage = 100;
-    const maxResults = 8;
-
-    let page = 1;
-    let resultsCount = 0;
-    let filteredIssues = [];
-    while (resultsCount < maxResults) {
-      const { data } = await octokit.request(
-        "GET /repos/{admin}/{repo}/issues?state=all",
-        {
-          admin,
-          repo,
-          headers: githubHeader,
-        }
-      );
-      const issues = data.filter((el) => el.pull_request === undefined);
-      filteredIssues = filteredIssues.concat(issues);
-      resultsCount = filteredIssues.length;
-
-      page++;
-
-      if (data.length < perPage) {
-        break;
+    const { data } = await octokit.request(
+      "GET /repos/{admin}/{repo}/issues?state=all",
+      {
+        admin,
+        repo,
+        headers: githubHeader,
       }
-    }
-    const result = filteredIssues.slice(0, maxResults).map((i) => {
+    );
+    const issues = data.filter((el) => el.pull_request === undefined);
+
+    const result = issues.slice(0, 8).map((i) => {
       const labels = i.labels.map((el) => {
         return { name: el.name, color: el.color, desc: el.description };
       });

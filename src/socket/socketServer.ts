@@ -58,12 +58,12 @@ export class Socket {
           await this.socketEmitter.messageStatus(socket);
           await this.socketEmitter.myAlert(socket);
           this.connectedSession.set(sessionID, socket);
-          this.handleSocketEvents(socket);
+          await this.handleSocketEvents(socket);
         } else {
           console.log("소켓있음");
           await this.socketEmitter.messageStatus(existSocket);
           await this.socketEmitter.myAlert(existSocket);
-          this.handleSocketEvents(existSocket);
+          await this.handleSocketEvents(existSocket);
         }
       } catch (err: any) {
         logger.error(err.message);
@@ -73,7 +73,7 @@ export class Socket {
     });
   }
 
-  private handleSocketEvents(socket: SocketIO): void {
+  private async handleSocketEvents(socket: SocketIO): Promise<void> {
     socket.on(Socket.SEND_MESSAGE, this.socketListener.sendMessage(socket));
     socket.on(Socket.READ_MESSAGE, this.socketListener.readMessage(socket));
     socket.on(Socket.SET_BOOKMARK, this.socketListener.setBookmark(socket));

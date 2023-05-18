@@ -9,7 +9,7 @@ import {
   messageService,
   pageService,
 } from "../services";
-import { getCurrentDate, RedisHandler } from "../utils";
+import { getCurrentDate, logger, RedisHandler } from "../utils";
 import { socketEmitter, SocketEmitter } from "./socketEmitter";
 import { emitHandler, socketsInRoom } from "./socketUtils";
 
@@ -47,6 +47,7 @@ export class SocketListener {
   public readMessage =
     (socket: SocketIO) =>
     async ({ roomId }: { roomId: string }) => {
+      logger.warn("readMessage");
       const cachedMessages = await RedisHandler.findMessages(roomId);
 
       const length = cachedMessages.length;
