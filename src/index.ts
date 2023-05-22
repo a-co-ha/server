@@ -1,54 +1,84 @@
-import express from "express";
-import cors from "cors";
-import createError from "http-errors";
 import cookieParser from "cookie-parser";
-import mongoose from "mongoose";
-import logger from "morgan";
-
-import { port, mongoDBUri, host } from "./config";
-import { errorHandler, loginRequired } from "./middlewares";
-import { indexRouter, oauthRouter } from "./routers";
+import cors from "cors";
+import express from "express";
+import { createServer } from "http";
+import { corsOptions, port, SESSION_SECRET } from "./config";
 import { endPoint } from "./constants";
+import { MongoAdapter, MySqlAdapter } from "./db";
+import {
+  errorHandler,
+  loginRequired,
+  morganMiddleware,
+  SessionStore,
+  useSession,
+} from "./middlewares";
+import {
+  bookmarkListRouter,
+  bookmarkRouter,
+  channelRouter,
+  githubRouter,
+  imageRouter,
+  indexRouter,
+  listRouter,
+  oauthRouter,
+  pageRouter,
+  templateRouter,
+  userRouter,
+} from "./routers";
+import { Socket, socketEmitter, socketListener } from "./socket";
+import { logger } from "./utils";
 
-const app = express();
-mongoose.connect(mongoDBUri);
-mongoose.connection.on("connected", () => {
-  console.log(`Successfully connected to MongoDB: ${mongoDBUri}`);
-});
+export class AppServer {
+  app: express.Application;
+  static PORT = port;
 
-import mysql from "mysql2";
+  constructor() {
+    this.app = express();
+  }
+  async config() {
+    this.middleWare();
+    new MySqlAdapter();
+    new MongoAdapter();
+    this.routes();
+  }
 
-const pool = mysql.createPool({
-  host: host,
-  port: 3306,
-  user: "admin",
-  password: "12341234",
-  database: "acoha",
-});
+  static async start() {
+    const appServer = new AppServer();
+    const server = createServer(appServer.app);
+    await appServer.config();
 
-export const getConn = async () => {
-  return pool.getConnection(async (conn) => conn);
-};
+    const socket = new Socket(server, socketListener, socketEmitter);
+    await socket.config();
+    socket.start();
+    server.listen(port, async () => {
+      logger.info(`server listening at http://localhost:${port}`);
+    });
+  }
 
-app.use(cors());
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+  private middleWare() {
+    this.app.use(morganMiddleware);
+    this.app.use(cors(corsOptions));
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cookieParser(SESSION_SECRET));
+    this.app.use(useSession());
+    this.app.use(SessionStore.checkSession());
+  }
 
-app.get(endPoint.index, indexRouter);
-app.use(endPoint.oauth, oauthRouter);
-
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-app.use(errorHandler);
-
-getConn().then((conn) => {
-  console.log(`Connected DB`);
-});
-
-app.listen(port, () => {
-  console.log(`Server listening on port: ${port}`);
-});
+  private routes() {
+    this.app.get(endPoint.index, indexRouter);
+    this.app.use(endPoint.oauth, oauthRouter);
+    this.app.use(endPoint.user, userRouter);
+    this.app.use(endPoint.invite, loginRequired, channelRouter);
+    this.app.use(endPoint.channel, loginRequired, channelRouter);
+    this.app.use(endPoint.page, loginRequired, pageRouter);
+    this.app.use(endPoint.template, loginRequired, templateRouter);
+    this.app.use(endPoint.list, loginRequired, listRouter);
+    this.app.use(endPoint.github, loginRequired, githubRouter);
+    this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
+    this.app.use(endPoint.bookmarks, loginRequired, bookmarkListRouter);
+    this.app.use(endPoint.image, loginRequired, imageRouter);
+    this.app.use(errorHandler);
+  }
+}
+AppServer.start();

@@ -1,9 +1,41 @@
-import { Request, Response, NextFunction } from "express";
+/* eslint-disable @typescript-eslint/no-namespace */
+import "express-session";
+import "express";
+import { Room, UserAttributes } from "../interface";
 
-export type AsyncRequestHandler = (
-  req: Request,
-  res: Response,
-  next?: NextFunction
-) => Promise<any>;
+declare module "socket.io" {
+  interface Socket {
+    sessionID?: string;
+    userID: number;
+    name: string;
+    img: string;
+    roomIds: Room[];
+  }
+}
 
-export type ErrorType = "FORBIDDEN" | "NOTFOUND" | "SERVERERROR" | "BADREQUEST";
+declare global {
+  namespace Express {
+    interface Request {
+      user?: UserAttributes;
+    }
+  }
+}
+
+declare module "express-session" {
+  interface SessionData {
+    sessionID: string;
+    userId?: number;
+    auth?: boolean;
+    user?: UserAttributes;
+  }
+}
+
+declare global {
+  namespace Express {
+    namespace Multer {
+      interface File {
+        location: string;
+      }
+    }
+  }
+}

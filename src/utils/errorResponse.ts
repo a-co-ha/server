@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ErrorType } from "../types";
+import { ErrorType } from "../constants";
 
 export const errorResponse = (
   res: Response,
@@ -8,16 +8,16 @@ export const errorResponse = (
 ) => {
   let statusCode: number = 500;
   switch (type) {
-    case "FORBIDDEN":
+    case ErrorType.FORBIDDEN:
       statusCode = 403;
       break;
-    case "NOTFOUND":
+    case ErrorType.NOTFOUND:
       statusCode = 404;
       break;
-    case "BADREQUEST":
+    case ErrorType.BADREQUEST:
       statusCode = 400;
       break;
-    case "SERVERERROR":
+    case ErrorType.SERVERERROR:
       statusCode = 500;
       break;
     default:
