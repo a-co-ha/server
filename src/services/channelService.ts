@@ -296,7 +296,7 @@ export class ChannelService {
       include: {
         model: User,
         required: true,
-        attributes: ["user_id"],
+        attributes: ["user_id", "img"],
       },
       raw: true,
     });
