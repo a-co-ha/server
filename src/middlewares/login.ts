@@ -1,17 +1,17 @@
 import axios, { AxiosResponse } from "axios";
-import { mysqlTransaction } from "./../db";
 import {
   GITHUBACCESSURL,
   GITHUBUSERURL,
   oauthClient,
   oauthClientLOCAL,
-  oauthSecretLOCAL,
   oauthSecret,
+  oauthSecretLOCAL,
 } from "../config";
+import { ErrorType } from "../constants";
 import { User } from "../interface";
 import { userService } from "../services";
-import { ErrorType } from "../constants";
 import { errorResponse } from "../utils";
+import { mysqlTransaction } from "./../db";
 
 export const githubLogin = async (req, res, next) => {
   const origin = req.headers.origin;

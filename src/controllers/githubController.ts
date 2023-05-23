@@ -111,8 +111,28 @@ export class GithubController implements IGithubController {
     });
 
     const events = data.filter((event) => event.type === "PushEvent");
-
-    res.json(events.slice(0, 8));
+    const filteredEvent = events.slice(0, 8);
+    const result = await Promise.all(
+      filteredEvent.map(async (event) => {
+        if (event.payload.commits.length > 1) {
+          const { head } = event.payload;
+          const { data } = await octokit.request(
+            "GET /repos/{admin}/{repo}/commits/{head}",
+            {
+              admin,
+              repo,
+              head,
+              headers: githubHeader,
+            }
+          );
+          event.payload.commits = [
+            { author: data.commit.author, message: data.commit.message },
+          ];
+        }
+        return event;
+      })
+    );
+    res.json(result);
   };
 
   getEvents: AsyncRequestHandler = async (req, res) => {

@@ -1,10 +1,10 @@
 import { Sequelize } from "sequelize";
 import {
-  mysqlDataBase,
-  mysqlUser,
-  mysqlPassword,
   dialect,
+  mysqlDataBase,
   mysqlHost,
+  mysqlPassword,
+  mysqlUser,
 } from "../config";
 import { logger } from "../utils/winston";
 
@@ -24,7 +24,9 @@ export const connectSequelize = async () => {
     await sequelize.authenticate().then(() => {
       logger.info("sequelize connection success");
     });
-    await sequelize.sync();
+    await sequelize.sync().then(() => {
+      logger.info("sequelize sync success");
+    });
   } catch (err) {
     logger.error(err);
   }

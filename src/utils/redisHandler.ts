@@ -158,6 +158,3 @@ export class RedisHandler {
     return { roomId, userId, isRead };
   }
 }
-
-// 데이터베이스 클라이언트는 보통
-// 전역으로 사용하기 위해서 static함수로 만듦.

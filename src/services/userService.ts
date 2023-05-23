@@ -74,8 +74,9 @@ export class UserService {
       },
       attributes: ["userId", "githubID", "githubURL", "img", "name"],
     });
-
+    console.log(user);
     if (!user) {
+      console.log("유저없음");
       return null;
     }
 
