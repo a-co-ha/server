@@ -14,6 +14,7 @@ export const PageSchema = new Schema<PageInterface>(
     pageName: { type: String, required: false, default: PAGE_NAME.DEFAULT },
     label: [
       {
+        githubImg: { type: String, required: false },
         content: { type: String, required: false },
       },
     ],

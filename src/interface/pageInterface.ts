@@ -11,13 +11,14 @@ export interface block {
 
 export interface label {
   content: string;
+  githubImg: string;
 }
 
 export interface page {
   channelId?: number;
   pageName?: string;
   _id?: {};
-  label?: {};
+  label?: label[];
   blocks: {};
   type?: string;
   categories?: string;
@@ -66,7 +67,7 @@ export interface IPageModel {
 export interface pages {
   pageId: {};
   pageName: string;
-  label: {};
+  label: label[];
   status?: string;
 }
 
@@ -74,7 +75,7 @@ export interface PageInterface {
   _id?: string;
   channelId: number;
   pageName: string;
-  label: string[];
+  label: label[];
   initial: boolean;
   blocks: [
     {
