@@ -4,7 +4,7 @@ import {
   mysqlDataBase,
   mysqlHost,
   mysqlPassword,
-  mysqlUser,
+  mysqlUser
 } from "../config";
 import { logger } from "../utils/winston";
 

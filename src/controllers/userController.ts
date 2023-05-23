@@ -16,7 +16,7 @@ export class UserController implements IUserController {
   }
 
   public login: AsyncRequestHandler = async (req, res) => {
-    console.log("controller", req.user);
+
     let result: UserLoginInterface;
     await this.mysqlTransaction.execute(async (t) => {
       result = await this.userService.login(t, req.user, req.sessionID);

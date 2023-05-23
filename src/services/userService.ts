@@ -6,7 +6,7 @@ import {
   ChannelAttributes,
   UserAttributes,
   userHasChannels,
-  UserLoginInterface,
+  UserLoginInterface
 } from "../interface";
 import { Channel, ChannelUser, User, userModel } from "../model";
 import { channelService, ChannelService } from "../services";
@@ -74,7 +74,7 @@ export class UserService {
       },
       attributes: ["userId", "githubID", "githubURL", "img", "name"],
     });
-    console.log(user);
+
     if (!user) {
       console.log("유저없음");
       return null;
