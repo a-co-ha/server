@@ -98,26 +98,37 @@ export class SocketListener {
     };
 
   public setLabel = (socket: SocketIO) => async (content: any) => {
-    const { channelId, pageId, targetUserId, targetUserName } = content;
+    try {
+      const { channelId, pageId, targetUserId, targetUserName } = content;
 
-    const { channelName } = await channelService.getChannelInfo({
-      id: channelId,
-    });
-    const { pageName, parentTemplate } = await pageService.findPage({
-      channelId,
-      id: pageId,
-    });
+      const { channelName } = await channelService.getChannelInfo({
+        id: channelId,
+      });
+      const { pageName, parentTemplate, type } = await pageService.findPage({
+        channelId,
+        id: pageId,
+      });
 
-    const result: any = { channelName, targetUserName, pageName };
-    if (parentTemplate) {
-      result.subPageName = pageName;
-      result.pageName = parentTemplate.pageName;
+      const result: any = {
+        channelName,
+        targetUserName,
+        pageName,
+        channelId,
+        pageId,
+        type,
+      };
+      if (parentTemplate) {
+        result.subPageName = pageName;
+        result.pageName = parentTemplate.pageName;
+      }
+
+      await RedisHandler.setAlert(targetUserId);
+
+      socket.emit("GET_ALERT", result); // 추후 제거 예정
+      socket.to(targetUserId).emit("GET_ALERT", result);
+    } catch (err: any) {
+      throw new Error(err);
     }
-
-    await RedisHandler.setAlert(targetUserId);
-
-    socket.emit("GET_ALERT", result); // 추후 제거 예정
-    socket.to(targetUserId).emit("GET_ALERT", result);
   };
 
   public readLabel = (socket: SocketIO) => async (content: any) => {

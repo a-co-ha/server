@@ -48,13 +48,16 @@ export class Socket {
         }
 
         await socketValidation(sessionID, socket);
-        await this.handleSocketEvents(socket);
+        await this.handleSocketEvents(socket).catch((err) => {
+          throw new Error(err);
+        });
         socket.join(socket.userID.toString());
         await this.socketEmitter.join(socket, socket.roomIds);
         await this.socketEmitter.getCurrentMembers(socket);
         await this.socketEmitter.messageStatus(socket);
         await this.socketEmitter.myAlert(socket);
       } catch (err: any) {
+        console.log(err);
         logger.error(err.message);
         socket.disconnect();
         return;
