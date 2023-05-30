@@ -112,23 +112,22 @@ export class RedisHandler {
     await redisClient.del(sessionKey);
   }
 
-  static async setAlert(targetUserId: number): Promise<void> {
+  static async setAlert(targetUserId: number, info: any): Promise<void> {
     const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
-    await RedisHelper.setWithExpiration(key, true, REDIS_TTL.DAY);
+    const value = JSON.stringify(info);
+    await redisClient.rPush(key, value);
+    await redisClient.expire(key, REDIS_TTL.DAY);
   }
 
   static async readAlert(targetUserId: number): Promise<void> {
     const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
-    await RedisHelper.setWithExpiration(key, false, REDIS_TTL.DAY);
+    await redisClient.del(key);
   }
 
-  static async getAlert(targetUserId: number): Promise<string> {
+  static async getAlert(targetUserId: number): Promise<string[]> {
     const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
-    const value = await redisClient.get(key);
-    if (value === null) {
-      return "false";
-    }
-    return value;
+    const results = await redisClient.lRange(key, 0, -1);
+    return results.map((result) => JSON.parse(result));
   }
 
   static async setReadMessagePerRoom(

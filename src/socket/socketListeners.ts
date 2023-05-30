@@ -122,7 +122,7 @@ export class SocketListener {
         result.pageName = parentTemplate.pageName;
       }
 
-      await RedisHandler.setAlert(targetUserId);
+      await RedisHandler.setAlert(targetUserId, result);
 
       socket.emit("GET_ALERT", result); // 추후 제거 예정
       socket.to(targetUserId).emit("GET_ALERT", result);
