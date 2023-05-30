@@ -23,16 +23,8 @@ export class RedisHandler {
   static BOOKMARK_PREFIX = "bookMark:";
   static ROOM_PREFIX = "rooms:";
   static ALERT_PREFIX = "alert:";
-  static SOCKET_PREFIX = "socket:";
+  static ALERT_READ_PREFIX = "alertIsRead:";
 
-  static async saveSocketId(sessionID, socketID) {
-    const key = `${RedisHandler.SOCKET_PREFIX}${sessionID}`;
-    await RedisHelper.setWithExpiration(key, socketID, REDIS_TTL.DAY);
-  }
-  static async getSocketId(sessionID) {
-    const key = `${RedisHandler.SOCKET_PREFIX}${sessionID}`;
-    return await redisClient.get(key);
-  }
   static async saveUserSession(
     userID: number,
     sessionID: string
@@ -117,17 +109,29 @@ export class RedisHandler {
     const value = JSON.stringify(info);
     await redisClient.rPush(key, value);
     await redisClient.expire(key, REDIS_TTL.DAY);
+
+    const readKey = `${RedisHandler.ALERT_READ_PREFIX}${targetUserId}`;
+    await RedisHelper.setWithExpiration(readKey, true, REDIS_TTL.DAY);
   }
 
   static async readAlert(targetUserId: number): Promise<void> {
-    const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
-    await redisClient.del(key);
+    const key = `${RedisHandler.ALERT_READ_PREFIX}${targetUserId}`;
+    await RedisHelper.setWithExpiration(key, false, REDIS_TTL.DAY);
   }
 
   static async getAlert(targetUserId: number): Promise<string[]> {
     const key = `${RedisHandler.ALERT_PREFIX}${targetUserId}`;
     const results = await redisClient.lRange(key, 0, -1);
     return results.map((result) => JSON.parse(result));
+  }
+
+  static async getAlertStatus(targetUserId: number): Promise<string> {
+    const key = `${RedisHandler.ALERT_READ_PREFIX}${targetUserId}`;
+    const value = await redisClient.get(key);
+    if (value === null) {
+      return "false";
+    }
+    return value;
   }
 
   static async setReadMessagePerRoom(

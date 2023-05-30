@@ -64,9 +64,9 @@ export class SocketEmitter {
   }
 
   public myAlert = async (socket: SocketIO) => {
-    const res = await RedisHandler.getAlert(socket.userID);
-
-    socket.emit("ALERT", res);
+    const isRead = await RedisHandler.getAlertStatus(socket.userID);
+    const alerts = await RedisHandler.getAlert(socket.userID);
+    socket.emit("ALERT", { isRead, alerts });
   };
 }
 export const socketEmitter = new SocketEmitter();
