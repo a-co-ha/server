@@ -15,128 +15,66 @@ export class TemplateController implements ITemplateController {
 
   createTemplate: AsyncRequestHandler = async (req, res) => {
     const { channel, blockId, type } = req.body;
-    if (type === PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
-      const createTemplateProgressResult =
-        await this.mongoTransaction.withTransaction(
-          async (session: ClientSession) => {
-            const createTemplateProgressInfo: createPageOrTemplateInfo = {
-              channelId: channel,
-              blockId,
-              type,
-              session,
-            };
-            const createTemplateProgress =
-              await templateService.createTemplateProgress(
-                createTemplateProgressInfo
-              );
-            return createTemplateProgress;
-          }
-        );
-      res.json(createTemplateProgressResult);
-    } else {
-      const createTemplateNormalResult =
-        await this.mongoTransaction.withTransaction(
-          async (session: ClientSession) => {
-            const createTemplateNormalInfo: createPageOrTemplateInfo = {
-              channelId: channel,
-              blockId,
-              type,
-              session,
-            };
-            const createTemplateNormal =
-              await templateNormalService.createTemplateNormal(
-                createTemplateNormalInfo
-              );
-            return createTemplateNormal;
-          }
-        );
-      res.json(createTemplateNormalResult);
-    }
+    const createTemplateProgressResult =
+      await this.mongoTransaction.withTransaction(
+        async (session: ClientSession) => {
+          const createTemplateProgressInfo: createPageOrTemplateInfo = {
+            channelId: channel,
+            blockId,
+            type,
+            session,
+          };
+          const createTemplateProgress = await templateService.createTemplate(
+            createTemplateProgressInfo
+          );
+          return createTemplateProgress;
+        }
+      );
+    res.json(createTemplateProgressResult);
   };
 
   putPageInTemplate: AsyncRequestHandler = async (req, res) => {
     const { id, progressStatus, blockId, channel, type } = req.body;
-    if (type === PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
-      const addTemplatePageResult = await this.mongoTransaction.withTransaction(
-        async (session: ClientSession) => {
-          const putPageInTemplate: putPageInTemplate = {
-            channelId: channel,
-            id,
-            blockId,
-            type,
-            session,
-            progressStatus,
-          };
+    const addTemplatePageResult = await this.mongoTransaction.withTransaction(
+      async (session: ClientSession) => {
+        const putPageInTemplate: putPageInTemplate = {
+          channelId: channel,
+          id,
+          blockId,
+          type,
+          session,
+          progressStatus,
+        };
 
-          const addTemplatePage =
-            await templateService.putPageInTemplateProgress(putPageInTemplate);
-          return addTemplatePage;
-        }
-      );
-      res.json(addTemplatePageResult);
-    } else {
-      const addTemplatePageResult = await this.mongoTransaction.withTransaction(
-        async (session: ClientSession) => {
-          const putPageInTemplate: putPageInTemplate = {
-            channelId: channel,
-            id,
-            blockId,
-            type,
-            session,
-          };
-          const addTemplateNormalPage =
-            await templateNormalService.putPageInTemplateNormal(
-              putPageInTemplate
-            );
-          return addTemplateNormalPage;
-        }
-      );
-      res.json(addTemplatePageResult);
-    }
+        const addTemplatePage = await templateService.putPageInTemplateProgress(
+          putPageInTemplate
+        );
+        return addTemplatePage;
+      }
+    );
+    res.json(addTemplatePageResult);
   };
 
   updateTemplate: AsyncRequestHandler = async (req, res) => {
     const { id, channel, pages, pageName, type } = req.body;
 
-    if (type === PAGE_TYPE.TEMPLATE_PROGRESSIVE) {
-      const updateProgressResult = await this.mongoTransaction.withTransaction(
-        async (session: ClientSession) => {
-          const updateTemplateInfo: updateTemplateInfo = {
-            channelId: channel,
-            id,
-            pageName,
-            pages,
-            type,
-            session,
-          };
-          const updateProgress = await templateService.updateTemplateProgress(
-            updateTemplateInfo
-          );
-          return updateProgress;
-        }
-      );
-      res.json(updateProgressResult);
-    } else {
-      const updateNormalTemplateResult =
-        await this.mongoTransaction.withTransaction(
-          async (session: ClientSession) => {
-            const updateTemplateInfo: updateTemplateInfo = {
-              channelId: channel,
-              id,
-              pageName,
-              pages,
-              type,
-              session,
-            };
-            const updateNormalTemplate =
-              await templateNormalService.updateTemplateNormal(
-                updateTemplateInfo
-              );
-            return updateNormalTemplate;
-          }
+    const updateProgressResult = await this.mongoTransaction.withTransaction(
+      async (session: ClientSession) => {
+        const updateTemplateInfo: updateTemplateInfo = {
+          channelId: channel,
+          id,
+          pageName,
+          pages,
+          type,
+          session,
+        };
+        const updateProgress = await templateService.updateTemplateProgress(
+          updateTemplateInfo
         );
-      res.json(updateNormalTemplateResult);
-    }
+        return updateProgress;
+      }
+    );
+    res.json(updateProgressResult);
   };
 
   deleteTemplate: AsyncRequestHandler = async (req, res) => {
