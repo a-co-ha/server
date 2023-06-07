@@ -18,6 +18,7 @@ import {
 } from "./../model/index";
 import { PageInterface } from "./../model/schema/pageSchema";
 import { ListService, listService } from "./listService";
+import { TemplateService, templateService } from "./templateService";
 export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
@@ -98,7 +99,7 @@ export class PageService {
         page: page[0],
         session,
       };
-      await this.putPageInList(putPageInListInfo);
+      await this.listService.putPageInList(putPageInListInfo);
     }
 
     return page[0];
@@ -117,19 +118,6 @@ export class PageService {
 
     await this.createSocketPageList(putSocketInListInfo);
     return room[0];
-  }
-
-  public async putPageInList(
-    putPageInListInfo: putPageOrSocketInList
-  ): Promise<ListInterface> {
-    const { channelId, page, session } = putPageInListInfo;
-
-    const list = await listModel.findOne({ channelId });
-    const listId = list._id;
-    const pageInsideList = await this.listModel
-      .findByIdAndUpdate({ _id: listId }, { $push: { EditablePage: { page } } })
-      .session(session);
-    return pageInsideList;
   }
 
   public async createSocketPageList(

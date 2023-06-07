@@ -95,7 +95,7 @@ export class PageController implements IPageController {
 
   public putBlockInEditablePage: AsyncRequestHandler = async (req, res) => {
     const { id, channel, label, blocks, pageName } = req.body;
-    const pushBlockResult = await this.mongoTransaction.withTransaction(
+    const putBlockResult = await this.mongoTransaction.withTransaction(
       async (session: ClientSession) => {
         const page: page = {
           channelId: channel,
@@ -108,7 +108,7 @@ export class PageController implements IPageController {
       }
     );
 
-    res.json(pushBlockResult);
+    res.json(putBlockResult);
   };
 
   public editRoomName: AsyncRequestHandler = async (req, res) => {
