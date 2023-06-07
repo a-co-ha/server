@@ -135,8 +135,10 @@ export class SocketListener {
     await RedisHandler.readAlert(socket.userID);
 
     const res = await RedisHandler.getAlert(socket.userID);
-    socket.to(socket.userID.toString()).emit("ALERT", res);
-    socket.emit("ALERT", res);
+    socket
+      .to(socket.userID.toString())
+      .emit("ALERT", { isRead: false, alerts: res });
+    socket.emit("ALERT", { isRead: false, alerts: res });
   };
 
   public disconnect = (socket: SocketIO, io: Server) => async () => {

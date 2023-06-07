@@ -1,5 +1,5 @@
-import { AsyncRequestHandler } from "../utils";
 import { deleteImage } from "../middlewares";
+import { AsyncRequestHandler } from "../utils";
 
 interface IImageController {
   imageDelete: AsyncRequestHandler;
