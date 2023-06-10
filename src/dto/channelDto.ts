@@ -10,7 +10,7 @@ export class ChannelDto {
 
   // 채널 이름
   @MinLength(1)
-  @MaxLength(10)
+  @MaxLength(15)
   @IsOptional()
   @IsString()
   channelName: string;

@@ -34,7 +34,7 @@ export class TemplateDto {
   public pages: pageStatusUpdate[];
 
   @MinLength(2)
-  @MaxLength(10)
+  @MaxLength(15)
   @IsString()
   @IsOptional()
   public pageName: string;
