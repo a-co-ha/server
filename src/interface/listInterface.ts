@@ -14,6 +14,7 @@ export interface list {
 
 export interface ListInterface {
   channelId: number;
+  channelName?: string;
   EditablePage: [
     { page: PageInterface; _id: string },
     { template: TemplateInterface; _id: string }

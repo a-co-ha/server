@@ -127,6 +127,14 @@ export class ChannelService {
     });
   }
 
+  public async getChannelName(channelId: number): Promise<any> {
+    return await Channel.findOne({
+      where: { id: channelId },
+      attributes: ["channelName"],
+      raw: true,
+    });
+  }
+
   public async joinChannel(
     t: Transaction,
     joinInfo: channelJoinInterface

@@ -1,3 +1,4 @@
+import { ChannelService, channelService } from "./channelService";
 import { ClientSession } from "mongoose";
 import { ERROR_NAME } from "../constants";
 import {
@@ -19,8 +20,10 @@ export class ListService {
   constructor(
     private listModel: listModelType,
     private pageModel: pageModelType,
-    private templateModel: templateModelType
+    private templateModel: templateModelType,
+    private channelService: ChannelService
   ) {}
+
   public async findList(channelId: number): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
@@ -28,8 +31,14 @@ export class ListService {
       path: "EditablePage.page EditablePage.template SocketPage.page",
       select: "pageName type categories pageName",
     });
+    const channelName = await this.channelService.getChannelName(channelId);
 
-    return listPage;
+    const listOfPagesIntheChannel = {
+      ...listPage.toObject(),
+      ...channelName,
+    };
+
+    return listOfPagesIntheChannel;
   }
 
   public async updateList(
@@ -153,4 +162,9 @@ export class ListService {
   }
 }
 
-export const listService = new ListService(listModel, pageModel, templateModel);
+export const listService = new ListService(
+  listModel,
+  pageModel,
+  templateModel,
+  channelService
+);
