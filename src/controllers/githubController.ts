@@ -40,7 +40,6 @@ export class GithubController implements IGithubController {
       owner: githubID,
       headers: githubHeader,
     });
-    console.log(response);
 
     const { data } = response;
     const result = data.map((el) => {
@@ -104,9 +103,8 @@ export class GithubController implements IGithubController {
   };
 
   getRepoCommits: AsyncRequestHandler = async (req, res) => {
-    const { githubID } = req.user;
-    const { org, owner, repo } = req.body;
-    const admin = githubID;
+    const { githubID: admin } = req.user;
+    const { repo } = req.body;
 
     const { data } = await octokit.request(
       "GET /repos/{admin}/{repo}/commits",
@@ -166,8 +164,10 @@ export class GithubController implements IGithubController {
   };
 
   getIssue: AsyncRequestHandler = async (req, res) => {
-    const { org, owner, repo } = req.body;
-    const admin = org ? org : owner;
+    const { githubID } = req.user;
+    const { org, repo } = req.body;
+
+    const admin = org ? org : githubID;
 
     const { data } = await octokit.request(
       "GET /repos/{admin}/{repo}/issues?state=all",
