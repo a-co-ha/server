@@ -17,6 +17,7 @@ export class GithubController implements IGithubController {
   getRepo: AsyncRequestHandler = async (req, res) => {
     const { githubID } = req.user;
     const { repo, type } = req.body;
+
     const { data } = await octokit.request("GET /repos/{owner}/{repo}", {
       owner: githubID,
       repo,
@@ -39,6 +40,7 @@ export class GithubController implements IGithubController {
       owner: githubID,
       headers: githubHeader,
     });
+    console.log(response);
 
     const { data } = response;
     const result = data.map((el) => {
@@ -100,6 +102,23 @@ export class GithubController implements IGithubController {
 
     res.json(result);
   };
+
+  getRepoCommits: AsyncRequestHandler = async (req, res) => {
+    const { org, owner, repo } = req.body;
+    const admin = org ? org : owner;
+
+    const { data } = await octokit.request(
+      "GET /repos/{admin}/{repo}/commits",
+      {
+        admin,
+        repo,
+        headers: githubHeader,
+      }
+    );
+
+    res.json(data);
+  };
+
   getCommits: AsyncRequestHandler = async (req, res) => {
     const { org, owner, repo } = req.body;
     const admin = org ? org : owner;
@@ -132,6 +151,7 @@ export class GithubController implements IGithubController {
         return event;
       })
     );
+
     res.json(result);
   };
 
