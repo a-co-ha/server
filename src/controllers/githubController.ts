@@ -105,7 +105,7 @@ export class GithubController implements IGithubController {
 
   getRepoCommits: AsyncRequestHandler = async (req, res) => {
     const { githubID } = req.user;
-    const { repo } = req.body;
+    const { org, owner, repo } = req.body;
     const admin = githubID;
 
     const { data } = await octokit.request(
@@ -121,9 +121,8 @@ export class GithubController implements IGithubController {
   };
 
   getCommits: AsyncRequestHandler = async (req, res) => {
-    const { githubID } = req.user;
-    const { repo } = req.body;
-    const admin = githubID;
+    const { org, owner, repo } = req.body;
+    const admin = org ? org : owner;
 
     const { data } = await octokit.request("GET /repos/{admin}/{repo}/events", {
       admin,
