@@ -5,6 +5,10 @@ import { asyncHandler } from "../utils";
 export const githubRouter = express.Router();
 githubRouter.post("/repos", asyncHandler(githubController.getRepos));
 githubRouter.post("/repo", asyncHandler(githubController.getRepo));
+githubRouter.post(
+  "/repo/commits",
+  asyncHandler(githubController.getRepoCommits)
+);
 githubRouter.post("/orgs", asyncHandler(githubController.getOrgs));
 githubRouter.post("/org", asyncHandler(githubController.getOrg));
 githubRouter.post("/commits", asyncHandler(githubController.getCommits));

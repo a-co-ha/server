@@ -1,6 +1,12 @@
+import { ChannelService, channelService } from "./channelService";
 import { ClientSession } from "mongoose";
 import { ERROR_NAME } from "../constants";
-import { list, ListInterface } from "../interface";
+import {
+  list,
+  ListInterface,
+  putPageOrSocketInList,
+  template,
+} from "../interface";
 import {
   listModel,
   listModelType,
@@ -14,8 +20,10 @@ export class ListService {
   constructor(
     private listModel: listModelType,
     private pageModel: pageModelType,
-    private templateModel: templateModelType
+    private templateModel: templateModelType,
+    private channelService: ChannelService
   ) {}
+
   public async findList(channelId: number): Promise<ListInterface> {
     const list = await this.listModel.findOne({ channelId });
     const listId = list._id;
@@ -23,8 +31,14 @@ export class ListService {
       path: "EditablePage.page EditablePage.template SocketPage.page",
       select: "pageName type categories pageName",
     });
+    const channelName = await this.channelService.getChannelName(channelId);
 
-    return listPage;
+    const listOfPagesIntheChannel = {
+      ...listPage.toObject(),
+      ...channelName,
+    };
+
+    return listOfPagesIntheChannel;
   }
 
   public async updateList(
@@ -62,6 +76,35 @@ export class ListService {
       .session(session);
 
     return deleteList;
+  }
+
+  public async putPageInList(
+    putPageInListInfo: putPageOrSocketInList
+  ): Promise<ListInterface> {
+    const { channelId, page, session } = putPageInListInfo;
+
+    const list = await listModel.findOne({ channelId });
+    const listId = list._id;
+    const pageInsideList = await this.listModel
+      .findByIdAndUpdate({ _id: listId }, { $push: { EditablePage: { page } } })
+      .session(session);
+    return pageInsideList;
+  }
+
+  public async putTemplateInList(
+    channelId: number,
+    template: template,
+    session: ClientSession
+  ): Promise<ListInterface> {
+    const list = await this.listModel.findOne({ channelId });
+    const listId = list._id;
+    const pushTemplateList = await this.listModel
+      .findByIdAndUpdate(
+        { _id: listId },
+        { $push: { EditablePage: { template } } }
+      )
+      .session(session);
+    return pushTemplateList;
   }
 
   public async deleteListTemplate(
@@ -119,4 +162,9 @@ export class ListService {
   }
 }
 
-export const listService = new ListService(listModel, pageModel, templateModel);
+export const listService = new ListService(
+  listModel,
+  pageModel,
+  templateModel,
+  channelService
+);

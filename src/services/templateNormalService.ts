@@ -1,3 +1,4 @@
+import { ListService, listService } from "./listService";
 import { PageService, pageService } from "./pageService";
 import { templateService, TemplateService } from "./templateService";
 import {
@@ -16,31 +17,27 @@ import {
 } from "../interface";
 import { PAGE_TYPE } from "../constants";
 
-class TemplateNormalService {
+export class TemplateNormalService {
   private templateModel: templateModelType;
   private pageService: PageService;
-  private templateService: TemplateService;
   private pageModel: pageModelType;
+  private listService: ListService;
   constructor(
     templateModel: templateModelType,
     pageService: PageService,
-    templateService: TemplateService,
-    pageModel: pageModelType
+    pageModel: pageModelType,
+    listService: ListService
   ) {
     this.templateModel = templateModel;
     this.pageService = pageService;
-    this.templateService = templateService;
     this.pageModel = pageModel;
+    this.listService = listService;
   }
 
   public async createTemplateNormal(
-    createTemplateNormalInfo: createPageOrTemplateInfo
-    // channelId: number,
-    // blockId: string,
-    // type: string,
-    // session: ClientSession
+    createTemplateInfo: createPageOrTemplateInfo
   ): Promise<template> {
-    const { channelId, blockId, type, session } = createTemplateNormalInfo;
+    const { channelId, blockId, type, session } = createTemplateInfo;
 
     const pageType = PAGE_TYPE.NORMALIZE;
     const parentTemplateInfo: parentTemplateInfo = {
@@ -74,7 +71,7 @@ class TemplateNormalService {
       )
       .session(session);
 
-    await this.templateService.putTemplateInList(
+    await this.listService.putTemplateInList(
       channelId,
       createNormalTemplate[0],
       session
@@ -156,6 +153,6 @@ class TemplateNormalService {
 export const templateNormalService = new TemplateNormalService(
   templateModel,
   pageService,
-  templateService,
-  pageModel
+  pageModel,
+  listService
 );
