@@ -18,7 +18,6 @@ import {
 } from "./../model/index";
 import { PageInterface } from "./../model/schema/pageSchema";
 import { ListService, listService } from "./listService";
-import { TemplateService, templateService } from "./templateService";
 export class PageService {
   private pageModel: pageModelType;
   private listModel: listModelType;
@@ -135,6 +134,13 @@ export class PageService {
       .session(session);
 
     return socketInsideList;
+  }
+
+  public async findChannelID(roomID: string): Promise<any> {
+    return await this.socketModel.findOne(
+      { _id: new ObjectId(roomID) },
+      { channelId: true }
+    );
   }
   public async editRoomName(
     id: string,

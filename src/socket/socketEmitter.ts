@@ -1,6 +1,6 @@
 import { Socket as SocketIO } from "socket.io";
 import { Room } from "../interface";
-import { userService } from "../services";
+import { pageService, userService } from "../services";
 import { logger, RedisHandler } from "../utils";
 export class SocketEmitter {
   public async join(socket: SocketIO, roomIds: Room[]): Promise<void> {
@@ -39,8 +39,9 @@ export class SocketEmitter {
     const { roomIds, userID } = socket;
     const status = await Promise.all(
       roomIds.map(async (room: Room) => {
+        const channelId = await pageService.findChannelID(room.id);
         const status = await RedisHandler.getIsRead(room.id, userID);
-        return { status };
+        return { status, channelId };
       })
     );
     socket.emit("MESSAGE_STATUS", status);
