@@ -7,3 +7,4 @@ export * from "./templateNormalService";
 export * from "./templateService";
 export * from "./userService";
 export * from "./announcementsService";
+export * from "./calendarService";

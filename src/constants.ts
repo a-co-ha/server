@@ -13,6 +13,7 @@ interface EndPointInterface {
   image: string;
   bookmarks: string;
   announcements: string;
+  calendar: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -30,6 +31,7 @@ export const endPoint: EndPointInterface = {
   image: "/api/image",
   bookmarks: "/api/bookmarks",
   announcements: "/api/announcements",
+  calendar: "/api/calendar",
 };
 
 export enum ErrorType {
