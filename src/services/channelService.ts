@@ -127,10 +127,10 @@ export class ChannelService {
     });
   }
 
-  public async getChannelName(channelId: number): Promise<any> {
+  public async getChannelNameAndImage(channelId: number): Promise<any> {
     return await Channel.findOne({
       where: { id: channelId },
-      attributes: ["channelName"],
+      attributes: ["channelName", "channelImg"],
       raw: true,
     });
   }

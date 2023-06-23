@@ -5,8 +5,8 @@ import {
   PAGE_TYPE,
   TEMPLATE_STATUS,
 } from "../../constants";
-import moment from "moment-timezone";
 import { PageInterface } from "../../interface";
+import { mongodbTimezone } from "../../middlewares/mongodbTimezone";
 const Schema = mongoose.Schema;
 
 export const PageSchema = new Schema<PageInterface>(
@@ -66,16 +66,6 @@ export const PageSchema = new Schema<PageInterface>(
   }
 );
 
-PageSchema.set("toJSON", {
-  getters: true,
-  virtuals: false,
-  transform: (doc, ret) => {
-    ret.createdAt = moment(ret.createdAt)
-      .tz("Asia/Seoul")
-      .format("YYYY-MM-DD HH:mm:ss");
-    ret.updatedAt = moment(ret.updatedAt)
-      .tz("Asia/Seoul")
-      .format("YYYY-MM-DD HH:mm:ss");
-  },
-});
+mongodbTimezone(PageSchema);
+
 export { PageInterface };

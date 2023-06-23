@@ -31,11 +31,12 @@ export class ListService {
       path: "EditablePage.page EditablePage.template SocketPage.page",
       select: "pageName type categories pageName",
     });
-    const channelName = await this.channelService.getChannelName(channelId);
+    const getChannelNameAndImage =
+      await this.channelService.getChannelNameAndImage(channelId);
 
     const listOfPagesIntheChannel = {
       ...listPage.toObject(),
-      ...channelName,
+      ...getChannelNameAndImage,
     };
 
     return listOfPagesIntheChannel;

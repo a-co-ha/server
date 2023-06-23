@@ -76,8 +76,19 @@ export class AnnouncementsService {
     findAnnouncementsInfo: AnnouncementsInfo
   ): Promise<Announcements[]> {
     const { channelId, announcementsId } = findAnnouncementsInfo;
+    if (announcementsId === 0) {
+      const ViewdFiveRecentAnnouncements = await Announcements.findAll({
+        where: {
+          channelId,
+        },
+        raw: true,
+        order: [["id", "DESC"]],
+        limit: 5,
+      });
+      return ViewdFiveRecentAnnouncements;
+    }
 
-    const findAllAnnouncementsInChannel = await Announcements.findAll({
+    const FromTheRequestIdViewdFiveAnnouncements = await Announcements.findAll({
       where: {
         channelId,
         id: { [Op.lte]: announcementsId },
@@ -86,7 +97,7 @@ export class AnnouncementsService {
       order: [["id", "DESC"]],
       limit: 5,
     });
-    return findAllAnnouncementsInChannel;
+    return FromTheRequestIdViewdFiveAnnouncements;
   }
 
   public async editAnnouncements(
