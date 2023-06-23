@@ -24,6 +24,8 @@ import {
   pageRouter,
   templateRouter,
   userRouter,
+  announcementsRouter,
+  calendarRouter,
 } from "./routers";
 import { Socket, socketEmitter, socketListener } from "./socket";
 import { logger } from "./utils";
@@ -78,6 +80,8 @@ export class AppServer {
     this.app.use(endPoint.bookmark, loginRequired, bookmarkRouter);
     this.app.use(endPoint.bookmarks, loginRequired, bookmarkListRouter);
     this.app.use(endPoint.image, loginRequired, imageRouter);
+    this.app.use(endPoint.announcements, loginRequired, announcementsRouter);
+    this.app.use(endPoint.calendar, loginRequired, calendarRouter);
     this.app.use(errorHandler);
   }
 }

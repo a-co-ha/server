@@ -8,3 +8,5 @@ export * from "./userRouter";
 export * from "./listRouter";
 export * from "./bookmarkRouter";
 export * from "./imageRouter";
+export * from "./announcementsRouter";
+export * from "./calendarRouter";

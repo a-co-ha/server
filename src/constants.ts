@@ -12,6 +12,8 @@ interface EndPointInterface {
   bookmark: string;
   image: string;
   bookmarks: string;
+  announcements: string;
+  calendar: string;
 }
 
 export const endPoint: EndPointInterface = {
@@ -28,6 +30,8 @@ export const endPoint: EndPointInterface = {
   bookmark: "/api/bookmark",
   image: "/api/image",
   bookmarks: "/api/bookmarks",
+  announcements: "/api/announcements",
+  calendar: "/api/calendar",
 };
 
 export enum ErrorType {
@@ -88,6 +92,8 @@ export const enum ERROR_NAME {
   NOT_FOUND_CHANNEL = "채널이 없습니다.",
   NOT_FOUND_PROGRESS_STATUS = "progressStatus를 입력하세요.",
   TEMPLATE_TYPE_ERROR = "진행현황 템플릿이 아닙니다.",
+  ANNOUNCEMENTS_NOT_AN_AUTHOR = "작성자가 아닙니다.",
+  ANNOUNCEMENTS_NOT_EXIST = "해당 공지사항은 존재하지 않습니다.",
 }
 
 export const enum gitHubType {

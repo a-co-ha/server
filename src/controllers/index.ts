@@ -7,3 +7,5 @@ export * from "./listController";
 export * from "./githubController";
 export * from "./bookmarkController";
 export * from "./imageController";
+export * from "./announcementsController";
+export * from "./calendarController";

@@ -55,3 +55,5 @@ export * from "./message";
 export * from "./channel";
 export * from "./user";
 export * from "./channelUser";
+export * from "./announcements";
+export * from "./calendar";
