@@ -8,6 +8,7 @@ import { MongoAdapter, MySqlAdapter } from "./db";
 import {
   errorHandler,
   loginRequired,
+  mongodbTimezone,
   morganMiddleware,
   SessionStore,
   useSession,
