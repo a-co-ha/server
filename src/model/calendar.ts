@@ -13,12 +13,12 @@ export class Calendar extends Model<CalendarAtributes> {
     this.init(
       {
         id: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           primaryKey: true,
           autoIncrement: true,
         },
         channelId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: "channel_id",
         },
@@ -31,7 +31,7 @@ export class Calendar extends Model<CalendarAtributes> {
           allowNull: false,
         },
         userId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: "author_id",
         },

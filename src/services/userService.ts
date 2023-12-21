@@ -60,6 +60,7 @@ export class UserService {
   public async getUserWithChannels(
     id: number
   ): Promise<userHasChannels | null> {
+    
     const user = await User.findByPk(id, {
       include: {
         model: ChannelUser,
@@ -74,6 +75,7 @@ export class UserService {
       },
       attributes: ["userId", "githubID", "githubURL", "img", "name"],
     });
+console.log(user,"gfhfh");
 
     if (!user) {
       console.log("유저없음");
@@ -98,7 +100,9 @@ export class UserService {
   }
 
   public async insert(transaction: any, user: UserAttributes): Promise<void> {
-    await User.create(user, transaction);
+    console.log(user,"afadsfafd");
+
+    await User.create(user, { transaction });
   }
 
   public async expandAccToken(

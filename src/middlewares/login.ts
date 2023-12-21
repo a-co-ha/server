@@ -14,6 +14,7 @@ import { errorResponse } from "../utils";
 import { mysqlTransaction } from "./../db";
 
 export const githubLogin = async (req, res, next) => {
+  
   const origin = req.headers.origin;
 
   let id = oauthClient;
@@ -23,6 +24,7 @@ export const githubLogin = async (req, res, next) => {
     secret = oauthSecretLOCAL;
   }
   const requestToken = req.query.code;
+  
   try {
     const response: AxiosResponse = await axios.post(
       GITHUBACCESSURL,
@@ -38,14 +40,17 @@ export const githubLogin = async (req, res, next) => {
         },
       }
     );
+    
 
     const access_token = response.data.access_token;
+
     try {
       const { data } = await axios.get(GITHUBUSERURL, {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
       });
+      
 
       const {
         id,
@@ -64,18 +69,21 @@ export const githubLogin = async (req, res, next) => {
         githubURL,
         img,
       };
-
       const isGuest = await userService.getUserWithChannels(id);
-
       if (!isGuest) {
         await mysqlTransaction.execute(async (t) => {
-          await userService.insert(t, user);
+         await userService.insert(t, user);
+         
         });
       }
 
       req.user = user;
+      console.log(req.user,"asdfasf");
+      
       next();
     } catch (e: any) {
+      console.log("eeeeeee",e);
+      
       errorResponse(res, ErrorType.BADREQUEST, requestToken);
     }
   } catch (e: any) {

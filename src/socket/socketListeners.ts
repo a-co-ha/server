@@ -123,8 +123,6 @@ export class SocketListener {
       }
 
       await RedisHandler.setAlert(targetUserId, result);
-
-      socket.emit("GET_ALERT", result); // 추후 제거 예정
       socket.to(targetUserId).emit("GET_ALERT", result);
     } catch (err: any) {
       throw new Error(err);

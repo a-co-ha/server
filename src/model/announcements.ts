@@ -13,7 +13,7 @@ export class Announcements extends Model<AnnouncementsAttributes> {
     this.init(
       {
         id: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           primaryKey: true,
           autoIncrement: true,
         },

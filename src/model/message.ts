@@ -18,7 +18,7 @@ export class Message extends Model<MessageAttributes> {
     this.init(
       {
         id: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           primaryKey: true,
           autoIncrement: true,
         },
@@ -27,7 +27,7 @@ export class Message extends Model<MessageAttributes> {
           allowNull: false,
         },
         userId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           field: "user_id",
         },
         img: {
@@ -40,7 +40,7 @@ export class Message extends Model<MessageAttributes> {
         },
         roomId: {
           type: DataTypes.STRING(100),
-          primaryKey: true,
+          // primaryKey: true,
           field: "room_id",
         },
         createdAt: {

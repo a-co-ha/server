@@ -15,7 +15,7 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
     this.init(
       {
         userId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: "user_id",
         },
@@ -26,7 +26,7 @@ export class ChannelUser extends Model<Channel_UserAttributes> {
         },
 
         channelId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: "channel_id",
         },

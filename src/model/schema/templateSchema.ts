@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { PAGE_NAME, PAGE_TYPE } from "../../constants";
 import { TemplateInterface } from "../../interface";
+import { mongodbTimezone } from "../../middlewares/mongodbTimezone";
 
 const Schema = mongoose.Schema;
 
@@ -30,3 +31,4 @@ export const TemplateSchema = new Schema<TemplateInterface>(
     timestamps: true,
   }
 );
+mongodbTimezone(TemplateSchema);
