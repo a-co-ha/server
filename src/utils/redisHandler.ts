@@ -150,7 +150,6 @@ export class RedisHandler {
 
   static async resetRead(roomId: string | number, userId: number) {
     const key = `${RedisHandler.ROOM_PREFIX}${roomId}`;
-    console.log(key);
     await redisClient.hSet(key, `isRead:${userId}`, "true");
   }
 

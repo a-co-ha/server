@@ -39,6 +39,7 @@ export class Socket {
 
   public start() {
     this.io.on(Socket.CONNECTION, async (socket: SocketIO) => {
+      
       try {
         const sessionID =
           socket.handshake.auth.sessionID || socket.handshake.headers.sessionid;

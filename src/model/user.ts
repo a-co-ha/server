@@ -48,6 +48,12 @@ export class User extends Model<UserAttributes> {
         sequelize,
         freezeTableName: true,
         timestamps: false,
+        indexes: [
+          {
+            name: 'idx_user_name', // 인덱스 이름
+            fields: ['name'], // 인덱스가 적용될 필드
+          },
+        ],
       }
     );
   }

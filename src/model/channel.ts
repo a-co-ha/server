@@ -15,12 +15,12 @@ export class Channel extends Model<ChannelAttributes> {
     this.init(
       {
         id: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           primaryKey: true,
           autoIncrement: true,
         },
         userId: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           field: "admin",
         },
