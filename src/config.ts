@@ -55,7 +55,7 @@ export const sessionConfig = {
 
 export const corsOrigin = [
   "http://localhost:3001/",
-  "https://acoha.site/",
+  "https://acoha.shop/",
   "https://acoha.store/",
 ];
 
@@ -66,7 +66,7 @@ export const ioCorsOptions = {
       "https://admin.socket.io",
       "http://localhost:3001",
       "https://acoha.store",
-      "https://acoha.site",
+      "https://acoha.shop",
     ],
     methods: ["GET"],
     allowedHeaders: ["Authorization"],
@@ -78,7 +78,7 @@ export const corsOptions = {
   origin: [
     "http://localhost:3001",
     "https://acoha.store",
-    "https://acoha.site",
+    "https://acoha.shop",
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
